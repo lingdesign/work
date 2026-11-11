@@ -33,7 +33,17 @@ lines:
 Lines starting with `#` are notes and never appear on the page. Keep the company's name out of the
 wording: the address names them, the page doesn't (the check fails if it does).
 
-## Updating
+## Nightly sync
+
+Every night (about 2 a.m. New York time) GitHub rebuilds /work from the main site, runs the checks, and
+publishes only if they pass. Edit a case study on lingdesign.github.io and it's on /work by morning.
+To sync now: Actions tab → "Rebuild from main site" → Run workflow. A failed run changes nothing on
+the live site, and GitHub emails you.
+
+GitHub pauses nightly jobs in a repo with no activity for 60 days; it emails before it does. Re-enable
+it from the Actions tab.
+
+## Updating by hand
 
 ```
 python3 build.py ../lingdesign.github.io

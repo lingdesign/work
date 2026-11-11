@@ -34,9 +34,22 @@ FIT = """async () => {
 }""" % (PHONE_LEFT - GAP)
 
 
+CACHE = HERE / "cache"     # one image per title, kept in the repo so a rebuild doesn't redraw unchanged images
+
+
 def render(jobs):
-    """jobs: [(output_path, title)]"""
-    asyncio.run(_render(jobs))
+    """jobs: [(output_path, title)]. Draws only titles not drawn before."""
+    import hashlib, shutil
+    CACHE.mkdir(exist_ok=True)
+    keyed = [(out, title, CACHE / (hashlib.sha1(title.encode()).hexdigest()[:12] + ".jpg")) for out, title in jobs]
+    todo = [(cached, title) for _, title, cached in keyed if not cached.exists()]
+    if todo:
+        asyncio.run(_render(todo))
+    for out, _, cached in keyed:
+        shutil.copy2(cached, out)
+    keep = {cached for _, _, cached in keyed}
+    for old in CACHE.glob("*.jpg"):
+        if old not in keep: old.unlink()
 
 
 async def _render(jobs):

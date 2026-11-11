@@ -1,0 +1,61 @@
+# Every night: rebuild /work from the main site (lingdesign.github.io) and publish it if every check passes.
+# Also runs by hand: Actions tab → "Rebuild from main site" → Run workflow.
+name: Rebuild from main site
+
+on:
+  schedule:
+    - cron: "17 7 * * *"     # 7:17 UTC = 2:17 a.m. in New York (3:17 a.m. in summer)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: rebuild
+  cancel-in-progress: false
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Get this repo
+        uses: actions/checkout@v4
+
+      - name: Get the main site
+        uses: actions/checkout@v4
+        with:
+          repository: lingdesign/lingdesign.github.io
+          path: main-site
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install tools
+        run: pip install playwright pillow
+
+      - name: Build
+        run: python build.py main-site
+
+      - name: Check every page
+        run: python check.py screenshots
+
+      - name: Publish if anything changed
+        run: |
+          git add docs og/cache
+          if git diff --cached --quiet; then
+            echo "Nothing changed on the main site."
+            exit 0
+          fi
+          git -c user.name="github-actions[bot]" -c user.email="41898283+github-actions[bot]@users.noreply.github.com" \
+            commit -m "Rebuild from main site ($(git -C main-site rev-parse --short HEAD))"
+          git push
+
+      - name: Keep the phone screenshots of a failed run
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshots
+          path: screenshots
+          if-no-files-found: ignore
