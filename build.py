@@ -81,9 +81,10 @@ def company_page(work_html, slug, page):
     esc = lambda s: html.escape(s, quote=False)
     attr = lambda s: html.escape(s, quote=True)
 
-    # headline
+    # headline. Words joined by a non-breaking space in pages/*.txt stay on one line, with a normal space between them
+    keep = lambda s: re.sub(r"(\S+(?:\u00a0\S+)+)", lambda m: '<span style="white-space:nowrap">' + m.group(1).replace("\u00a0", " ") + "</span>", esc(s))
     t, n = re.subn(r'<span class="lead">[^<]*</span> <span class="rest">[^<]*</span>',
-                   f'<span class="lead">{esc(page["headline"])}</span> <span class="rest">{esc(page["headline2"])}</span>', t)
+                   lambda m: f'<span class="lead">{keep(page["headline"])}</span> <span class="rest">{keep(page["headline2"])}</span>', t)
     if n != 1: raise BuildError(f"{where}: headline not found")
 
     # rotating lines under the headline

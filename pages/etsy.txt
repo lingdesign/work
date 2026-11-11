@@ -1,0 +1,19 @@
+# Etsy · Staff Product Designer, Buyer · NYC
+# The post asks for: native mobile depth, discovery to checkout, visual and interaction craft, experimentation,
+# workshops that align teams, motion and generative AI, high-traffic consumer commerce.
+# Gap: high-traffic discovery and commerce at scale.
+
+headline: Designing for
+headline2: every step from first look to checkout.
+
+hello: Hi, I'm Ling. I design consumer mobile experiences end to end, using research and data to find what's in people's way, and craft to make the next step feel simple and trustworthy.
+
+order: monument, goals, provider
+
+lines:
+- Redesigned onboarding for a recovery treatment service, signup-to-paid from 26.7% to 56%.
+- Prototyped and tested a clearer way to choose a treatment at checkout, fail rate from 33% to 0%.
+- Moved payment after scheduling, so people see an open time before they pay.
+- Brought five teams together to find why people dropped out of onboarding.
+- Directed an onboarding animation with a motion contractor, from storyboard to build.
+- Prototyped AI-assisted goal writing in code, so the team reacted to working versions.

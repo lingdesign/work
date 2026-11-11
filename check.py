@@ -8,7 +8,7 @@ Fails if any page has a missing file, a script error, a headline wider than the 
 import asyncio, functools, http.server, pathlib, re, shutil, sys, tempfile, threading
 
 ROOT = pathlib.Path(__file__).resolve().parent
-COMPANIES = ["Anthropic", "Duolingo", "Meta", "Google", "DoorDash"]
+COMPANIES = ["Anthropic", "Duolingo", "Meta", "Google", "DoorDash", "Etsy"]
 SIZES = {"phone": dict(viewport={"width": 390, "height": 844}, is_mobile=True, has_touch=True, device_scale_factor=2),
          "desktop": dict(viewport={"width": 1440, "height": 900})}
 

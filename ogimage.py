@@ -60,7 +60,7 @@ async def _render(jobs):
         page = await browser.new_page(viewport={"width": 2400, "height": 1260})
         for out, title in jobs:
             tmp = HERE / "_render.html"
-            tmp.write_text(PAGE.format(idealist=idealist, width=PHONE_LEFT - GAP - 128, title=html.escape(title, quote=False)))
+            tmp.write_text(PAGE.format(idealist=idealist, width=PHONE_LEFT - GAP - 128, title=html.escape(title, quote=False).replace("\u00a0", " ")))
             await page.goto(tmp.as_uri())
             fs = await page.evaluate(FIT)
             if not fs:

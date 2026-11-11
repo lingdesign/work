@@ -71,6 +71,7 @@ longer finds its text on the main site.
 | /work/meta | Product Designer, Human Interface | | |
 | /work/google | Staff UX Designer, Google Cloud | | |
 | /work/doordash | Staff Product Designer, Support | | |
+| /work/etsy | Staff Product Designer, Buyer | | |
 
 When a role closes for good, keep its page a few months (recruiters reopen links), then delete its
 `pages/` file and add a redirect to /work.
