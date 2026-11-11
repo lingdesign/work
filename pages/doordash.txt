@@ -1,0 +1,19 @@
+# DoorDash · Staff Product Designer, Support · NYC (hybrid)
+# The post asks for: three-sided marketplace, preventing issues before they happen, internal tools for support teams,
+# prototyping in production and contributing to the codebase, building LLM tools, data, clarity through shipped work.
+
+headline: Designing help people can rely on,
+headline2: before they need to ask.
+
+hello: Hi, I'm Ling. I design for every side of a product: the people using it, the experts serving them, and the teams behind the scenes who keep it running.
+
+order: provider, monument, goals
+provider: From one nudge to a system that flags problems before they happen.
+
+lines:
+- Flagged what was due before notes locked or licenses lapsed, every deadline met.
+- Turned what customer support kept seeing into a fix, fail rate from 33.3% to 0%.
+- Built a workflow redesign with Claude Code and merged it to production myself.
+- Built a research practice from zero, insights any team can ask AI about.
+- Prototyped license management live with an engineer, shipped in a day.
+- Designed a security console that grouped alerts into one incident.
