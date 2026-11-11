@@ -1,16 +1,18 @@
 # Google · Staff UX Designer, Google Cloud · NYC (on-site)
-# The post asks for: visual craft, design system components, launch assets and executive decks, motion, contract designers, AI tools with Figma.
+# The post asks for: user-centered design from concept to execution, visual and interaction craft, motion,
+# AI tools with Figma. Also design systems, launch assets and executive decks, which Ling does but doesn't lead with.
 
-headline: Designing every detail,
-headline2: from the design system to launch day.
+headline: Designing products
+headline2: from user insight to the final detail.
 
-hello: Hi, I'm Ling. I design the details people notice and the systems that keep them consistent, from product screens to a Times Square billboard.
+hello: Hi, I'm Ling. I design products end to end, from understanding what people need to the visual and interaction details that make the experience feel effortless.
 
-order: goals, provider, monument
+order: goals, monument, provider
 
 lines:
+- Replaced a prize draw with real progress, a daily habit that counts.
+- Simplified onboarding, signup-to-paid conversion from 26.7% to 56%.
+- Simplified one screen to one action, fail rate from 33.3% to 0%.
 - Directed motion with a contract animator, built into our app.
-- Designed a Times Square billboard for a pricing launch.
-- Coded a pattern into our design system, so the next ask reuses it.
-- Led 4 designers to build a company's first design system.
+- Redesigned to-dos for experts, every deadline met.
 - Prototyped in Figma and Claude Code, working versions, not static mockups.
