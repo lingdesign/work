@@ -1,0 +1,18 @@
+# Meta · Product Designer, Human Interface · NYC
+# The post asks for: design vision across products, ambiguity, strategy into roadmaps, systems that scale, mentorship, research and data.
+# Not covered by the work: VR/AR/spatial interfaces (preferred, not required).
+
+headline: Designing one system
+headline2: for every side of the product.
+
+hello: Hi, I'm Ling. I set direction for products with more than one side, and design the systems that keep them consistent as they grow.
+
+order: provider, goals, monument
+provider: From one nudge to a system the next ask reuses.
+
+lines:
+- Turned two one-off asks into one notification system.
+- Ran the numbers first, and changed the ask with my PM.
+- Built research from zero, insights that shaped acquisition and retention.
+- Brought five teams together to find where conversion broke.
+- Led 4 designers and an engineer to build a first design system.

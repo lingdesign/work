@@ -1,0 +1,17 @@
+# Duolingo · Senior Product Designer · NYC (on-site)
+# The post asks for: simple consumer mobile apps, delight and fun, motion, fast high-fidelity prototypes, brand, AI ideas from scratch.
+
+headline: Designing small steps
+headline2: that add up to a daily habit.
+
+hello: Hi, I'm Ling. I design simple mobile apps people come back to, with the motion and small details that make each step feel worth taking.
+
+order: goals, monument, provider
+
+lines:
+- Directed a loading animation our engineer called his favorite screen.
+- Replaced a prize draw with real progress, a daily habit that counts.
+- Moved a celebration to an overlay, built in a day for the release.
+- Simplified one screen to one action, fail rate from 33.3% to 0%.
+- Designed a Times Square billboard for a pricing launch.
+- Built Glasswork from scratch with AI, free in the browser.

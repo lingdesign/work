@@ -1,0 +1,16 @@
+# Google · Staff UX Designer, Google Cloud · NYC (on-site)
+# The post asks for: visual craft, design system components, launch assets and executive decks, motion, contract designers, AI tools with Figma.
+
+headline: Designing every detail,
+headline2: from the design system to launch day.
+
+hello: Hi, I'm Ling. I design the details people notice and the systems that keep them consistent, from product screens to a Times Square billboard.
+
+order: goals, provider, monument
+
+lines:
+- Directed motion with a contract animator, built into our app.
+- Designed a Times Square billboard for a pricing launch.
+- Coded a pattern into our design system, so the next ask reuses it.
+- Led 4 designers to build a company's first design system.
+- Prototyped in Figma and Claude Code, working versions, not static mockups.

@@ -1,0 +1,17 @@
+# Anthropic · Product Designer, Safeguards · NYC (hybrid)
+# The post asks for: complex workflows and B2B, earning trust, shipping fast, Claude Code, prototyping in code, edge cases.
+
+headline: Designing tools people trust,
+headline2: from prototype to production.
+
+hello: Hi, I'm Ling. I design complex workflows people can trust, and I build them in code to get them in front of people sooner.
+
+order: provider, goals, monument
+
+lines:
+- Built a redesign in Claude Code and merged it to production myself.
+- Prototyped license management live with an engineer, shipped in a day.
+- Defined to-dos from our data, one pattern every new ask reuses.
+- Designed every state of a workflow, edge cases included.
+- Prototyped AI goal writing, a dietitian confirms before anything is sent.
+- Built a research practice from zero, insights any team can ask AI about.
