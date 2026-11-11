@@ -1,0 +1,1997 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Equipoise</title>
+<style id="embed">
+html,body{height:100%!important;overflow:hidden;background:transparent!important}
+.panel,.viewtabs,.stage-foot,.toast,#load,#sky{display:none!important}
+.app{grid-template-columns:minmax(0,1fr)!important;height:100%!important}
+.stage{height:100%!important;min-height:0!important;background:transparent!important;cursor:grab}
+</style>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<style>
+/* Layout: full-height studio stage (3D render or blueprint sheet) beside a narrow drafting panel of controls and the balance sheet. */
+:root{
+  --bg:#ECEEF0; --surface:#F7F8F9; --ink:#15181C; --muted:#5C6570; --line:#D2D7DD; --chip:#E1E5E9;
+  --accent:#2445C4; --accent-ink:#FFFFFF; --ok:#1E7A4C;
+  --font-ui:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --font-mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#111417; --surface:#171B1F; --ink:#E6E9ED; --muted:#8F98A3; --line:#2A3038; --chip:#20262C;
+  --accent:#8EA6FF; --accent-ink:#0B1022; --ok:#5FCB92; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#111417; --surface:#171B1F; --ink:#E6E9ED; --muted:#8F98A3; --line:#2A3038; --chip:#20262C;
+  --accent:#8EA6FF; --accent-ink:#0B1022; --ok:#5FCB92; color-scheme:dark }
+
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-ui);font-size:14px;line-height:1.45}
+*{box-sizing:border-box}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.app{display:grid;grid-template-columns:minmax(0,1fr) 384px;height:100%}
+.stage{position:relative;min-height:0;overflow:hidden;background:#D6D7D8;user-select:none;-webkit-user-select:none}
+.stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
+#sky{top:-100%;height:300%;inset-inline:0;bottom:auto;touch-action:auto;pointer-events:none;will-change:transform}
+#bp{cursor:default}
+.viewtabs{position:absolute;top:14px;left:max(14px,env(safe-area-inset-left,0px));display:flex;gap:2px;padding:3px;border-radius:9px;
+  background:rgba(250,250,250,.78);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.viewtabs button{border:0;background:transparent;padding:6px 12px;border-radius:7px;font-weight:600;font-size:12.5px;color:#3A4048;cursor:pointer;font-stretch:90%}
+.viewtabs button[aria-pressed="true"]{background:#16191D;color:#F5F6F7}
+.stage-foot{position:absolute;left:max(14px,env(safe-area-inset-left,0px));right:14px;bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:12px;pointer-events:none}
+.stage-foot > *{pointer-events:auto}
+.hint{font-family:var(--font-mono);font-size:11px;color:rgba(30,34,40,.62);letter-spacing:.02em}
+.stage.dark .hint{color:rgba(240,240,240,.6)}
+.ghost{border:0;border-radius:8px;padding:7px 12px;font-weight:600;font-size:12.5px;background:rgba(250,250,250,.82);color:#1B1F24;cursor:pointer;
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);box-shadow:0 1px 2px rgba(0,0,0,.1);font-stretch:90%}
+.ghost:hover{background:#fff}
+.foot-btns{display:flex;gap:6px}
+.ghost.save{display:flex;align-items:center;gap:6px}
+.ghost.save svg{width:13px;height:13px}
+.ghost.save[data-state="saved"]{background:#16191D;color:#F5F6F7}
+.toast{position:absolute;left:50%;top:14px;transform:translateX(-50%);background:#16191D;color:#F5F6F7;font-size:12.5px;font-weight:600;padding:8px 12px;border-radius:8px;
+  box-shadow:0 4px 14px rgba(0,0,0,.18);max-width:calc(100% - 200px);text-align:center;font-stretch:92%}
+.lib{display:flex;flex-direction:column;gap:9px}
+.lib-strip{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scroll-snap-type:x proximity;margin-inline:-2px;padding-inline:2px}
+.lib-card{position:relative;flex:none;width:84px;scroll-snap-align:start}
+.lib-open{display:block;width:84px;padding:0;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--surface);cursor:pointer;text-align:left}
+.lib-open img{display:block;width:100%;aspect-ratio:4/5;object-fit:cover;background:var(--chip)}
+.lib-open span{display:block;font-family:var(--font-mono);font-size:10px;color:var(--muted);padding:4px 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lib-open[aria-current="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.lib-del{position:absolute;top:4px;right:4px;width:22px;height:22px;border-radius:50%;border:0;background:rgba(20,22,26,.62);color:#fff;font-size:12px;line-height:1;cursor:pointer;display:grid;place-items:center}
+.lib-del[data-armed="true"]{width:auto;padding:0 8px;border-radius:999px;background:#B3261E;font-size:10.5px;font-weight:700}
+.lib-empty{font-size:12px;color:var(--muted);margin:0;padding:12px;border:1px dashed var(--line);border-radius:10px}
+.load{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--font-mono);font-size:12px;color:#444}
+
+.panel{overflow-y:auto;border-left:1px solid var(--line);padding-block:18px 32px;padding-left:20px;padding-right:max(20px,env(safe-area-inset-right,0px));
+  display:flex;flex-direction:column;gap:20px;background:var(--bg)}
+.head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
+.mark{font-weight:800;font-stretch:125%;font-size:22px;letter-spacing:-.01em;line-height:1;margin:0}
+.study{font-family:var(--font-mono);font-size:11px;color:var(--muted);margin-top:6px}
+.hist{display:flex;gap:4px}
+.icon-btn{width:30px;height:30px;border-radius:7px;border:1px solid var(--line);background:var(--surface);cursor:pointer;display:grid;place-items:center;font-size:14px}
+.icon-btn:disabled{opacity:.35;cursor:default}
+
+.gen{display:block;text-align:left;width:100%;border:0;border-radius:10px;padding:14px 16px;cursor:pointer;
+  background:var(--accent);color:var(--accent-ink);font-weight:700;font-size:15px;font-stretch:110%;letter-spacing:.005em}
+.gen:hover{filter:brightness(1.07)}
+.gen:active{transform:translateY(1px)}
+
+.group{display:flex;flex-direction:column;gap:9px}
+.label{font-size:11px;font-weight:700;font-stretch:80%;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);display:flex;justify-content:space-between;gap:8px}
+.label output{font-family:var(--font-mono);font-weight:500;text-transform:none;letter-spacing:0;color:var(--ink);font-stretch:100%}
+.seg{display:flex;gap:2px;padding:2px;border-radius:9px;background:var(--chip)}
+.seg button{flex:1;min-width:0;border:0;background:transparent;padding:7px 6px;border-radius:7px;font-size:12.5px;font-weight:600;cursor:pointer;color:var(--muted);font-stretch:92%}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.12)}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.ticks{display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:10px;color:var(--muted);margin-top:-4px}
+
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:flex;align-items:center;gap:7px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:4px 10px 4px 4px;font-size:12.5px;font-weight:600;cursor:pointer;font-stretch:92%}
+.chip[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.chip .sw{width:20px;height:20px;border-radius:50%;flex:none;box-shadow:inset 0 0 0 1px rgba(0,0,0,.12)}
+.chip .pal{display:flex;height:16px;border-radius:999px;overflow:hidden;flex:none;box-shadow:inset 0 0 0 1px rgba(0,0,0,.1)}
+.chip .pal i{width:8px;height:100%}
+.chip.plain{padding:5px 11px}
+
+.swatches{display:flex;gap:8px;align-items:center}
+.swatches label{position:relative;width:34px;height:34px;border-radius:50%;overflow:hidden;box-shadow:inset 0 0 0 1px rgba(0,0,0,.15),0 1px 2px rgba(0,0,0,.1);cursor:pointer}
+.swatches input{position:absolute;inset:-8px;width:50px;height:50px;border:0;padding:0;cursor:pointer;background:none}
+.swatches small{font-size:11.5px;color:var(--muted);margin-left:4px}
+.sub{display:flex;flex-direction:column;gap:9px;padding:12px;border-radius:10px;background:var(--surface);border:1px solid var(--line)}
+.sub[hidden]{display:none}
+
+.sheet{display:block;border-top:1px solid var(--line);padding-top:18px}
+.sheet h2{font-size:15px;font-weight:800;font-stretch:115%;margin:0}
+.sheet summary{display:flex;align-items:baseline;gap:10px;cursor:pointer;list-style:none}
+.sheet summary::-webkit-details-marker{display:none}
+.sheet summary::after{content:"";margin-left:auto;width:7px;height:7px;border-right:1.6px solid var(--muted);border-bottom:1.6px solid var(--muted);transform:rotate(45deg) translateY(-3px);transition:transform .15s}
+.sheet[open] summary::after{transform:rotate(225deg)}
+.sum-note{font-size:12px;color:var(--muted)}
+.sheet-body{display:flex;flex-direction:column;gap:12px;margin-top:14px}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.stat{display:flex;flex-direction:column;gap:2px}
+.stat b{font-family:var(--font-mono);font-size:14px;font-weight:600;font-variant-numeric:tabular-nums}
+.stat span{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;font-stretch:82%;font-weight:700}
+.tbl{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-family:var(--font-mono);font-size:11px;font-variant-numeric:tabular-nums}
+th{text-align:left;font-weight:500;color:var(--muted);padding:5px 6px 5px 0;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:5px 6px 5px 0;border-bottom:1px solid var(--line);white-space:nowrap}
+td.r,th.r{text-align:right}
+.okc{color:var(--ok)}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;vertical-align:-1px;margin-right:5px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.18)}
+.foot{font-size:11.5px;color:var(--muted);margin:0}
+
+@media (max-width:860px){
+  .hint,#nudge{display:none}
+  .stage-foot{top:14px;bottom:auto;left:auto;right:max(14px,env(safe-area-inset-right,0px))}
+  html,body{height:auto}
+  .app{grid-template-columns:minmax(0,1fr);height:auto}
+  .stage{height:62svh;min-height:380px}
+  .panel{border-left:0;overflow:visible;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+  .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (prefers-reduced-motion: reduce){ .gen:active{transform:none} }
+</style>
+
+<div class="app">
+  <section class="stage" id="stage" aria-label="Sculpture view">
+    <canvas id="sky" hidden aria-hidden="true"></canvas>
+    <canvas id="gl"></canvas>
+    <canvas id="bp" hidden></canvas>
+    <div class="load" id="load">Loading renderer…</div>
+    <div class="viewtabs" role="group" aria-label="View">
+      <button id="vRender" aria-pressed="true">Render</button>
+      <button id="vBlue" aria-pressed="false">Blueprint</button>
+    </div>
+    <div class="stage-foot">
+      <span class="hint" id="hint">Drag to orbit · tap the sculpture to set it turning</span>
+      <div class="foot-btns">
+        <button class="ghost" id="nudge">Nudge</button>
+        <button class="ghost save" id="save"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M3 1.5h8v11L7 9.6 3 12.5z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg><span>Save</span></button>
+      </div>
+    </div>
+  </section>
+
+  <aside class="panel">
+    <div class="head">
+      <div>
+        <h1 class="mark">Equipoise</h1>
+        <div class="study" id="studyNo">Study No. —</div>
+      </div>
+      <div class="hist">
+        <button class="icon-btn" id="prev" aria-label="Previous study" disabled>‹</button>
+        <button class="icon-btn" id="next" aria-label="Next study" disabled>›</button>
+      </div>
+    </div>
+
+    <button class="gen" id="gen">Generate new sculpture</button>
+
+    <section class="lib" aria-labelledby="libH">
+      <div class="label"><span id="libH">Library</span><output id="libInfo"></output></div>
+      <div class="lib-strip" id="libStrip"></div>
+      <p class="lib-empty" id="libEmpty">Pieces you save appear here. Press Save on any study you want to come back to.</p>
+    </section>
+
+    <div class="group">
+      <div class="label"><span>Complexity</span><output id="cxOut">3 arms</output></div>
+      <input type="range" id="cx" min="1" max="7" step="1" value="3" aria-label="Complexity">
+      <div class="ticks"><span>2-shape balance</span><span>multi-layered</span></div>
+    </div>
+
+    <div class="group">
+      <div class="label"><span>Form</span></div>
+      <div class="seg" id="form">
+        <button data-v="cascade" aria-pressed="true">Cascade</button>
+        <button data-v="branching" aria-pressed="false">Branching</button>
+        <button data-v="freeform" aria-pressed="false">Freeform</button>
+      </div>
+    </div>
+
+    <div class="group">
+      <div class="label"><span>Mount</span></div>
+      <div class="seg" id="mount">
+        <button data-v="hanging" aria-pressed="true">Hanging mobile</button>
+        <button data-v="standing" aria-pressed="false">Standing stabile</button>
+      </div>
+      <div class="chips" id="base" hidden></div>
+    </div>
+
+    <div class="group">
+      <div class="label"><span>Material</span></div>
+      <div class="seg" id="mode">
+        <button data-v="metal" aria-pressed="false">Metal</button>
+        <button data-v="glass" aria-pressed="false">Glass</button>
+        <button data-v="colored" aria-pressed="true">Colored</button>
+        <button data-v="mixed" aria-pressed="false">Mixed</button>
+      </div>
+
+      <div class="sub" id="glassBox" hidden>
+        <div class="label"><span>Glass</span><output id="glassInfo">Soda-lime · 2.5 g/cm³ · 6 mm</output></div>
+        <div class="chips" id="glassTint"></div>
+        <div class="label"><span>Surface</span></div>
+        <div class="seg" id="glassFinish">
+          <button data-v="clear" aria-pressed="true">Clear</button>
+          <button data-v="frosted" aria-pressed="false">Frosted</button>
+        </div>
+      </div>
+
+      <div class="sub" id="metalBox">
+        <div class="label"><span>Metal</span><output id="metalInfo"></output></div>
+        <div class="chips" id="metal"></div>
+        <div class="label"><span>Finish</span></div>
+        <div class="seg" id="finish">
+          <button data-v="mirror" aria-pressed="false">Mirror</button>
+          <button data-v="polished" aria-pressed="false">Polished</button>
+          <button data-v="brushed" aria-pressed="true">Brushed</button>
+          <button data-v="matte" aria-pressed="false">Matte</button>
+        </div>
+      </div>
+
+      <div class="sub" id="paintBox">
+        <div class="label"><span>Palette</span></div>
+        <div class="chips" id="palette"></div>
+        <div class="swatches" id="swatches"></div>
+        <div class="label"><span>Paint finish</span></div>
+        <div class="seg" id="paint">
+          <button data-v="gloss" aria-pressed="false">Gloss</button>
+          <button data-v="satin" aria-pressed="true">Satin</button>
+          <button data-v="matte" aria-pressed="false">Matte</button>
+        </div>
+      </div>
+
+      <div class="label"><span>Wire</span></div>
+      <div class="seg" id="wire">
+        <button data-v="auto" aria-pressed="true">Auto</button>
+        <button data-v="steel" aria-pressed="false">Steel</button>
+        <button data-v="brass" aria-pressed="false">Brass</button>
+      </div>
+    </div>
+
+    <div class="group">
+      <div class="label"><span>Backdrop</span></div>
+      <div class="chips" id="backdrop"></div>
+      <div class="label"><span>Air current</span><output id="brOut">Light</output></div>
+      <input type="range" id="breeze" min="0" max="1" step="0.01" value="0.35" aria-label="Air current">
+    </div>
+
+    <details class="sheet" id="sheet">
+      <summary><h2>Balance sheet</h2><span class="sum-note">Moments, masses and parts</span></summary>
+      <div class="sheet-body">
+      <div class="stats" id="stats"></div>
+      <p class="foot" id="baseInfo" hidden></p>
+      <div class="tbl"><table id="armT"></table></div>
+      <div class="tbl"><table id="partT"></table></div>
+      <p class="foot">Each pivot sits at the horizontal centre of mass of everything below it, wire weight included, so the moments on both sides are equal. Lower assemblies hang on drops long enough that their sweep circles clear every neighbour.</p>
+      </div>
+    </details>
+  </aside>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+(() => {
+'use strict';
+const $ = s => document.querySelector(s);
+if (!window.THREE) { $('#load').textContent = 'The 3D renderer could not load. Check the connection and reload.'; return; }
+
+/* ───────────────────────── constants ───────────────────────── */
+const GN = 9.80665e-3;                  // newtons per gram
+const RHO = { steel:7.85e-3, stainless:8.0e-3, brass:8.5e-3, copper:8.96e-3, alu:2.70e-3 }; // g/mm³
+const GAP = 14;                          // clearance between swept parts, mm
+const NECK = 34;                         // stabile neck half-width allowance, mm
+const METALS = {
+  silver:{label:'Silver', info:'Stainless · 8.0 g/cm³', rho:RHO.stainless, lin:[0.68,0.68,0.66], sw:'radial-gradient(circle at 35% 30%,#fff,#c9ccd0 35%,#81878e 70%,#d9dcdf)'},
+  brass:{label:'Brass', info:'Brass · 8.5 g/cm³', rho:RHO.brass, lin:[0.80,0.62,0.30], sw:'radial-gradient(circle at 35% 30%,#fff6d8,#d8bd78 35%,#8f7330 70%,#e4cd8e)'},
+  gold:{label:'Gold', info:'Gold-plated brass · 8.5 g/cm³', rho:RHO.brass, lin:[1.0,0.70,0.24], sw:'radial-gradient(circle at 35% 30%,#fff3c4,#f1c14a 35%,#a27412 70%,#f6d47a)'},
+  copper:{label:'Copper', info:'Copper · 8.96 g/cm³', rho:RHO.copper, lin:[0.93,0.52,0.38], sw:'radial-gradient(circle at 35% 30%,#ffe2d4,#d98a68 35%,#8a4128 70%,#e8a487)'},
+  black:{label:'Blackened', info:'Blackened steel · 7.85 g/cm³', rho:RHO.steel, lin:[0.03,0.03,0.032], sw:'radial-gradient(circle at 35% 30%,#8a8d91,#2c2e31 40%,#0d0e0f 75%,#3a3c3f)'}
+};
+const PALETTES = {
+  ling:{label:'Ling', c:['#FB8961','#2C3899','#17151F','#5693E2','#F7DBA5']},
+  calder:{label:'Primaries', c:['#C8302A','#F0B82B','#1F4E8D','#151515','#EEEBE3']},
+  midcentury:{label:'Mid-century', c:['#E6452B','#F5C02E','#3F9AAE','#235A80','#D9B77C']},
+  inkred:{label:'Ink & red', c:['#B5121B','#D92B22','#141414','#F3F3F0','#7C0D12']},
+  sage:{label:'Sage & bone', c:['#93A68B','#BCCAB4','#ECE5D5','#6E8466','#D6C6A0']},
+  riviera:{label:'Riviera', c:['#E8775C','#F2C4A0','#7FB6C9','#2F6F8F','#F4E3C1']},
+  nocturne:{label:'Monochrome', c:['#141414','#2C2D2F','#F2F2EE','#8A8D90','#C8C9CB']}
+};
+const BACKDROPS = {
+  haze:{label:'Haze', c:'#ECE9F6', horizon:.5, noise:[0,0,0], stops:[[0,"#DCD9F0"],[0.3,"#E8E4F4"],[0.42,"#F1EAF0"],[0.47,"#FBE7BC"],[0.53,"#FAE2B2"],[0.58,"#E2DDF1"],[0.68,"#A9A5D0"],[0.82,"#7C78B2"],[1,"#5F5B98"]]},
+  night:{label:'Night', c:'#1B2B8C', horizon:.5, noise:[0,0,0], stops:[[0,"#162174"],[0.3,"#1E2F92"],[0.42,"#2C40A6"],[0.47,"#E2C2DC"],[0.53,"#EECBE3"],[0.58,"#2A45AE"],[0.72,"#142070"],[1,"#0A1150"]]},
+  stone:{label:'Warm stone', c:'#D6CFC5'}, charcoal:{label:'Charcoal', c:'#2B2C2E'},
+  // worlds: colour stops sampled row by row from the reference gradients; grain = per-pixel luminance noise with its measured strength per channel
+  daybreak:{label:'Daybreak', c:'#6D9DC3', horizon:.292, noise:[12.5,6.3,-2.5], stops:[[0.000,"#8BC0C7"],[0.042,"#99C2C6"],[0.083,"#A7C5C5"],[0.125,"#B6C7C4"],[0.167,"#C5C9C4"],[0.208,"#D3CCC3"],[0.250,"#E2CEC2"],[0.292,"#F1D0C1"],[0.333,"#D9C7C2"],[0.375,"#B3BAC4"],[0.417,"#8BACC6"],[0.458,"#74A2C6"],[0.500,"#6D9DC3"],[0.542,"#6798C1"],[0.583,"#5F93BF"],[0.625,"#588EBD"],[0.667,"#5189BB"],[0.708,"#4A84B8"],[0.750,"#447FB6"],[0.792,"#3D79B4"],[0.833,"#3574B2"],[0.875,"#2F6FAF"],[0.917,"#286AAD"],[0.958,"#2165AB"],[1.000,"#1B60A9"]]},
+  dusk:{label:'Dusk', c:'#B5BEE2', horizon:.645, noise:[9.7,5.7,-5.4], stops:[[0.000,"#679BDC"],[0.042,"#719FDC"],[0.083,"#7AA4DD"],[0.125,"#84A8DE"],[0.167,"#8EACDE"],[0.208,"#97B1E0"],[0.250,"#A1B5E0"],[0.292,"#ABBAE1"],[0.333,"#B5BEE2"],[0.375,"#BDC2E4"],[0.417,"#C5C5E7"],[0.458,"#CDC9E9"],[0.500,"#D5CCEC"],[0.542,"#DDD0EE"],[0.583,"#E5D3F1"],[0.625,"#EDD6F4"],[0.667,"#EBD5F4"],[0.708,"#BEC1EC"],[0.750,"#92AEE3"],[0.792,"#6799DB"],[0.833,"#5B86CE"],[0.875,"#4F73C0"],[0.917,"#4460B3"],[0.958,"#394CA6"],[1.000,"#2D3999"]]},
+  altitude:{label:'Altitude', c:'#4967B9', horizon:.5, noise:[15.6,10.5,-2.7], stops:[[0.000,"#2C3899"],[0.042,"#2F3C9B"],[0.083,"#31409E"],[0.125,"#3444A0"],[0.167,"#3648A3"],[0.208,"#394CA6"],[0.250,"#3B50A9"],[0.292,"#3D53AB"],[0.333,"#4057AE"],[0.375,"#425BB1"],[0.417,"#445FB3"],[0.458,"#4663B6"],[0.500,"#4967B9"],[0.542,"#4B6BBC"],[0.583,"#4E6FBE"],[0.625,"#5073C1"],[0.667,"#5378C4"],[0.708,"#557CC7"],[0.750,"#5881CA"],[0.792,"#5A85CD"],[0.833,"#5D89D0"],[0.875,"#608ED3"],[0.917,"#6292D6"],[0.958,"#6596D9"],[1.000,"#679ADC"]]},
+  afterglow:{label:'Afterglow', c:'#6D82C5', horizon:.5, noise:[12.4,8.8,-3.7], stops:[[0.000,"#2D3899"],[0.042,"#313E9C"],[0.083,"#3343A0"],[0.125,"#3749A4"],[0.167,"#3A4FA8"],[0.208,"#3E54AC"],[0.250,"#415AB0"],[0.292,"#445FB4"],[0.333,"#4865B8"],[0.375,"#4D6BBB"],[0.417,"#5772BF"],[0.458,"#627AC2"],[0.500,"#6D82C5"],[0.542,"#7889C8"],[0.583,"#8391CC"],[0.625,"#8D98D0"],[0.667,"#98A0D2"],[0.708,"#A3A7D6"],[0.750,"#AEAFD9"],[0.792,"#B8B6DD"],[0.833,"#C3BEE0"],[0.875,"#CEC6E3"],[0.917,"#D9CDE7"],[0.958,"#E4D5EA"],[1.000,"#EEDCED"]]}
+};
+const isWorld = k => !!BACKDROPS[k].stops;
+function stopsAt(stops, t){
+  t = Math.max(0, Math.min(1, t));
+  for (let i=1;i<stops.length;i++){ if (t <= stops[i][0]){ const a=stops[i-1], b=stops[i], u=(t-a[0])/(b[0]-a[0]||1);
+    const ca=parseInt(a[1].slice(1),16), cb=parseInt(b[1].slice(1),16);
+    return [0,1,2].map(k=>{ const sh=16-8*k; return ((ca>>sh)&255)*(1-u)+((cb>>sh)&255)*u; }); } }
+  const c=parseInt(stops[stops.length-1][1].slice(1),16); return [c>>16&255,c>>8&255,c&255];
+}
+const CX_ARMS = [1,2,3,4,6,8,11];
+
+/* ───────────────────────── state ───────────────────────── */
+const S = {
+  complexity:3, form:'cascade', mount:'hanging', mode:'colored', metal:'brass', finish:'brushed',
+  palette:'ling', colors:PALETTES.ling.c.slice(), paint:'satin', glassTint:'clear', glassFinish:'clear', wire:'auto', backdrop:(matchMedia('(prefers-color-scheme: dark)').matches ? 'night' : 'haze'), base:'random',
+  breeze:0.5, view:'render'
+};
+try { if (matchMedia('(prefers-reduced-motion: reduce)').matches) { S.breeze = 0; $('#breeze').value = 0; } } catch(e){}
+const history = []; let hIdx = -1;
+
+/* ───────────────────────── rng ───────────────────────── */
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+let R = Math.random, RA = Math.random;
+const rr = (a,b) => a + (b-a)*R();
+const chance = p => R() < p;
+const pickW = (obj) => { let t=0; for (const k in obj) t+=obj[k]; let x=R()*t; for (const k in obj){ x-=obj[k]; if (x<=0) return k; } return Object.keys(obj)[0]; };
+const clamp = (v,a,b) => Math.max(a, Math.min(b, v));
+
+/* ───────────────────────── 2D shape geometry ───────────────────────── */
+function shoelace(p){let a=0,cx=0,cy=0;for(let i=0;i<p.length;i++){const q=p[i],w=p[(i+1)%p.length];const c=q[0]*w[1]-w[0]*q[1];a+=c;cx+=(q[0]+w[0])*c;cy+=(q[1]+w[1])*c}a/=2;return{area:Math.abs(a),cx:cx/(6*a),cy:cy/(6*a),ccw:a>0}}
+function chaikin(p,n){for(let k=0;k<n;k++){const o=[];for(let i=0;i<p.length;i++){const a=p[i],b=p[(i+1)%p.length];o.push([a[0]*.75+b[0]*.25,a[1]*.75+b[1]*.25],[a[0]*.25+b[0]*.75,a[1]*.25+b[1]*.75])}p=o}return p}
+const rot2 = (p,a) => { const c=Math.cos(a), s=Math.sin(a); return [p[0]*c-p[1]*s, p[0]*s+p[1]*c]; };
+
+/* Every plate is normalised the same way: the wire/hole point is the origin, the centroid lies on +x,
+   and the farthest outline point is 1 unit away. So mass ∝ s², and the centre of mass is on the wire axis. */
+function unitShape(kind, forPendant){
+  let pts=[], att=null; const N=72;
+  if (kind==='disc' || kind==='ellipse'){
+    const b = kind==='disc' ? .5 : rr(.29,.4);
+    const ins = forPendant ? rr(.05,.09) : (kind==='disc' && chance(.35) ? .5 : rr(.08,.2));
+    const cx = .5 - ins;
+    for (let i=0;i<N;i++){ const a=2*Math.PI*i/N; pts.push([cx+.5*Math.cos(a), b*Math.sin(a)]); }
+    att=[0,0];
+  } else if (kind==='petal'){
+    const q=rr(1.15,2.0), e=rr(.5,.9), w1=rr(.15,.27), w2=w1*rr(.35,.95);
+    for (let i=0;i<=N;i++){ const u=i/N, h=Math.pow(Math.sin(Math.PI*Math.pow(u,q)),e); pts.push([u, w1*h]); }
+    for (let i=N-1;i>0;i--){ const u=i/N, h=Math.pow(Math.sin(Math.PI*Math.pow(u,q)),e); pts.push([u, -w2*h]); }
+  } else if (kind==='wedge'){
+    const al=rr(.75,1.2);
+    pts.push([0,0]);
+    for (let i=0;i<=40;i++){ const a=-al*i/40; pts.push([Math.cos(a), Math.sin(a)]); }
+    pts = chaikin(pts,2);
+    if (chance(.5)) pts = pts.map(p=>[p[0],-p[1]]);
+  } else if (kind==='halfmoon'){
+    for (let i=0;i<=40;i++){ const a=Math.PI+Math.PI*i/40; pts.push([.5+.5*Math.cos(a), .5*Math.sin(a)]); }
+    pts = chaikin(pts,1);
+  } else if (kind==='triangle'){
+    pts = chaikin([[0,0],[1,rr(-.15,.25)],[rr(.4,.8),-rr(.45,.75)]],4);
+  } else if (kind==='crescent'){
+    const r2=rr(.32,.42), off=rr(.12,.2);
+    for (let i=0;i<=40;i++){ const a=-Math.PI/2+Math.PI*i/40; pts.push([.5*Math.cos(a)+.5,.5*Math.sin(a)]); }
+    for (let i=40;i>=0;i--){ const a=-Math.PI/2+Math.PI*i/40; const yy=r2*Math.sin(a)*1.0; pts.push([.5+off+ (r2)*Math.cos(a)*.9 - .15, yy]); }
+  }
+  let sh = shoelace(pts);
+  if (!att){
+    // hole/slot point: just inside the outline at the end nearest the wire
+    let L = pts[0]; for (const p of pts) if (p[0] < L[0]) L = p;
+    const dx=sh.cx-L[0], dy=sh.cy-L[1], d=Math.hypot(dx,dy)||1;
+    const ins = forPendant ? .07 : rr(.06,.12);
+    att=[L[0]+dx/d*ins, L[1]+dy/d*ins];
+  }
+  pts = pts.map(p=>[p[0]-att[0], p[1]-att[1]]);
+  sh = shoelace(pts);
+  const ang = Math.hypot(sh.cx,sh.cy) > 1e-6 ? -Math.atan2(sh.cy, sh.cx) : 0;
+  pts = pts.map(p=>rot2(p,ang));
+  let maxR=0; for (const p of pts) maxR=Math.max(maxR, Math.hypot(p[0],p[1]));
+  pts = pts.map(p=>[p[0]/maxR, p[1]/maxR]);
+  if (!sh.ccw) pts.reverse();
+  sh = shoelace(pts);
+  return { kind, pts, area:sh.area, c:Math.max(0,sh.cx) };
+}
+
+function bottomOnAxis(pts){ // lowest point where the outline crosses x=0
+  let best=0;
+  for (let i=0;i<pts.length;i++){ const a=pts[i], b=pts[(i+1)%pts.length];
+    if ((a[0]<=0&&b[0]>=0)||(a[0]>=0&&b[0]<=0)){ const t=(b[0]-a[0])===0?0:-a[0]/(b[0]-a[0]); const y=a[1]+t*(b[1]-a[1]); if (y<best) best=y; } }
+  return best;
+}
+
+/* ───────────────────────── materials of parts ───────────────────────── */
+function pickMat(){
+  const paint = () => ({ kind:'paint', ci: Math.floor(RA()*S.colors.length) });
+  if (S.mode==='metal') return { kind:'metal' };
+  if (S.mode==='colored') return paint();
+  if (S.mode==='glass') return { kind:'glass' };
+  return RA() < .45 ? { kind:'metal' } : paint();
+}
+function matPhys(m){ return m.kind==='metal' ? { t:1.6, rho:METALS[S.metal].rho } : m.kind==='glass' ? { t:6, rho:2.5e-3 } : { t:2.0, rho:RHO.alu }; }
+function wireRho(){ const w = wireKey(); return w==='brass' ? RHO.brass : RHO.steel; }
+function wireKey(){ if (S.wire!=='auto') return S.wire; if (S.mode==='colored' || S.mode==='glass') return 'steel'; return S.metal==='brass'||S.metal==='gold' ? 'brass' : 'steel'; }
+
+/* ───────────────────────── leaves & pendants ───────────────────────── */
+let VOCAB = {};
+let lastCi = -1;
+function makeLeaf(depth, forPendant){
+  const kind = pickW(VOCAB);
+  const isSphere = kind==='sphere' && !forPendant;
+  const sh = isSphere ? { kind:'sphere', pts:null, area:4*Math.PI*.5*.5, c:.44 } : unitShape(kind==='sphere'?'disc':kind, forPendant);
+  if (isSphere){ const pts=[]; for(let i=0;i<40;i++){const a=2*Math.PI*i/40; pts.push([.44+.5*Math.cos(a), .5*Math.sin(a)]);} sh.pts=pts; }
+  let mat = pickMat();
+  if (mat.kind==='paint' && mat.ci===lastCi) mat.ci = (mat.ci+1+Math.floor(RA()*(S.colors.length-1)))%S.colors.length;
+  if (mat.kind==='paint') lastCi = mat.ci;
+  const ph = matPhys(mat);
+  const base = Math.max(46, 190*Math.pow(S.form==='cascade' ? .9 : .84, depth));
+  let twist = 0; const tw = R();
+  if (!isSphere){ if (tw > .62 && tw < .9) twist = rr(.15,.6)*(chance(.5)?1:-1); else if (tw >= .9) twist = rr(1.0,1.57); }
+  const pitchMax = sh.kind==='petal' ? .7 : .35;
+  return { kind:sh.kind, pts:sh.pts, area:sh.area, c:sh.c, s: base*rr(.7,1.3), base,
+           twist, pitch: rr(-pitchMax*.4, pitchMax), t:isSphere?1.0:ph.t, rho:ph.rho, mat, sphere:isSphere };
+}
+const leafMass = lf => lf.area * lf.s * lf.s * lf.t * lf.rho;
+
+function makePendant(depth){
+  const a = makeLeaf(depth, true); a.twist=0; a.pitch=0;
+  const P = { pieces:[{leaf:a}], s:a.s, base:a.base };
+  if (chance(S.form==='branching' ? .4 : .2)){
+    const b = makeLeaf(depth+1, true); b.twist=0; b.pitch=0; b.k = rr(.45,.8);
+    P.pieces.push({leaf:b});
+  }
+  pendantGeom(P);
+  return P;
+}
+function pendantGeom(P){
+  // pieces hang centroid-below-hole; second piece hangs from a hole near the first piece's lowest point on the axis
+  const s = P.s; let M=0, my=0, top=0, bot=0, sw=0;
+  let holeY = 0;
+  P.pieces.forEach((pc,i)=>{
+    const lf = pc.leaf; lf.s = i===0 ? s : s*lf.k;
+    const pts = lf.pts.map(p=>{ const q=rot2(p,-Math.PI/2); return [q[0]*lf.s, q[1]*lf.s + holeY]; });
+    pc.hole = [0, holeY]; pc.world = pts;
+    const m = leafMass(lf); M+=m; my += m*(holeY - lf.c*lf.s);
+    for (const p of pts){ top=Math.max(top,p[1]); bot=Math.min(bot,p[1]); sw=Math.max(sw,Math.abs(p[0])); }
+    const b = bottomOnAxis(lf.pts.map(p=>rot2(p,-Math.PI/2))) * lf.s;
+    holeY = holeY + b + 0.07*lf.s - 11; // hole inside the lower edge + linked loop
+  });
+  P.M = M + 0.25*(P.pieces.length); P.comY = my/M; P.top = top+4; P.bottom = bot; P.sweepR = sw;
+}
+
+/* ───────────────────────── arms (the balance) ───────────────────────── */
+function archY(type,u){ const v=2*u-1; return type==='ellipse' ? Math.sqrt(Math.max(0,1-v*v)) : 1-v*v; }
+
+function armGeom(A){
+  const N=36, L=A.L, pts=[];
+  for (let i=0;i<=N;i++){ const u=i/N; pts.push([u*L, archY(A.arch,u)*A.sag]); }
+  const lam = Math.PI*A.wr*A.wr*wireRho();
+  const lamD = Math.PI*0.9*0.9*wireRho();
+  const loads=[]; let wireLen=0;
+  for (let i=0;i<N;i++){ const a=pts[i], b=pts[i+1], len=Math.hypot(b[0]-a[0],b[1]-a[1]); wireLen+=len;
+    loads.push({m:lam*len, x:(a[0]+b[0])/2, y:(a[1]+b[1])/2, tag:'w'}); }
+  const ends=[pts[0], pts[N]];
+  const dir = (a,b)=>{ const dx=a[0]-b[0], dy=a[1]-b[1], d=Math.hypot(dx,dy)||1; return [dx/d,dy/d]; };
+  const dirs=[dir(pts[0],pts[1]), dir(pts[N],pts[N-1])];
+  A.kids.forEach((k,side)=>{
+    const E=ends[side], d=dirs[side]; k.E=E;
+    if (k.type==='mounted'){
+      const lf=k.leaf;
+      k.ang = Math.atan2(d[1],d[0]) + (side ? 1 : -1)*lf.pitch;
+      const c = lf.c*lf.s;
+      k.m = leafMass(lf);
+      loads.push({m:k.m, x:E[0]+Math.cos(k.ang)*c, y:E[1]+Math.sin(k.ang)*c, tag:side});
+    } else {
+      const node = k.type==='arm' ? k.node : k.pend;
+      const dm = lamD*k.h + 0.6;
+      k.m = node.M + dm;
+      loads.push({m:node.M, x:E[0], y:E[1]-k.h+node.comY, tag:side}, {m:dm, x:E[0], y:E[1]-k.h/2, tag:side});
+    }
+  });
+  let M=0,mx=0,my=0; for (const l of loads){ M+=l.m; mx+=l.m*l.x; my+=l.m*l.y; }
+  const p = mx/M;
+  let hy = pts[N][1];
+  for (let i=0;i<N;i++){ if (p>=pts[i][0] && p<=pts[i+1][0]){ const t=(p-pts[i][0])/(pts[i+1][0]-pts[i][0]); hy=pts[i][1]+t*(pts[i+1][1]-pts[i][1]); break; } }
+  let ML=0, MR=0; for (const l of loads){ const dd=l.x-p; if (dd<0) ML+=-dd*l.m; else MR+=dd*l.m; }
+  Object.assign(A, { p, hy, M, comY:my/M-hy, loads, ML:ML*GN, MR:MR*GN });
+  A.rel = pts.map(q=>[q[0]-p, q[1]-hy]);
+  // extents relative to the hook
+  let top=7, bot=0, sw=0;
+  for (const q of A.rel){ top=Math.max(top,q[1]); bot=Math.min(bot,q[1]); sw=Math.max(sw,Math.abs(q[0])); }
+  A.kids.forEach((k,side)=>{
+    k.relE=[k.E[0]-p, k.E[1]-hy];
+    if (k.type==='mounted'){
+      k.pts3 = leafPts3(k.leaf, side, k.ang).map(q=>[q[0]+k.relE[0], q[1]+k.relE[1], q[2]]);
+      for (const q of k.pts3){ top=Math.max(top,q[1]); bot=Math.min(bot,q[1]); sw=Math.max(sw,Math.hypot(q[0],q[2])); }
+    } else {
+      const node = k.type==='arm' ? k.node : k.pend;
+      k.band=[k.relE[1]-k.h+node.bottom, k.relE[1]-k.h+node.top];
+      top=Math.max(top,k.band[1]); bot=Math.min(bot,k.band[0]); sw=Math.max(sw, Math.abs(k.relE[0])+node.sweepR);
+    }
+  });
+  A.top=top; A.bottom=bot; A.sweepR=sw;
+}
+function leafPts3(lf, side, ang){
+  const mir = side===0, s=lf.s, ct=Math.cos(lf.twist), st=Math.sin(lf.twist), c=Math.cos(ang), sn=Math.sin(ang);
+  return lf.pts.map(p=>{ const y0 = (mir?-p[1]:p[1])*s, x0=p[0]*s; const y1=y0*ct, z=y0*st*(mir?-1:1); return [x0*c-y1*sn, x0*sn+y1*c, z]; });
+}
+
+function solveLeaf(A, side, target, lo, hi){
+  const k=A.kids[side]; if (k.type==='arm') return;
+  const lf = k.type==='mounted' ? k.leaf : null;
+  for (let it=0; it<10; it++){
+    armGeom(A);
+    let T=0, xs=0, ms=0;
+    for (const l of A.loads){ if (l.tag===side){ xs += l.m*l.x; ms += l.m; } else T += l.m*(l.x-target); }
+    xs/=ms;
+    const need = -T/(xs-target);
+    if (!(need>0) || !isFinite(need)) break;
+    if (lf){ lf.s = clamp(lf.s*Math.sqrt(need/ms), lf.base*lo, lf.base*hi); }
+    else { const P=k.pend; P.s = clamp(P.s*Math.sqrt(need/ms), P.base*lo, P.base*hi); pendantGeom(P); }
+  }
+  armGeom(A);
+}
+
+function fixDrops(A){
+  A.kids.forEach((k,i)=>{
+    if (k.type==='mounted') return;
+    const node = k.type==='arm' ? k.node : k.pend;
+    k.h = Math.max(k.h, node.top + GAP, 18);
+  });
+  armGeom(A);
+  for (let pass=0; pass<3; pass++){
+    let changed=false;
+    for (let i=0;i<2;i++){
+      const ki=A.kids[i], kj=A.kids[1-i]; if (ki.type==='mounted') continue;
+      const ni = ki.type==='arm'?ki.node:ki.pend;
+      const xi = ki.relE[0];
+      if (kj.type!=='mounted'){
+        const nj = kj.type==='arm'?kj.node:kj.pend;
+        const overlapV = ki.band[1] > kj.band[0]-GAP && kj.band[1] > ki.band[0]-GAP;
+        if (overlapV && Math.abs(xi-kj.relE[0]) < ni.sweepR+nj.sweepR+GAP){
+          // the shorter assembly drops below the other
+          const hi_ = ki.band[1]-ki.band[0], hj = kj.band[1]-kj.band[0];
+          if (hi_ < hj || (hi_===hj && i===1)){ ki.h += ki.band[1]-kj.band[0]+GAP; changed=true; }
+        }
+      } else {
+        let lb=Infinity, lt=-Infinity, dmin=Infinity;
+        for (const q of kj.pts3){ lb=Math.min(lb,q[1]); lt=Math.max(lt,q[1]); dmin=Math.min(dmin, Math.hypot(q[0]-xi,q[2])); }
+        const overlapV = ki.band[1] > lb-GAP && lt > ki.band[0]-GAP;
+        if (overlapV && dmin < ni.sweepR+GAP){ ki.h += ki.band[1]-lb+GAP; changed=true; }
+      }
+      if (changed) armGeom(A);
+    }
+    if (!changed) break;
+  }
+}
+
+function stabilise(A, margin){
+  for (let it=0; it<10 && A.comY > -margin; it++){
+    if (A.arch==='ellipse'){ A.arch='parabola'; A.sag = A.L*.35; }
+    else A.sag = A.sag*1.35 + A.L*.03;
+    armGeom(A); fixDrops(A);
+  }
+}
+
+function standClear(A){ // ratio by which the root arm must grow so hanging parts clear the stabile neck
+  let need=1;
+  A.kids.forEach(k=>{
+    if (k.type==='mounted'){
+      let dmin=Infinity; for (const q of k.pts3) if (q[1]<-4) dmin=Math.min(dmin, Math.hypot(q[0],q[2]));
+      if (dmin < NECK+GAP) need=Math.max(need, (NECK+GAP)/Math.max(dmin,1)+.02);
+    } else {
+      const n=k.type==='arm'?k.node:k.pend, x=Math.abs(k.relE[0]);
+      if (x - n.sweepR < NECK+GAP) need=Math.max(need, (n.sweepR+NECK+GAP)/Math.max(x,1)+.02);
+    }
+  });
+  return need;
+}
+
+function makeArm(nArms, depth, isRoot){
+  const rest = nArms-1; let kL, kR;
+  if (S.form==='cascade'){ if (chance(.5)){kL=rest;kR=0}else{kL=0;kR=rest} }
+  else if (S.form==='branching'){ kL=Math.floor(rest/2)+((rest%2)&&chance(.5)?1:0); kR=rest-kL; }
+  else { kL=Math.floor(R()*(rest+1)); kR=rest-kL; }
+  const standRoot = isRoot && STANDROOT;
+
+  let arch='parabola', sagF;
+  if (S.form==='cascade') sagF = rr(.02,.11);
+  else if (S.form==='branching'){ if (chance(.5) && !standRoot){ arch='ellipse'; sagF=rr(.32,.5); } else sagF=rr(.1,.28); }
+  else { if (chance(.25) && !standRoot){ arch='ellipse'; sagF=rr(.3,.5);} else sagF=rr(.03,.26); }
+  if (standRoot) sagF = rr(.04,.12);
+
+  const leafType = () => {
+    if (arch==='ellipse') return 'pendant';
+    if (S.form==='cascade') return chance(.88) ? 'mounted' : 'pendant';
+    if (S.form==='branching') return chance(.55) ? 'pendant' : 'mounted';
+    return chance(.6) ? 'mounted' : 'pendant';
+  };
+  const kids = [kL,kR].map(k => {
+    if (k>0) return { type:'arm', node:makeArm(k, depth+1, false), h: rr(18, S.form==='branching'?90:60) };
+    const t = leafType();
+    return t==='mounted' ? { type:'mounted', leaf:makeLeaf(depth+1,false) } : { type:'pendant', pend:makePendant(depth+1), h: rr(16,70) };
+  });
+  const A = { id:0, kids, depth, arch, wr: Math.max(.8, 1.55 - .16*depth), L:0, sag:0 };
+
+  const reach = k => k.type==='mounted' ? k.leaf.s*.55 : k.type==='pendant' ? k.pend.sweepR : k.node.sweepR;
+  A.L = clamp((reach(kids[0])+reach(kids[1]))*rr(1.15,1.75) + rr(30,120), 130, 2200);
+  A.sag = sagF*A.L;
+
+  const leafSides = [0,1].filter(i=>kids[i].type!=='arm');
+  if (standRoot && leafSides.length===1){
+    // put the counterweight leaf on the short side so the hanging cascade clears the neck
+    const ls = leafSides[0];
+    const f = rr(.42,.5);
+    solveLeaf(A, ls, ls===0 ? f*A.L : (1-f)*A.L, .5, 3.0);
+  } else if (leafSides.length && chance(.5)){
+    const side = leafSides[Math.floor(R()*leafSides.length)];
+    solveLeaf(A, side, rr(.3,.7)*A.L, .55, 2.0);
+  } else armGeom(A);
+
+  let f = A.p/A.L;
+  if ((f<.1 || f>.9) && leafSides.length){
+    const side = leafSides.length===2 ? (f<.5 ? 1 : 0) : leafSides[0];
+    solveLeaf(A, side, clamp(f,.12,.88)*A.L, .5, 2.4);
+  }
+  fixDrops(A);
+  stabilise(A, standRoot ? 25 : 8);
+
+  if (standRoot){
+    for (let it=0; it<8; it++){
+      const need = standClear(A); if (need<=1.001) break;
+      A.L *= need; A.sag = sagF*A.L;
+      armGeom(A); fixDrops(A); stabilise(A,25);
+    }
+  }
+  return A;
+}
+
+/* ───────────────────────── whole study ───────────────────────── */
+let STUDY = null, STANDROOT = false;
+function generate(seed){
+  R = mulberry32(seed); RA = mulberry32(seed*7919+13); lastCi=-1;
+  const n = CX_ARMS[S.complexity-1];
+  const metalish = S.mode!=='colored';
+  if (S.form==='cascade') VOCAB = pickVocab({petal:3,disc:3,ellipse:1.2,triangle:1.6,wedge:1.6,halfmoon:.6,crescent:.6, sphere: metalish?.6:0});
+  else if (S.form==='branching') VOCAB = pickVocab({disc:4,halfmoon:2,ellipse:1.5,petal:1,wedge:1.4,triangle:.6, sphere: metalish?.8:0});
+  else VOCAB = pickVocab({disc:2,ellipse:1.4,petal:2,triangle:1.6,wedge:1.6,halfmoon:1,crescent:1,sphere:metalish?1:.3});
+  const baseType = S.mount==='standing' ? resolveBase(seed) : null;
+  STANDROOT = !!baseType && !HOOK_BASES[baseType];
+  const root = makeArm(n, 0, true);
+  const st = { seed, root, arms:[], parts:[], baseType };
+  // numbering
+  const walk = (A)=>{ A.id = st.arms.push(A); A.kids.forEach(k=>{
+      if (k.type==='arm') walk(k.node);
+      else if (k.type==='mounted'){ k.leaf.id = st.parts.push({leaf:k.leaf, mount:'Mounted'}); }
+      else k.pend.pieces.forEach((pc,i)=>{ pc.leaf.id = st.parts.push({leaf:pc.leaf, mount: i? 'Linked':'Hung'}); });
+    }); };
+  walk(root);
+  if (baseType) st.base = makeBase(baseType, root, seed);
+  return st;
+}
+function pickVocab(w){
+  const keys = Object.keys(w).filter(k=>w[k]>0); const n = R()<.35 ? 1 : R()<.7 ? 2 : 3; const v={};
+  for (let i=0;i<n;i++){ const k=pickW(Object.fromEntries(keys.filter(x=>!(x in v)).map(x=>[x,w[x]]))); v[k]= i===0 ? 3 : 1.4; }
+  if (Object.keys(v).length===1 && v.sphere) v.disc=2;
+  return v;
+}
+
+/* ───────────────────────── three.js scene ───────────────────────── */
+const stage = $('#stage'), glc = $('#gl');
+const renderer = new THREE.WebGLRenderer({ canvas:glc, antialias:true, alpha:true });
+renderer.setPixelRatio(Math.min(matchMedia('(pointer: coarse)').matches ? 1.5 : 2, window.devicePixelRatio||1));
+renderer.outputEncoding = THREE.sRGBEncoding;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 0.92;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFShadowMap;
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(30, 1, 10, 60000);
+// BACK: the page's hero, painted by the page (watercolor, horizon, every word of the title) and sent as an image.
+// texRaw feeds the glass shader (decoded by hand); texEnv becomes part of the world the metal reflects.
+const BACK = { canvas:null, texRaw:null, texEnv:null, uniforms:{ tBack:{ value:null }, uHas:{ value:0 }, uProj:{ value:camera.projectionMatrix } } };
+const controls = new THREE.OrbitControls(camera, glc);
+controls.enableDamping = true; controls.dampingFactor = .08; controls.rotateSpeed=.6; controls.enablePan = false;
+controls.enableZoom = false;
+const COARSE = matchMedia('(pointer: coarse)').matches;
+if (COARSE){ controls.enabled = false; glc.style.touchAction = 'pan-y'; }
+controls.minPolarAngle = Math.PI/2 - .55; controls.maxPolarAngle = Math.PI/2 + .32;
+
+function makeEnv(world){
+  const sc = new THREE.Scene();
+  const geo = new THREE.SphereGeometry(40,64,32), pos=geo.attributes.position, col=[];
+  for (let i=0;i<pos.count;i++){ const y=pos.getY(i)/40;
+    if (world){ // the world's own gradient wraps the sky; its horizon band sits at eye level
+      const h=world.horizon, t = y>=0 ? h*(1-y) : h+(1-h)*(-y);
+      const c = new THREE.Color().setRGB(...stopsAt(world.stops,t).map(v=>v/255)).convertSRGBToLinear();
+      col.push(c.r*1.5, c.g*1.5, c.b*1.5); continue; }
+    const v = y>0 ? .2+.3*Math.pow(y,.9) : .2*Math.pow(1+y,2.5)+.02; col.push(v,v*.995,v*.985); }
+  geo.setAttribute('color', new THREE.Float32BufferAttribute(col,3));
+  sc.add(new THREE.Mesh(geo, new THREE.MeshBasicMaterial({side:THREE.BackSide, vertexColors:true})));
+  if (world && BACK.texEnv){   // the page's hero stands behind the piece, so metal shows it where it faces away: near its edges
+    const a = BACK.canvas.width / BACK.canvas.height, hh = 46;
+    const wall = new THREE.Mesh(new THREE.PlaneGeometry(hh*a, hh), new THREE.MeshBasicMaterial({ map:BACK.texEnv, color:new THREE.Color(1.5,1.5,1.5) }));
+    wall.position.set(0, 4, -30); sc.add(wall);
+  }
+  const panel=(w,h,x,y,z,I,warm)=>{ const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h), new THREE.MeshBasicMaterial({color:new THREE.Color(I,I*(warm?.96:1),I*(warm?.9:1)), side:THREE.DoubleSide})); m.position.set(x,y,z); m.lookAt(0,0,0); sc.add(m); };
+  panel(24,11, -2,33,6, world?4.5:7);        // overhead softbox
+  panel(4.5,30, -31,4,9, world?4:9);         // tall strip, key side
+  panel(3.5,24, 31,1,-7, world?2:5, true);   // strip, opposite side
+  if (!world) panel(30,2.2, 0,17,-31, 3.5);  // rim from behind
+  if (world){ const pm = new THREE.PMREMGenerator(renderer); const t = pm.fromScene(sc, .012).texture; pm.dispose(); return t; }
+  // behind the camera: a window-like grid of cards so flat plates facing the viewer pick up structure
+  {
+    const c=document.createElement('canvas'); c.width=1024; c.height=512; const x=c.getContext('2d');
+    const g=x.createLinearGradient(0,0,0,512); g.addColorStop(0,'#3a3a3a'); g.addColorStop(.55,'#1c1c1c'); g.addColorStop(1,'#060606'); x.fillStyle=g; x.fillRect(0,0,1024,512);
+    // a mullioned studio window
+    for (let i=0;i<4;i++) for (let j=0;j<3;j++){ const gx=x.createLinearGradient(0,60+j*92,0,60+j*92+84); gx.addColorStop(0,'#ffffff'); gx.addColorStop(1,'#b9bcc0'); x.fillStyle=gx; x.fillRect(140+i*96,60+j*92,88,84); }
+    // a soft vertical softbox and two bounce cards
+    const rg=x.createLinearGradient(700,0,790,0); rg.addColorStop(0,'rgba(255,255,255,0)'); rg.addColorStop(.5,'#ffffff'); rg.addColorStop(1,'rgba(255,255,255,0)'); x.fillStyle=rg; x.fillRect(700,30,90,420);
+    x.fillStyle='#8d8d8d'; x.fillRect(860,120,110,170); x.fillStyle='#5c5c5c'; x.fillRect(40,300,70,150);
+    const t=new THREE.CanvasTexture(c);
+    const m=new THREE.Mesh(new THREE.PlaneGeometry(84,42), new THREE.MeshBasicMaterial({map:t, color:new THREE.Color(3.2,3.2,3.2), side:THREE.DoubleSide}));
+    m.position.set(0,6,35); m.lookAt(0,6,0); sc.add(m);
+  }
+  // a dark floor and black flags give metals their contrast
+  const floor=new THREE.Mesh(new THREE.PlaneGeometry(120,120), new THREE.MeshBasicMaterial({color:new THREE.Color(.035,.035,.035)})); floor.rotation.x=-Math.PI/2; floor.position.y=-10; sc.add(floor);
+  const flag=(w,h,x,y,z)=>{ const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h), new THREE.MeshBasicMaterial({color:0x050505, side:THREE.DoubleSide})); m.position.set(x,y,z); m.lookAt(0,0,0); sc.add(m); };
+  flag(14,30,-22,-2,-24); flag(10,26,-6,0,-36); flag(10,30,34,0,6);
+  const pm = new THREE.PMREMGenerator(renderer);
+  const t = pm.fromScene(sc, .012).texture; pm.dispose();
+  return t;
+}
+const ENV = { studio: makeEnv(null) };
+scene.environment = ENV.studio;
+
+const hemi = new THREE.HemisphereLight(0xffffff, 0x50504c, .45); scene.add(hemi);
+const key = new THREE.DirectionalLight(0xffffff, 1.6);
+key.castShadow = true; key.shadow.mapSize.set(2048,2048); key.shadow.radius = 9; key.shadow.bias=-.0004; key.shadow.normalBias=.6;
+scene.add(key); scene.add(key.target);
+
+// in a world there is no paper: a ground that only receives shadow keeps a standing piece planted
+const SHADOW = { haze:'#5D5970', night:'#0A1150' };   // --cast-shadow in index.html; the page sends its current value with the theme
+const catcher = new THREE.Mesh(new THREE.PlaneGeometry(40000,40000), new THREE.ShadowMaterial({opacity:.5}));
+catcher.rotation.x = -Math.PI/2; catcher.receiveShadow = true; catcher.visible = false; scene.add(catcher);
+const wallCatcher = new THREE.Mesh(new THREE.PlaneGeometry(40000,40000), new THREE.ShadowMaterial({opacity:.3}));
+wallCatcher.receiveShadow = true; wallCatcher.visible = false; scene.add(wallCatcher);
+
+// seamless paper sweep (cyclorama)
+const cycMat = new THREE.MeshStandardMaterial({ color:0xffffff, roughness:1, metalness:0, envMapIntensity:.9 });
+const cyc = (()=>{
+  const Rc=900, prof=[];
+  prof.push([9000,0],[3000,0],[Rc,0]);
+  for (let i=1;i<=16;i++){ const a=-Math.PI/2 - Math.PI/2*i/16; prof.push([Rc+Rc*Math.cos(a), Rc+Rc*Math.sin(a)]); }
+  prof.push([0,3000],[0,12000]);
+  const xs=[-14000,-4000,0,4000,14000], P=[], I=[];
+  for (const [z,y] of prof) for (const x of xs) P.push(x,y,z);
+  const W=xs.length;
+  for (let i=0;i<prof.length-1;i++) for (let j=0;j<W-1;j++){ const a=i*W+j,b=a+1,c=a+W,d=c+1; I.push(a,c,b,b,c,d); }
+  const g=new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(P,3)); g.setIndex(I); g.computeVertexNormals();
+  const m=new THREE.Mesh(g,cycMat); m.receiveShadow=true; cycMat.side=THREE.DoubleSide; return m;
+})();
+scene.add(cyc);
+
+/* textures for metal finishes */
+function canvasTex(draw){ const c=document.createElement('canvas'); c.width=c.height=512; draw(c.getContext('2d')); const t=new THREE.CanvasTexture(c); t.wrapS=t.wrapT=THREE.RepeatWrapping; t.repeat.set(1/150,1/150); t.anisotropy=renderer.capabilities.getMaxAnisotropy(); return t; }
+let seedTex = mulberry32(99);
+const TEX_BRUSH = canvasTex(x=>{
+  x.fillStyle='rgb(88,88,88)'; x.fillRect(0,0,512,512);
+  for (let i=0;i<3200;i++){ const y=seedTex()*512, len=40+seedTex()*460, x0=seedTex()*512, v=60+seedTex()*75|0;
+    x.strokeStyle=`rgba(${v},${v},${v},${.25+seedTex()*.55})`; x.lineWidth=.3+seedTex()*1.3;
+    x.beginPath(); x.moveTo(x0,y); x.lineTo(x0+len,y); x.stroke(); if (x0+len>512){ x.beginPath(); x.moveTo(x0-512,y); x.lineTo(x0+len-512,y); x.stroke(); } }
+});
+const TEX_BLAST = canvasTex(x=>{
+  const d=x.createImageData(512,512);
+  for (let i=0;i<d.data.length;i+=4){ const v=128+ (seedTex()-.5)*40 + (seedTex()<.02? 30:0); d.data[i]=d.data[i+1]=d.data[i+2]=v; d.data[i+3]=255; }
+  x.putImageData(d,0,0);
+});
+TEX_BLAST.repeat.set(1/40,1/40);
+
+const linHex = h => new THREE.Color(h).convertSRGBToLinear();
+let MATS = [];
+function track(m){ MATS.push(m); return m; }
+function metalMat(key, finish, forWire){
+  const m = METALS[key];
+  const mat = new THREE.MeshPhysicalMaterial({ color:new THREE.Color(...m.lin), metalness:1, roughness:.1, envMapIntensity:1.05 });
+  if (key==='silver' && finish==='mirror') mat.color.setRGB(.9,.9,.9);
+  if (key==='black'){ mat.metalness=.5; mat.clearcoat=.25; mat.clearcoatRoughness=.4; }
+  const f = forWire ? (finish==='mirror'||finish==='polished' ? 'polished' : 'wire') : finish;
+  if (f==='mirror') mat.roughness = key==='black'? .2 : .015;
+  else if (f==='polished') mat.roughness = key==='black'? .28 : .1;
+  else if (f==='wire') mat.roughness = .3;
+  else if (f==='brushed'){ mat.roughness=1; mat.roughnessMap=TEX_BRUSH; mat.bumpMap=TEX_BRUSH; mat.bumpScale=.006; if (key==='black') mat.roughness=1.25; }
+  else { mat.roughness=1; mat.roughnessMap=TEX_BLAST; if (key==='black') mat.metalness=.35; }
+  if (!forWire && (f==='mirror' || f==='polished') && key!=='black') mirrorPage(mat, f==='mirror' ? 1 : .5);
+  return track(mat);
+}
+function mirrorPage(mat, amt){
+  mat.onBeforeCompile = sh => {
+    Object.assign(sh.uniforms, BACK.uniforms);
+    sh.fragmentShader = sh.fragmentShader
+      .replace('#include <common>', '#include <common>\nuniform sampler2D tBack;\nuniform float uHas;\nuniform mat4 uProj;')
+      .replace('#include <tonemapping_fragment>', `if (uHas > 0.5) {
+        vec3 P = -vViewPosition, rd = reflect(normalize(P), normal);
+        float away = smoothstep(0.0, -0.55, rd.z) * ${amt.toFixed(2)};
+        vec4 C = uProj * vec4(P + rd * 220.0, 1.0);
+        vec2 uv = clamp(C.xy / C.w * 0.5 + 0.5, 0.002, 0.998);
+        gl_FragColor.rgb = mix(gl_FragColor.rgb, pow(texture2D(tBack, uv).rgb, vec3(2.2)) * diffuse * 1.05, away * 0.9);
+      }
+      #include <tonemapping_fragment>`);
+  };
+  mat.customProgramCacheKey = () => 'mirrorpage' + amt;
+}
+function paintMat(hex, finish){
+  const p = { gloss:{r:.26,cc:1,ccr:.04}, satin:{r:.5,cc:.35,ccr:.28}, matte:{r:.84,cc:0,ccr:0} }[finish];
+  return track(new THREE.MeshPhysicalMaterial({ color:linHex(hex), metalness:0, roughness:p.r, clearcoat:p.cc, clearcoatRoughness:p.ccr, envMapIntensity:.95 }));
+}
+// glass: tinted, see-through, with sharp reflections on its faces and bright 6 mm edges.
+// Kept as a transparent surface (not refraction) so the backdrop shows through it exactly.
+const GLASS = {
+  clear:{label:'Clear', c:'#EEF5F6', a:.22, sw:'linear-gradient(135deg,#ffffff,#d9e6ea 60%,#f4f9fa)'},
+  sea:{label:'Sea glass', c:'#8FD0C2', a:.42, sw:'linear-gradient(135deg,#d6f2ea,#8fd0c2 60%,#c4e9df)'},
+  cobalt:{label:'Cobalt', c:'#2E4FD6', a:.55, sw:'linear-gradient(135deg,#8ea3f0,#2e4fd6 60%,#5f78e2)'},
+  amber:{label:'Amber', c:'#E39A2E', a:.5, sw:'linear-gradient(135deg,#f7d39a,#e39a2e 60%,#efbb66)'},
+  rose:{label:'Rose', c:'#E7A3B6', a:.42, sw:'linear-gradient(135deg,#f9dbe3,#e7a3b6 60%,#f2c3d0)'},
+  smoke:{label:'Smoke', c:'#4E535C', a:.55, sw:'linear-gradient(135deg,#a3a8b0,#4e535c 60%,#7a7f88)'}
+};
+const GLASS_KEYS = Object.keys(GLASS);
+// faces: barely there, tinted, with two soft reflection streaks that slide across as the piece turns;
+// fresnel makes the outline brighten and firm up at grazing angles. edges: the 6 mm polished rim, denser and brighter.
+function glassMats(size, thick, sph){
+  const g = GLASS[S.glassTint] || GLASS.clear, frost = S.glassFinish==='frosted';
+  const face = new THREE.MeshPhysicalMaterial({ color:linHex(g.c), metalness:0, roughness: frost ? .45 : .03,
+    transparent:true, opacity: frost ? Math.min(.7, g.a+.16) : g.a*.55, depthWrite:false, side:THREE.DoubleSide,
+    clearcoat:1, clearcoatRoughness: frost ? .4 : 0, envMapIntensity: frost ? .9 : 1.3 });
+  face.toneMapped = false;   // the bent view of the page must keep the page's exact colours
+  const sk = frost ? .25 : 1, k = frost ? .35 : .75, lift = frost ? .1 : .3;
+  face.onBeforeCompile = sh => {
+    sh.uniforms.uSize = { value: Math.max(30, size) };
+    Object.assign(sh.uniforms, BACK.uniforms, { uThick:{ value:thick||6 }, uSph:{ value:sph?1:0 }, uTint:{ value:linHex(g.c) }, uTintA:{ value:g.a }, uFrost:{ value:frost?1:0 } });
+    sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nvarying vec2 vPos;').replace('#include <begin_vertex>', '#include <begin_vertex>\nvPos = position.xy;');
+    sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>\nvarying vec2 vPos;\nuniform float uSize;\nuniform sampler2D tBack;\nuniform float uHas, uThick, uSph, uTintA, uFrost;\nuniform vec3 uTint;\nuniform mat4 uProj;').replace('#include <tonemapping_fragment>', `
+      vec3 nn = normalize(vNormal), vv = normalize(vViewPosition);
+      float fres = pow(1.0 - abs(dot(nn, vv)), 2.6);
+      float d = (vPos.x + vPos.y) / uSize + nn.x * 1.6;
+      float streak = (exp(-pow((d - 0.3) * 5.0, 2.0)) * 0.5 + exp(-pow((d - 0.78) * 10.0, 2.0)) * 0.28) * ${sk.toFixed(2)};
+      gl_FragColor.rgb += streak + fres * ${lift.toFixed(2)};
+      gl_FragColor.a = clamp(gl_FragColor.a + streak * 0.55 + fres * ${k.toFixed(2)}, 0.0, 1.0);
+      if (uHas > 0.5) {
+        // where the light that reaches this point came from: a plate shifts it along the refracted ray (window glass);
+        // a sphere acts as a lens, sampling from the opposite side of its centre, so what is behind it turns over
+        vec3 P = -vViewPosition;
+        vec3 Q = uSph > 0.5 ? P - vec3(nn.xy * uThick * 0.9, 0.0) : P + refract(normalize(P), nn, 0.66) * uThick;
+        vec4 C = uProj * vec4(Q, 1.0);
+        vec2 uv = clamp(C.xy / C.w * 0.5 + 0.5, 0.002, 0.998);
+        vec3 bg = vec3(0.0);
+        if (uFrost > 0.5) {   // frosted: the etched surface scatters, so the view through it is soft
+          for (int i = 0; i < 8; i++) { float a = float(i) * 0.7854; bg += texture2D(tBack, clamp(uv + vec2(cos(a), sin(a)) * 0.007, 0.002, 0.998)).rgb; }
+          bg /= 8.0;
+        } else bg = texture2D(tBack, uv).rgb;
+        bg = pow(bg, vec3(2.2));
+        vec3 seen = mix(bg, bg * uTint * 1.1, clamp(uTintA * 0.6, 0.0, 1.0));   // tint as light as in Equipoise's own thumbnails
+        gl_FragColor = vec4(seen * (1.0 - fres * 0.3) + gl_FragColor.rgb * gl_FragColor.a * 0.55, 1.0);
+      }
+      #include <tonemapping_fragment>`);
+  };
+  face.customProgramCacheKey = () => 'glassface'+(frost?1:0);
+  const edge = new THREE.MeshPhysicalMaterial({ color:linHex(g.c), metalness:0, roughness: frost ? .35 : .04, transparent:true,
+    opacity: frost ? .9 : .82, depthWrite:false, clearcoat:1, clearcoatRoughness:0, envMapIntensity:2.2 });
+  return [track(face), track(edge)];
+}
+function partMat(m){ return m.kind==='metal' ? metalMat(S.metal, S.finish) : paintMat(S.colors[m.ci % S.colors.length], S.paint); }
+function wireMat(){ const w=wireKey(); if (w==='brass') return metalMat('brass','polished',true); return metalMat('silver','polished',true); }
+function stabileMat(){ if (S.mode==='glass') return metalMat('silver','polished'); if (S.mode==='metal') return metalMat(S.metal, S.finish==='mirror'?'polished':S.finish); return paintMat('#121212', S.paint==='gloss'?'satin':'matte'); }
+
+/* ───────────────────────── mesh builders ───────────────────────── */
+let GEOS=[]; const geo = g => (GEOS.push(g), g);
+let JOINTS=[]; let WIRE=null;
+function mesh(g,m){ const o=new THREE.Mesh(g,m); o.castShadow=true; o.receiveShadow=true; return o; }
+function torus(r, tube){ return geo(new THREE.TorusGeometry(r, tube, 8, 24)); }
+function rod(len, r){ const g=geo(new THREE.CylinderGeometry(r,r,len,8)); return g; }
+
+function plateGeo(pts, s, t, mirror, glass){
+  let P = chaikin(pts, 3).map(p=>new THREE.Vector2(p[0]*s, (mirror?-p[1]:p[1])*s));
+  if (mirror) P.reverse();
+  const shape = new THREE.Shape(P);
+  const g = new THREE.ExtrudeGeometry(shape, glass ? { depth:t-1.6, bevelEnabled:true, bevelThickness:.8, bevelSize:.9, bevelSegments:3, curveSegments:4 } : { depth:t, bevelEnabled:true, bevelThickness:Math.min(.9, t*.32), bevelSize:Math.min(1.1, t*.42), bevelSegments:5, curveSegments:4 });
+  g.translate(0,0,glass ? -(t-1.6)/2 : -t/2);
+  return geo(g);
+}
+function leafObj(lf, mirror){
+  const g = new THREE.Group();
+  if (lf.mat.kind==='glass'){
+    const [face, edge] = glassMats(lf.s, lf.sphere ? lf.s : lf.t*1.2, !!lf.sphere);
+    if (lf.sphere){ const s=mesh(geo(new THREE.SphereGeometry(.5*lf.s,48,32)), face); s.position.x=.44*lf.s; g.add(s); }
+    else { // two passes over one geometry: faces cast no shadow, the rim does, so the shadow is a pale outline of the plate
+      const pg = plateGeo(lf.pts, lf.s, lf.t, mirror, true), hid = track(new THREE.MeshBasicMaterial({ visible:false }));
+      const fm = mesh(pg, [face, hid]); fm.castShadow = false; g.add(fm);
+      g.add(mesh(pg, [hid, edge])); }
+    return g;
+  }
+  const mat = partMat(lf.mat);
+  if (lf.sphere){ const s=mesh(geo(new THREE.SphereGeometry(.5*lf.s,48,32)), mat); s.position.x=.44*lf.s; g.add(s); }
+  else g.add(mesh(plateGeo(lf.pts, lf.s, lf.t, mirror), mat));
+  return g;
+}
+function armObj(A){
+  const g = new THREE.Group();
+  const curve = new THREE.CatmullRomCurve3(A.rel.map(q=>new THREE.Vector3(q[0],q[1],0)));
+  g.add(mesh(geo(new THREE.TubeGeometry(curve, 96, A.wr, 10, false)), WIRE));
+  // hook loop at the balance point, turned 90° so the loop above can link it
+  const hook = mesh(torus(3.6, Math.max(.7,A.wr*.75)), WIRE); hook.position.y = 3.6; hook.rotation.y = Math.PI/2; g.add(hook);
+  A.kids.forEach((k,side)=>{
+    const E = k.relE;
+    if (k.type==='mounted'){
+      const lg = new THREE.Group(); lg.position.set(E[0],E[1],0); lg.rotation.z = k.ang;
+      const lo = leafObj(k.leaf, side===0); lo.rotation.x = k.leaf.twist * (side===0?-1:1); lg.add(lo); g.add(lg);
+      const cap = mesh(geo(new THREE.SphereGeometry(A.wr,10,8)), WIRE); cap.position.set(E[0],E[1],0); g.add(cap);
+    } else {
+      const eye = mesh(torus(3.4, Math.max(.7,A.wr*.75)), WIRE); eye.position.set(E[0], E[1]-3.4, 0); g.add(eye);
+      const joint = new THREE.Group(); joint.position.set(E[0], E[1]-6.2, 0); g.add(joint);
+      const h = k.h - 6.2;
+      const node = k.type==='arm' ? k.node : k.pend;
+      if (h > 9){ const r = mesh(rod(h-7, .85), WIRE); r.position.y = -(h-7)/2; joint.add(r); }
+      const inner = k.type==='arm' ? armObj(k.node) : pendantObj(k.pend);
+      inner.position.y = -h; joint.add(inner);
+      JOINTS.push(makeJoint(joint, node));
+    }
+  });
+  return g;
+}
+function pendantObj(P){
+  const g = new THREE.Group();
+  P.pieces.forEach((pc,i)=>{
+    const lf = pc.leaf;
+    const pg = new THREE.Group(); pg.position.set(0, pc.hole[1], 0); pg.rotation.z = -Math.PI/2;
+    pg.add(leafObj(lf,false)); g.add(pg);
+    const ring = mesh(torus(3, .7), WIRE); ring.position.set(0, pc.hole[1], 0); ring.rotation.y = Math.PI/2; g.add(ring);
+    if (i>0){ const link = mesh(torus(3.2,.7), WIRE); link.position.set(0, pc.hole[1]+5.5, 0); g.add(link); }
+  });
+  const top = mesh(torus(3.6,.8), WIRE); top.position.y=3; top.rotation.y=Math.PI/2; g.add(top);
+  return g;
+}
+function makeJoint(obj, node){
+  const r = Math.max(30, node.sweepR);
+  const T = 3.5 + 7*Math.sqrt(r/600);
+  const rest = (Math.random()-.5)*1.1;
+  obj.rotation.y = rest;
+  return { obj, r, rest, th:rest, w:0, k:Math.pow(2*Math.PI/T,2), c:2*.045*(2*Math.PI/T), ph:[Math.random()*9,Math.random()*9,Math.random()*9], drive: Math.pow(140/r,.35) };
+}
+
+/* ───────────────────────── standing bases ─────────────────────────
+   Two families. Pivot bases (spire, figure, arch, cairn, cradle): the mobile's top arm rests on a needle tip.
+   Hook bases (nautilus, creature): a rod rises from the body and curls over; the mobile hangs from its end.
+   For every base: mass and centre of mass from plate areas, rod lengths and ball volumes; the footprint is the
+   convex hull of floor contacts, and the combined centre of mass (base + mobile) must sit inside it.
+   Clearance is checked in revolution space: every part of the turning mobile sweeps a ring (radius × height),
+   and no ring may come within GAP of the base. */
+const BASE_TYPES = ['spire','figure','arch','cairn','cradle','nautilus','creature'];
+const BASE_LABEL = { spire:'Spire', figure:'Figure', arch:'Arch', cairn:'Cairn', cradle:'Cradle', nautilus:'Nautilus', creature:'Creature' };
+const HOOK_BASES = { nautilus:1, creature:1 };
+const ROW = 4;
+function resolveBase(seed){
+  if (S.base && S.base!=='random') return S.base;
+  const rb = mulberry32(seed*31+7); return BASE_TYPES[Math.floor(rb()*BASE_TYPES.length)];
+}
+const shapeFrom = pts => { const sh=new THREE.Shape(); pts.forEach((p,i)=> i? sh.lineTo(p[0],p[1]) : sh.moveTo(p[0],p[1])); return sh; };
+const circlePts = (cx,cy,r,n=48,clipY=-Infinity) => { const o=[]; for(let i=0;i<n;i++){ const a=2*Math.PI*i/n; o.push([cx+r*Math.cos(a), Math.max(clipY, cy+r*Math.sin(a))]); } return o; };
+
+function plateInfo(pl){
+  const P = pl.shape.extractPoints(24).shape.map(v=>[v.x,v.y]);
+  const sh = shoelace(P);
+  return { P, area:sh.area, cu:sh.cx, cy:sh.cy };
+}
+function baseMetrics(spec, loadM){
+  let M=0, mx=0, my=0, mz=0; const contacts=[];
+  spec.plates.forEach(pl=>{
+    const I = pl.info || (pl.info = plateInfo(pl)); const m = I.area*pl.t*RHO.steel*(pl.rhoK||1);
+    const cx = pl.plane==='xy' ? I.cu : pl.off, cz = pl.plane==='xy' ? 0 : I.cu;
+    M+=m; mx+=m*cx; my+=m*I.cy; mz+=m*cz;
+    for (const q of I.P) if (q[1] < .6){
+      if (pl.plane==='xy'){ contacts.push([q[0], -pl.t/2],[q[0], pl.t/2]); }
+      else contacts.push([pl.off-pl.t/2, q[0]],[pl.off+pl.t/2, q[0]]);
+    }
+  });
+  spec.rods.forEach(rd=>{ let L=0; for (let i=1;i<rd.pts.length;i++){ const a=rd.pts[i-1], b=rd.pts[i], l=Math.hypot(b[0]-a[0],b[1]-a[1],b[2]-a[2]); L+=l;
+      const m=l*Math.PI*rd.r*rd.r*RHO.steel; M+=m; mx+=m*(a[0]+b[0])/2; my+=m*(a[1]+b[1])/2; mz+=m*(a[2]+b[2])/2; } });
+  spec.spheres.forEach(sp=>{ const m=4/3*Math.PI*sp.r**3*RHO.steel*(sp.hollow?.15:1); M+=m; mx+=m*sp.c[0]; my+=m*sp.c[1]; mz+=m*sp.c[2]; });
+  (spec.horns||[]).forEach(h=>{ for (let i=1;i<h.pts.length;i++){ const a=h.pts[i-1], b=h.pts[i], ds=Math.hypot(b[0]-a[0],b[1]-a[1]), m=hornMass(h.a[i],h.b[i],ds);
+      M+=m; mx+=m*(a[0]+b[0])/2; my+=m*(a[1]+b[1])/2; } });
+  const com = [mx/M, my/M, mz/M];
+  const tx = (M*com[0])/(M+loadM), tz = (M*com[2])/(M+loadM); // mobile load acts on the axis (0,0)
+  (spec.contacts||[]).forEach(c=>contacts.push(c));
+  const hull = convexHull(contacts);
+  return { M, com, hull, total:[tx,tz], margin: hullMargin(hull, tx, tz) };
+}
+function convexHull(pts){
+  const p = pts.slice().sort((a,b)=>a[0]-b[0]||a[1]-b[1]); if (p.length<3) return p;
+  const cr=(o,a,b)=>(a[0]-o[0])*(b[1]-o[1])-(a[1]-o[1])*(b[0]-o[0]); const lo=[], up=[];
+  for (const q of p){ while(lo.length>=2 && cr(lo[lo.length-2],lo[lo.length-1],q)<=0) lo.pop(); lo.push(q); }
+  for (let i=p.length-1;i>=0;i--){ const q=p[i]; while(up.length>=2 && cr(up[up.length-2],up[up.length-1],q)<=0) up.pop(); up.push(q); }
+  up.pop(); lo.pop(); return lo.concat(up);
+}
+function hullMargin(h, x, z){ // signed distance to the footprint edge, positive inside (CCW hull)
+  if (h.length<3) return -1;
+  let m=Infinity; for (let i=0;i<h.length;i++){ const a=h[i], b=h[(i+1)%h.length], ex=b[0]-a[0], ez=b[1]-a[1], L=Math.hypot(ex,ez)||1;
+    m=Math.min(m, (ex*(z-a[1]) - ez*(x-a[0]))/L); }
+  return m;
+}
+// base occupancy per 4 mm row, as radius intervals around the mobile's axis
+function baseRows(spec){
+  const rows=new Map(), add=(row,a,b)=>{ let l=rows.get(row); if(!l) rows.set(row,l=[]); l.push([a,b]); };
+  spec.plates.forEach(pl=>{
+    const P=(pl.info||(pl.info=plateInfo(pl))).P; let y0=Infinity,y1=-Infinity; for (const q of P){ y0=Math.min(y0,q[1]); y1=Math.max(y1,q[1]); }
+    for (let row=Math.floor(y0/ROW); row<=Math.floor(y1/ROW); row++){
+      const y=(row+.5)*ROW, xs=[];
+      for (let i=0;i<P.length;i++){ const a=P[i], b=P[(i+1)%P.length]; if ((a[1]<=y&&b[1]>y)||(b[1]<=y&&a[1]>y)) xs.push(a[0]+(y-a[1])/(b[1]-a[1])*(b[0]-a[0])); }
+      xs.sort((u,v)=>u-v);
+      for (let i=0;i+1<xs.length;i+=2){ const a=xs[i], b=xs[i+1], lo=Math.min(Math.abs(a),Math.abs(b)), hi=Math.max(Math.abs(a),Math.abs(b)), span0=a<=0&&b>=0;
+        if (pl.plane==='xy') add(row, span0?0:lo, Math.hypot(hi, pl.t/2));
+        else { const o=Math.abs(pl.off); add(row, span0? o : Math.hypot(o,lo), Math.hypot(o+pl.t/2, hi)); } }
+    }
+  });
+  spec.rods.forEach(rd=>{ if (rd.noClear) return;
+    for (let i=1;i<rd.pts.length;i++){ const a=rd.pts[i-1], b=rd.pts[i], n=Math.max(1,Math.ceil(Math.hypot(b[0]-a[0],b[1]-a[1])/3));
+      for (let k=0;k<=n;k++){ const t=k/n, x=a[0]+(b[0]-a[0])*t, y=a[1]+(b[1]-a[1])*t, z=a[2]+(b[2]-a[2])*t, r=Math.hypot(x,z);
+        for (let row=Math.floor((y-rd.r)/ROW); row<=Math.floor((y+rd.r)/ROW); row++) add(row, Math.max(0,r-rd.r), r+rd.r); } } });
+  (spec.horns||[]).forEach(h=>h.pts.forEach((q,i)=>{ const a=h.a[i], r=Math.abs(q[0]);
+    for (let row=Math.floor((q[1]-a)/ROW); row<=Math.floor((q[1]+a)/ROW); row++) add(row, Math.max(0,r-a), Math.hypot(r+a, h.b[i])); }));
+  spec.spheres.forEach(sp=>{ const rc=Math.hypot(sp.c[0],sp.c[2]);
+    for (let row=Math.floor((sp.c[1]-sp.r)/ROW); row<=Math.floor((sp.c[1]+sp.r)/ROW); row++){ const dy=(row+.5)*ROW-sp.c[1], w=Math.sqrt(Math.max(0,sp.r*sp.r-dy*dy)); add(row, Math.max(0,rc-w), rc+w); } });
+  return rows;
+}
+// what the turning mobile sweeps, relative to its hook / tip
+function sweptEls(root){
+  const els=[{y0:0,y1:9,a:0,b:5}];
+  for (let i=1;i<root.rel.length;i++){ const a=root.rel[i-1], b=root.rel[i];
+    for (let k=0;k<4;k++){ const t=k/4, x=a[0]+(b[0]-a[0])*t, y=a[1]+(b[1]-a[1])*t; els.push({y0:y-root.wr,y1:y+root.wr,a:Math.max(0,Math.abs(x)-root.wr),b:Math.abs(x)+root.wr}); } }
+  root.kids.forEach(k=>{
+    if (k.type==='mounted'){
+      const per=new Map(); const P=k.pts3;
+      for (let i=0;i<P.length;i++){ const a=P[i], b=P[(i+1)%P.length];
+        for (let j=0;j<4;j++){ const t=j/4, x=a[0]+(b[0]-a[0])*t, y=a[1]+(b[1]-a[1])*t, z=a[2]+(b[2]-a[2])*t, r=Math.hypot(x,z), row=Math.floor(y/ROW);
+          const e=per.get(row); if (e){ e[0]=Math.min(e[0],r); e[1]=Math.max(e[1],r); } else per.set(row,[r,r]); } }
+      per.forEach((v,row)=>els.push({y0:row*ROW,y1:(row+1)*ROW,a:v[0],b:v[1]}));
+    } else { const n=k.type==='arm'?k.node:k.pend, rho=Math.abs(k.relE[0]);
+      els.push({y0:k.band[0], y1:k.band[1], a:Math.max(0,rho-n.sweepR), b:rho+n.sweepR}); }
+  });
+  return els;
+}
+function collides(rows, els, hookY){
+  for (const e of els){
+    for (let row=Math.floor((hookY+e.y0-GAP)/ROW); row<=Math.floor((hookY+e.y1+GAP)/ROW); row++){
+      const l=rows.get(row); if (!l) continue;
+      for (const [c,d] of l) if (e.a < d+GAP && c < e.b+GAP) return true;
+    }
+  }
+  return false;
+}
+
+function spireSpec(root){
+  const H = Math.max(360, (-root.bottom + 40)/(1-.34), root.sweepR*.55);
+  const W = Math.max(240, H*.62);
+  const A = new THREE.Shape();
+  const lf=-W*.56, rf=W*.44, cr=.34*H;
+  A.moveTo(lf,0);
+  A.bezierCurveTo(lf+W*.18, H*.1, -30, cr*.9, -24, cr+H*.12);
+  A.bezierCurveTo(-18, H*.68, -14, H*.86, -3, H-6);
+  A.lineTo(0,H);
+  A.bezierCurveTo(10, H*.95, 14, H*.84, 18, H*.66);
+  A.bezierCurveTo(24, H*.5, 30, cr*1.05, rf-W*.12, H*.06);
+  A.lineTo(rf,0); A.lineTo(rf-14,0);
+  A.bezierCurveTo(rf-W*.16, H*.08, W*.06, cr*.8, 4, cr);
+  A.bezierCurveTo(-W*.1, cr*.75, lf+W*.16, H*.06, lf+14, 0);
+  A.lineTo(lf,0);
+  const B = new THREE.Shape(); const bw=W*.42, bh=cr*.92;
+  B.moveTo(-bw,0); B.bezierCurveTo(-bw*.8, bh*.6, -bw*.3, bh, 0, bh); B.bezierCurveTo(bw*.3, bh, bw*.8, bh*.6, bw, 0);
+  B.lineTo(bw-13,0); B.bezierCurveTo(bw*.65, bh*.45, bw*.25, bh*.78, 0, bh*.8); B.bezierCurveTo(-bw*.25, bh*.78, -bw*.65, bh*.45, -bw+13, 0); B.lineTo(-bw,0);
+  return { spec:{ plates:[{shape:A, plane:'xy', off:0, t:5},{shape:B, plane:'zy', off:0, t:5}], rods:[], spheres:[] }, hookY:H };
+}
+
+// pedestals: a figure, arch, cairn or cradle carries a needle pin; the pin grows until nothing the mobile sweeps can touch the pedestal
+function pedestalSpec(type, root, rbr){
+  const D = -root.bottom, R0 = root.sweepR;
+  const s = clamp(Math.max(R0*.58, D*.72), 220, 620) * rbr(.88,1.12);
+  const plates=[], spheres=[]; let top=0;
+  if (type==='figure'){
+    const b=s*rbr(.17,.25), sh=s*rbr(.52,.6), n=s*.045, aw=s*rbr(.22,.32), at=s*.045, n2=s*.028, nk=s*.04, tilt=s*rbr(-.05,.05);
+    plates.push({ shape:shapeFrom([[-b,0],[b,0],[n,sh],[aw,sh+tilt],[aw,sh+at+tilt],[n2,sh+at],[n2,sh+at+nk],[-n2,sh+at+nk],[-n2,sh+at],[-aw,sh+at-tilt],[-aw,sh-tilt],[-n,sh]]), plane:'xy', off:0, t:6 });
+    const hr=s*rbr(.07,.09), hc=sh+at+nk+hr*.85;
+    plates.push({ shape:shapeFrom(circlePts(0,hc,hr)), plane:'xy', off:0, t:6 });
+    plates.push({ shape:shapeFrom([[-b*.8,0],[b*.8,0],[s*.03,sh*.62],[-s*.03,sh*.62]]), plane:'zy', off:0, t:6 });
+    top = hc+hr;
+  } else if (type==='arch'){
+    const aw=s*rbr(.27,.35), ah=s*rbr(.48,.6), ri=Math.min(aw*.55, ah-s*.12), pts=[[-aw,0],[-ri,0]];
+    for (let i=0;i<=24;i++){ const a=Math.PI-Math.PI*i/24; pts.push([ri*Math.cos(a), ri*Math.sin(a)]); }
+    pts.push([ri,0],[aw,0],[aw*.74,ah],[-aw*.74,ah]);
+    plates.push({ shape:shapeFrom(pts), plane:'xy', off:0, t:6 });
+    plates.push({ shape:shapeFrom(pts.map(p=>[p[0]*.82,p[1]*.94])), plane:'zy', off:0, t:6 });
+    const br=s*rbr(.07,.1); spheres.push({ c:[0,ah+br,0], r:br }); top=ah+2*br;
+  } else if (type==='cairn'){
+    const r1=s*rbr(.2,.25), c1=r1*.84, r2=r1*rbr(.58,.72), c2=c1+r1+r2*.62;
+    plates.push({ shape:shapeFrom(circlePts(0,c1,r1,48,0)), plane:'xy', off:0, t:6 });
+    plates.push({ shape:shapeFrom(circlePts(0,c2,r2)), plane:'xy', off:0, t:6 });
+    plates.push({ shape:shapeFrom(circlePts(0,c1,r1*.92,48,0)), plane:'zy', off:0, t:6 });
+    plates.push({ shape:shapeFrom(circlePts(0,c2,r2*.9)), plane:'zy', off:0, t:6 });
+    top=c2+r2;
+    if (rbr(0,1)<.5){ const r3=r2*.5, c3=c2+r2+r3*.6; plates.push({ shape:shapeFrom(circlePts(0,c3,r3)), plane:'xy', off:0, t:6 }); top=c3+r3; }
+  } else { // cradle: a crescent bowl holding a ball
+    const ro=s*rbr(.24,.3), cy=ro*.9, pts=[];
+    for (let i=0;i<=32;i++){ const a=Math.PI+Math.PI*i/32; pts.push([ro*Math.cos(a), Math.max(0, cy+ro*Math.sin(a))]); }
+    const ri=ro*rbr(.9,.97), ci=cy+ro*rbr(.3,.42);
+    for (let i=0;i<=32;i++){ const a=-Math.PI*i/32; pts.push([ri*Math.cos(a), ci+ri*Math.sin(a)]); } // inner rim, right to left
+    plates.push({ shape:shapeFrom(pts), plane:'xy', off:0, t:6 });
+    plates.push({ shape:shapeFrom(pts.map(p=>[p[0]*.85,p[1]])), plane:'zy', off:0, t:6 });
+    const bR=ro*rbr(.38,.5), bottom=ci-ri; spheres.push({ c:[0,bottom+bR,0], r:bR }); top=bottom+2*bR;
+  }
+  const spec={ plates, rods:[], spheres };
+  const rows=baseRows(spec), els=sweptEls(root);
+  let P=40; while (P<4000 && collides(rows, els, top+P)) P+=12;
+  spec.rods.push({ pts:[[0,top-4,0],[0,top+P,0]], r:2.2, noClear:true, pin:true });
+  return { spec, hookY: top+P };
+}
+
+/* Nautilus: one logarithmic spiral, from the upturned bow through the hull, up the tail as a rod, over the top and
+   curling inward to the hook. The hull rocks on a single low point; the whole piece is turned to the angle where its
+   combined centre of mass (hull, rod and the hanging mobile) sits straight above that point, on a small flat ground into the belly. */
+// the hull is cast hollow, a 4 mm shell: mass per mm of length = ellipse perimeter × wall × density
+function hornMass(a, b, ds){ const w=Math.min(4, a, b), per=Math.PI*(3*(a+b)-Math.sqrt((3*a+b)*(a+3*b))); return per*w*ds*RHO.brass; }
+function nautilusSpec(root, rbr){
+  const D=-root.bottom, R0=root.sweepR, drop=Math.max(root.top+GAP+10, 40), rodR=3.4;
+  const beta=rbr(.13,.18), pb=rbr(-128,-108)*Math.PI/180, pt=rbr(-42,-28)*Math.PI/180, pe=rbr(198,214)*Math.PI/180;
+  const hk=rbr(.1,.14), bk=rbr(.6,.75);
+  const design = re => {
+    const r = ph => re*Math.exp(beta*(pe-ph));
+    const N=260, S=[], kind=[], A=[], B=[];
+    const hmax = hk*r(-Math.PI/2);
+    for (let i=0;i<=N;i++){ const ph=pb+(pe-pb)*i/N, rr_=r(ph); S.push([rr_*Math.cos(ph), rr_*Math.sin(ph)]);
+      if (ph<=pt){ const u=(ph-pb)/(pt-pb), a=rodR+(hmax-rodR)*Math.pow(Math.sin(Math.PI*Math.pow(u,1.45)),.8); kind.push(1); A.push(a); B.push(rodR+(a-rodR)*bk); }
+      else { kind.push(0); A.push(rodR); B.push(rodR); } }
+    // the hull hangs below the spiral line: its upper edge is the spiral itself, the belly swells outward
+    const n = normals(S); const Sc = S.map((p,i)=> d_kindShift(p, n[i], kind[i]?A[i]-rodR:0));
+    return { S:Sc, kind, A, B, hmax };
+  };
+  const d_kindShift = (p,n,k)=>[p[0]-n[0]*k, p[1]-n[1]*k];
+  const normals = S => S.map((p,i)=>{ const a=S[Math.max(0,i-1)], b=S[Math.min(S.length-1,i+1)], dx=b[0]-a[0], dy=b[1]-a[1], L=Math.hypot(dx,dy)||1; return [-dy/L, dx/L]; });
+  const place = re => {
+    const d = design(re), Mm = root.M + Math.PI*.81*drop*RHO.steel;
+    const rot = (p,t)=>[p[0]*Math.cos(t)-p[1]*Math.sin(t), p[0]*Math.sin(t)+p[1]*Math.cos(t)];
+    const evalAt = t => {
+      const S = d.S.map(p=>rot(p,t)), n = normals(S);
+      let low=[0,Infinity], M=0, mx=0;
+      for (let i=0;i<S.length;i++){
+        if (d.kind[i]){ for (const sg of [1,-1]){ const q=[S[i][0]+sg*n[i][0]*d.A[i], S[i][1]+sg*n[i][1]*d.A[i]]; if (q[1]<low[1]) low=q; } }
+        if (i){ const ds=Math.hypot(S[i][0]-S[i-1][0], S[i][1]-S[i-1][1]), m = d.kind[i] ? hornMass(d.A[i],d.B[i],ds) : Math.PI*rodR*rodR*ds*RHO.steel; M+=m; mx+=m*(S[i][0]+S[i-1][0])/2; }
+      }
+      const E=S[S.length-1]; M+=Mm; mx+=Mm*E[0];
+      return { S, n, low, comX:mx/M, E };
+    };
+    // find the resting tilt: lowest point directly under the centre of mass, nearest to upright
+    let best=null;
+    for (let t=-1.2; t<=1.2; t+=.02){ const e0=evalAt(t), e1=evalAt(t+.02), f0=e0.low[0]-e0.comX, f1=e1.low[0]-e1.comX;
+      if (f0===0 || f0*f1<0){ let lo=t, hi=t+.02, flo=f0; for (let k=0;k<30;k++){ const m=(lo+hi)/2, fm=evalAt(m).low[0]-evalAt(m).comX; if (fm*flo<=0) hi=m; else { lo=m; flo=fm; } }
+        const tt=(lo+hi)/2, et=evalAt(tt); if (Math.abs(et.low[0]-et.comX) < 2 && (best==null || Math.abs(tt)<Math.abs(best))) best=tt; } }
+    if (best==null){ let bf=Infinity; for (let t=-1.2;t<=1.2;t+=.01){ const e=evalAt(t), f=Math.abs(e.low[0]-e.comX); if (f<bf){ bf=f; best=t; } } }
+    const e = evalAt(best);
+    // no plinth: a small flat is ground into the belly at its lowest point (as a sculptor would), just long enough
+    // that the centre of mass sits over it with room to spare; the hull's silhouette is unchanged
+    const under=[]; for (let i=0;i<e.S.length;i++) if (d.kind[i]) for (const sg of [1,-1]) under.push([e.S[i][0]+sg*e.n[i][0]*d.A[i], e.S[i][1]+sg*e.n[i][1]*d.A[i], i]);
+    const flatContacts = (cut, facet) => { const c=[]; facet.forEach(q=>{ const i=q[2], depth=Math.max(0, e.low[1]+cut-q[1]), a=d.A[i], zw=d.B[i]*Math.sqrt(Math.max(0,1-Math.pow((a-Math.min(a,depth))/a,2)));
+      c.push([q[0], -zw],[q[0], zw]); }); return c; };
+    let cut=.5, facet=[];
+    for (; cut<d.hmax*.35; cut+=.5){ facet=under.filter(q=>q[1]<=e.low[1]+cut);
+      if (facet.length>2 && hullMargin(convexHull(flatContacts(cut, facet)), e.comX, 0) >= 20) break; }
+    const dx=-e.E[0], dy=-(e.low[1]+cut);
+    const S3 = e.S.map(p=>[p[0]+dx, p[1]+dy, 0]);
+    const hullIdx=[], rodIdx=[]; d.kind.forEach((k,i)=> (k?hullIdx:rodIdx).push(i));
+    const lastHull = hullIdx[hullIdx.length-1];
+    const horn = { pts:hullIdx.map(i=>S3[i]), a:hullIdx.map(i=>d.A[i]), b:hullIdx.map(i=>d.B[i]) };
+    const rodPts = [S3[lastHull]].concat(rodIdx.map(i=>S3[i]));
+    const E = S3[S3.length-1], Hh = E[1]-drop;
+    horn.clipY = 0;
+    const contacts = flatContacts(cut, facet).map(c=>[c[0]+dx, c[1]]);
+    return { spec:{ plates:[], horns:[horn], contacts,
+      rods:[{pts:rodPts, r:rodR, smooth:true},{pts:[[0,E[1],0],[0,Hh+8,0]], r:.9, noClear:true, drop:true}], spheres:[] }, hookY:Hh, tilt:best };
+  };
+  // grow the spiral until the turning mobile clears it everywhere
+  const els=sweptEls(root);
+  let re = Math.max((R0+GAP+30)/2.0, (D+drop+GAP+60)/1.6, 70), out=place(re);
+  for (let i=0;i<60 && (out.hookY < D+30 || collides(baseRows(out.spec), els, out.hookY)); i++){ re*=1.06; out=place(re); }
+  return out;
+}
+function creatureSpec(root, rbr){
+  const R0=root.sweepR, xL=R0+GAP+24, hb=clamp(R0*rbr(.7,.95),240,620), bw=hb*rbr(.55,.72), drop=Math.max(root.top+GAP+10, 40);
+  const body = xF => { const A=new THREE.Shape();
+    A.moveTo(xF,0);
+    A.quadraticCurveTo(xL-bw*.05, hb*.18, xL+bw*.04, hb*.46);          // front leg up to chest
+    A.bezierCurveTo(xL-bw*.1, hb*.7, xL-bw*.02, hb*.92, xL+bw*.04, hb);  // neck to beak
+    A.quadraticCurveTo(xL+bw*.2, hb*.86, xL+bw*.24, hb*.62);           // back of neck
+    A.quadraticCurveTo(xL+bw*.6, hb*.58, xL+bw, hb*.5);                 // back
+    A.quadraticCurveTo(xL+bw*1.08, hb*.3, xL+bw*1.12, 0);              // hind leg
+    A.lineTo(xL+bw*.96, 0);
+    A.quadraticCurveTo(xL+bw*.62, hb*.36, xL+bw*.36, hb*.3);           // belly arch
+    A.quadraticCurveTo(xL+bw*.12, hb*.24, xF+22, 0);                    // inside of front leg
+    A.lineTo(xF,0); return A; };
+  const legs=new THREE.Shape(), lw=bw*.36, lh=hb*.3;
+  legs.moveTo(-lw,0); legs.quadraticCurveTo(-lw*.6, lh, 0, lh); legs.quadraticCurveTo(lw*.6, lh, lw, 0); legs.lineTo(lw-12,0);
+  legs.quadraticCurveTo(lw*.5, lh*.78, 0, lh*.8); legs.quadraticCurveTo(-lw*.5, lh*.78, -lw+12, 0); legs.lineTo(-lw,0);
+  let xF = xL - bw*.25;
+  const beak=[xL+bw*.04, hb];
+  const build = (Hh, xf=xF) => {
+    // a straight rise from the beak flowing into one half-ellipse (tangent-continuous), arriving at the hook pointing down
+    const yC=Math.max(Hh+drop, hb*1.35+70), ax=beak[0]/2, by=Math.max(ax*.72, 140), pts=[];
+    for (let i=0;i<=16;i++){ const u=i/16; pts.push([beak[0], beak[1]+(yC-beak[1])*u, 0]); }
+    for (let i=1;i<=64;i++){ const a=Math.PI*i/64; pts.push([ax+ax*Math.cos(a), yC+by*Math.sin(a), 0]); }
+    return { plates:[{shape:body(xf), plane:'xy', off:0, t:7},{shape:legs, plane:'zy', off:xL+bw*.55, t:7}], rods:[{pts, r:3.2, smooth:true},{pts:[[0,yC,0],[0,Hh+8,0]], r:.9, noClear:true, drop:true}], spheres:[] };
+  };
+  // the front leg reaches toward the mobile until the combined centre of mass sits inside the footprint
+  for (let it=0; it<8; it++){
+    const m = baseMetrics(build(hb), root.M);
+    if (m.margin > 18) break;
+    xF = Math.min(xF, m.total[0] - 30) - 12;
+  }
+  const out = searchHook(root, Hh=>build(Hh,xF), Math.max(-root.bottom+30, hb*1.35+70-drop));
+  return out;
+}
+function searchHook(root, build, Hmin){
+  const els=sweptEls(root); let Hh=Hmin, spec=build(Hh);
+  for (let i=0;i<300 && collides(baseRows(spec), els, Hh); i++){ Hh+=15; spec=build(Hh); }
+  return { spec, hookY:Hh };
+}
+
+function makeBase(type, root, seed){
+  const rb = mulberry32(seed*53+11), rbr=(a,b)=>a+(b-a)*rb();
+  let out;
+  if (type==='spire') out = spireSpec(root);
+  else if (type==='nautilus') out = nautilusSpec(root, rbr);
+  else if (type==='creature') out = creatureSpec(root, rbr);
+  else out = pedestalSpec(type, root, rbr);
+  out.type = type; out.hook = !!HOOK_BASES[type];
+  out.metrics = baseMetrics(out.spec, root.M);
+  // extents for framing and drawings
+  let x0=Infinity,x1=-Infinity,y1=-Infinity;
+  out.spec.plates.forEach(pl=>{ const P=(pl.info||(pl.info=plateInfo(pl))).P; for (const q of P){ if (pl.plane==='xy'){ x0=Math.min(x0,q[0]); x1=Math.max(x1,q[0]); } y1=Math.max(y1,q[1]); } if (pl.plane==='zy'){ x0=Math.min(x0,pl.off); x1=Math.max(x1,pl.off); } });
+  out.spec.rods.forEach(rd=>rd.pts.forEach(q=>{ x0=Math.min(x0,q[0]); x1=Math.max(x1,q[0]); y1=Math.max(y1,q[1]); }));
+  out.spec.spheres.forEach(sp=>{ x0=Math.min(x0,sp.c[0]-sp.r); x1=Math.max(x1,sp.c[0]+sp.r); y1=Math.max(y1,sp.c[1]+sp.r); });
+  (out.spec.horns||[]).forEach(h=>h.pts.forEach((q,i)=>{ x0=Math.min(x0,q[0]-h.a[i]); x1=Math.max(x1,q[0]+h.a[i]); y1=Math.max(y1,q[1]+h.a[i]); }));
+  out.ext = { x0, x1, top:y1 };
+  return out;
+}
+
+// a tapered horn: elliptical cross-sections swept along a planar spine (half-height a in the plane, half-depth b)
+function hornGeo(h){
+  const P=h.pts, n=P.length, M=28, pos=[], idx=[];
+  for (let i=0;i<n;i++){ const a=P[Math.max(0,i-1)], b=P[Math.min(n-1,i+1)], dx=b[0]-a[0], dy=b[1]-a[1], L=Math.hypot(dx,dy)||1, nx=-dy/L, ny=dx/L;
+    for (let j=0;j<M;j++){ const v=2*Math.PI*j/M; pos.push(P[i][0]+nx*h.a[i]*Math.cos(v), Math.max(h.clipY ?? -Infinity, P[i][1]+ny*h.a[i]*Math.cos(v)), h.b[i]*Math.sin(v)); } }
+  for (let i=0;i<n-1;i++) for (let j=0;j<M;j++){ const a=i*M+j, b=i*M+(j+1)%M, c=a+M, d=b+M; idx.push(a,c,b,b,c,d); }
+  const c0=pos.length/3; pos.push(...P[0]); for (let j=0;j<M;j++) idx.push(c0, j, (j+1)%M);
+  const c1=pos.length/3; pos.push(...P[n-1]); for (let j=0;j<M;j++) idx.push(c1, (n-1)*M+(j+1)%M, (n-1)*M+j);
+  const g=new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos,3)); g.setIndex(idx); g.computeVertexNormals();
+  return geo(g);
+}
+function baseObj(spec){
+  const g = new THREE.Group(), mat = stabileMat();
+  spec.plates.forEach(pl=>{
+    const sol = !!pl.solid;
+    const ge = geo(new THREE.ExtrudeGeometry(pl.shape,{depth:pl.t, bevelEnabled:true, bevelThickness:sol?3:.6, bevelSize:sol?3:.6, bevelSegments:sol?5:2, curveSegments:28}));
+    ge.translate(0,0,-pl.t/2);
+    const m = mesh(ge, mat); if (pl.plane==='zy'){ m.rotation.y = Math.PI/2; m.position.x = pl.off; } g.add(m);
+  });
+  spec.rods.forEach(rd=>{
+    const curve = new THREE.CatmullRomCurve3(rd.pts.map(q=>new THREE.Vector3(q[0],q[1],q[2])));
+    if (rd.drop){ // hanging wire with a ring at the rod end and a swivel
+      const a=rd.pts[0], b=rd.pts[1], len=a[1]-b[1];
+      const ring = mesh(torus(4.2,1.1), WIRE); ring.position.set(0,a[1]-4,0); g.add(ring);
+      if (len > 26){ const w=mesh(rod(len-18,.9), WIRE); w.position.set(0,(a[1]+b[1])/2 - 4,0); g.add(w);
+        const sw=mesh(geo(new THREE.CylinderGeometry(2.2,2.2,7,10)), mat); sw.position.set(0,a[1]-14,0); g.add(sw); }
+      return;
+    }
+    g.add(mesh(geo(new THREE.TubeGeometry(curve, Math.max(24, rd.pts.length*(rd.smooth?2:3)), rd.r, 12, false)), mat));
+    if (rd.pin){ const tip=mesh(geo(new THREE.ConeGeometry(rd.r, 9, 12)), mat); tip.position.set(0, rd.pts[1][1]-4.5, 0); g.add(tip); }
+    else { const cap=mesh(geo(new THREE.SphereGeometry(rd.r,12,8)), mat); const e=rd.pts[rd.pts.length-1]; cap.position.set(e[0],e[1],e[2]); g.add(cap); }
+  });
+  spec.spheres.forEach(sp=>{ const m=mesh(geo(new THREE.SphereGeometry(sp.r,48,32)), mat); m.position.set(...sp.c); g.add(m); });
+  (spec.horns||[]).forEach(h=>g.add(mesh(hornGeo(h), mat)));
+  return g;
+}
+
+/* ───────────────────────── build & frame ───────────────────────── */
+let ROOTG = null;
+function disposeAll(){ if (ROOTG) scene.remove(ROOTG); GEOS.forEach(g=>g.dispose()); MATS.forEach(m=>m.dispose()); GEOS=[]; MATS=[]; JOINTS=[]; }
+function build(reframe){
+  disposeAll();
+  WIRE = wireMat();
+  const st = STUDY, root = st.root;
+  ROOTG = new THREE.Group();
+  const top = new THREE.Group(); ROOTG.add(top);
+  const ro = armObj(root); top.add(ro);
+  const rootJ = makeJoint(top, root); JOINTS.unshift(rootJ);
+  rootJ.rest = rootJ.th = (Math.random()-.5)*.5; top.rotation.y = rootJ.rest;
+  let floorY;
+  let baseG = null;
+  if (S.mount==='standing'){
+    top.position.y = st.base.hookY; ro.position.y = 0;
+    baseG = baseObj(st.base.spec); ROOTG.add(baseG);
+    floorY = 0;
+  } else {
+    // floor close enough that the piece's shadow reads in frame
+    floorY = root.bottom - clamp((root.top-root.bottom)*1.4, 600, 1600);
+    const line = new THREE.Mesh(geo(new THREE.CylinderGeometry(.35,.35,6000,6)), track(new THREE.MeshStandardMaterial({color:0xbfc3c7, roughness:.35, metalness:.2, transparent:true, opacity:.55})));
+    line.position.y = 3000+7; ROOTG.add(line);
+  }
+  scene.add(ROOTG);
+  // wall behind, far enough for the full sweep to turn
+  cyc.position.set(0, floorY, -(root.sweepR + 260));
+  catcher.position.y = floorY;
+  wallCatcher.position.set(0, floorY + 20000, cyc.position.z);
+  WALL = { y:floorY, z:cyc.position.z };
+  applyBackdrop();
+  // bounding box at rest
+  const yTop = S.mount==='standing' ? Math.max(st.base.hookY + root.top, st.base.ext.top) : root.top;
+  const yBot = S.mount==='standing' ? 0 : floorY + (root.bottom-floorY)*.25;
+  const sw = root.sweepR;
+  const bb = new THREE.Box3().setFromObject(top); if (baseG) bb.expandByObject(baseG);
+  const cx = (bb.min.x+bb.max.x)/2, cyy = (yTop+yBot)/2, hh = yTop-yBot, ww = bb.max.x-bb.min.x;
+  const tgt = new THREE.Vector3(cx, cyy, 0);
+  // key light & shadows fitted to the piece
+  const span = Math.max(hh, sw*2)*1.5 + 600;
+  key.position.copy(tgt).add(new THREE.Vector3(-.55,.85,.7).normalize().multiplyScalar(span*1.6));
+  key.target.position.copy(tgt);
+  Object.assign(key.shadow.camera, { left:-span*.8, right:span*.8, top:span*.8, bottom:-span*.8, near:10, far:span*4 });
+  key.shadow.camera.updateProjectionMatrix();
+  LASTFRAME = [tgt, hh, ww];
+  if (reframe) frame(tgt, hh, ww);
+}
+let LASTFRAME = null, WALL = { y:0, z:-500 };
+const sky = $('#sky'); let skyKey = '';
+const SKY = { span:0, foot0:0 };
+const _hz = new THREE.Vector3();
+function wallFootY(){ // screen y of the line where the backdrop meets the floor, behind the target
+  _hz.set(controls.target.x, WALL.y, WALL.z).project(camera);
+  return (1 - _hz.y)/2*stage.clientHeight;
+}
+function fitSky(){ // called when the view is framed: the gradient fills the frame down to the wall's foot
+  const H = stage.clientHeight; camera.updateMatrixWorld();
+  SKY.foot0 = wallFootY(); SKY.span = clamp(SKY.foot0, H*.75, H);
+  if (isWorld(S.backdrop)) drawSky();
+}
+function drawSky(){ return;
+  const b = BACKDROPS[S.backdrop]; if (!b.stops) return;
+  const H0 = Math.max(1, Math.round(stage.clientHeight));
+  const cw = Math.max(1, Math.min(1800, Math.round(stage.clientWidth)));
+  // grain is drawn at the screen's own pixel density, so on a phone each speck is one device pixel, not a 3×3 smudge
+  let dpr = Math.min(3, window.devicePixelRatio || 1);
+  dpr = Math.max(1, Math.min(dpr, Math.sqrt(8e6 / (cw*H0*3))));
+  const w = Math.round(cw*dpr), h = Math.round(H0*3*dpr), H0d = H0*dpr;
+  const span = Math.max(12, Math.round((SKY.span || H0)/12)*12), spand = span*dpr;
+  const k = S.backdrop+w+'x'+h+'/'+span; if (k===skyKey) return; skyKey = k;
+  sky.width = w; sky.height = h;
+  const x = sky.getContext('2d'), img = x.createImageData(w,h), d = img.data, [nr,ng,nb] = b.noise;
+  // finer specks read softer, so the strength scales up gently with density to keep the warmth of the reference
+  const amp = .78 * Math.pow(dpr, .25);
+  let seed = 0x9E3779B9 ^ (w*31 + h);
+  const rnd = () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+  // the reference gradient runs from the top of the frame to the wall's foot; past either end its end colours continue
+  for (let yy=0; yy<h; yy++){
+    const t = (yy - H0d)/spand, c = stopsAt(b.stops, t);
+    for (let xx=0, i=yy*w*4; xx<w; xx++, i+=4){
+      const n = (rnd()+rnd()+rnd()-1.5)*2*amp; // ~N(0, amp)
+      d[i]=c[0]+nr*n; d[i+1]=c[1]+ng*n; d[i+2]=c[2]+nb*n + (rnd()-.5)*3; d[i+3]=255;
+    }
+  }
+  x.putImageData(img,0,0);
+}
+function applyBackdrop(){
+  const b = BACKDROPS[S.backdrop], world = isWorld(S.backdrop);
+  cyc.visible = !world;
+  catcher.visible = world; wallCatcher.visible = world;
+  sky.hidden = !world;
+  stage.style.background = b.c;
+  const bl = world ? stopsAt(b.stops,.97) : null;
+  stage.classList.toggle('dark', world ? (bl[0]*.3+bl[1]*.59+bl[2]*.11) < 160 : S.backdrop==='charcoal');
+  if (world){
+    if (!ENV[S.backdrop]) ENV[S.backdrop] = makeEnv(b);
+    scene.environment = ENV[S.backdrop];
+    renderer.setClearColor(0x000000, 0);
+    const top = stopsAt(b.stops,0), bot = stopsAt(b.stops,1);
+    hemi.color.setRGB(...top.map(v=>v/255)).convertSRGBToLinear(); hemi.groundColor.setRGB(...bot.map(v=>v/255)).convertSRGBToLinear();
+    // shadows are a deeper shade of the floor colour, not grey, so the palette stays intact
+    { const sc = new THREE.Color(SHADOW[S.backdrop] || SHADOW.haze).convertSRGBToLinear(); catcher.material.color.copy(sc); wallCatcher.material.color.copy(sc); }
+    drawSky();
+  } else {
+    scene.environment = ENV.studio;
+    cycMat.color.copy(linHex(b.c));
+    renderer.setClearColor(linHex(b.c).convertLinearToSRGB(), 1);
+    hemi.color.set(0xffffff); hemi.groundColor.set(0x50504c);
+  }
+}
+function frame(tgt, hh, sw){
+  const aspect = camera.aspect, fov = camera.fov*Math.PI/180;
+  const L = layoutFor(aspect);
+  const dH = (hh*1.18)/(2*Math.tan(fov/2))/L.fh;
+  const dW = (sw*1.14)/(2*Math.tan(fov/2)*aspect)/L.fw;
+  const d = Math.max(dH, dW, 450);
+  applyOffset();
+  const VIEW = { az:0.22, el:0.26 };   // radians: azimuth (negative = from the left), elevation
+  const place = down => { const dir = new THREE.Vector3(Math.sin(VIEW.az)*Math.cos(down), Math.sin(down), Math.cos(VIEW.az)*Math.cos(down)).normalize();
+    camera.position.copy(tgt).addScaledVector(dir, d); camera.lookAt(tgt); camera.updateMatrixWorld(); return dir; };
+  controls.target.copy(tgt);
+  let down = .08;
+  if (isWorld(S.backdrop)){ // tilt just enough that the backdrop's foot sits near the bottom: the full gradient shows, with a strip of floor below
+    let best = 1e9;
+    for (let a=-.2; a<=.42; a+=.02){ place(a); const e = Math.abs(wallFootY() - stage.clientHeight*L.hz); if (e < best){ best = e; down = a; } }
+  }
+  down = VIEW.el;   // the page aligns the horizon (alignFeet), so the camera can keep its own elevation
+  const dir = place(down);
+  const az0 = Math.atan2(dir.x, dir.z);
+  controls.minAzimuthAngle = az0 - .9; controls.maxAzimuthAngle = az0 + .9;
+  controls.minDistance = d*.35; controls.maxDistance = d*1.7;
+  camera.near = Math.max(5, d*.02); camera.far = d*30; camera.updateProjectionMatrix();
+  controls.update();
+  alignFeet(L);
+  fitSky();
+}
+
+/* ───────────────────────── motion ───────────────────────── */
+let tPrev = performance.now(), simT = 0;
+function step(dt){
+  simT += dt;
+  for (const j of JOINTS){
+    const n = .55*Math.sin(simT*.31+j.ph[0]) + .3*Math.sin(simT*.83+j.ph[1]) + .15*Math.sin(simT*1.9+j.ph[2]);
+    const a = -j.k*(j.th-j.rest) - j.c*j.w + S.breeze*.22*j.drive*n;
+    j.w += a*dt; j.th += j.w*dt;
+    j.obj.rotation.y = j.th;
+  }
+}
+function nudge(){ for (const j of JOINTS){ j.w += (Math.random()<.5?-1:1)*(.35+Math.random()*.6)*j.drive; } }
+
+function resize(){
+  const w = stage.clientWidth, h = stage.clientHeight;
+  renderer.setSize(w,h,false); camera.aspect = w/h; camera.updateProjectionMatrix();
+  if (LASTFRAME) frame(...LASTFRAME); else applyOffset();
+  if (S.view==='blue') drawBlueprint();
+}
+new ResizeObserver(resize).observe(stage);
+
+// px/py: where the sculpture's centre lands; fw/fh: the share of the frame it may fill. Keep in sync with the hero grid in index.html.
+// The page measures its own layout and sends {land, top, hz}: the sculpture fits between `top` and the horizon `hz`
+// (fractions of the frame's height) and its base is placed exactly on hz, where the page paints its yellow stroke.
+let LAYOUT = null, FEET_DY = 0;
+function layoutFor(a){
+  const land = LAYOUT ? LAYOUT.land : a >= 1.15, top = LAYOUT ? LAYOUT.top : .08, hz = LAYOUT ? LAYOUT.hz : (land ? .86 : .34);
+  return land ? {px:.7, fw:.62, hz, py:(top+hz)/2, fh:(hz-top)*.97} : {px:.5, fw:1.15, hz, py:(top+hz)/2, fh:(hz-top)*.95};
+}
+function alignFeet(L){   // shift the view so the floor point under the sculpture lands on the page's horizon
+  FEET_DY = 0; applyOffset(); camera.updateMatrixWorld();
+  if (S.mount !== 'standing') return;
+  _hz.set(controls.target.x, WALL.y, 0).project(camera);
+  FEET_DY = (1-_hz.y)/2 - L.hz; applyOffset(); camera.updateMatrixWorld();
+}
+function applyOffset(){
+  const w = stage.clientWidth||1, h = stage.clientHeight||1, L = layoutFor(w/h);
+  camera.setViewOffset(w, h, (.5-L.px)*w, (.5-L.py+FEET_DY)*h, w, h);
+}
+let lastRep = '';  // (layoutFor/applyOffset above are hoisted function declarations; LAYOUT is set by the page)
+function reportWorld(){
+  // hz: where the sculpture meets the floor (the point under its centre), so the page's horizon stroke sits at its feet
+  _hz.set(controls.target.x, WALL.y, 0).project(camera); const hz = (1-_hz.y)/2;
+  _hz.copy(controls.target).project(camera);
+  const sx = (_hz.x+1)/2, sy = (1-_hz.y)/2, k = hz.toFixed(3)+'|'+sx.toFixed(3)+'|'+sy.toFixed(3);
+  if (k === lastRep) return; lastRep = k;
+  try{ parent.postMessage({type:'world', hz, sx, sy}, location.origin); }catch(e){}
+}
+// the studies Ling picked from her Equipoise library (seed + saved settings); the page supplies the world, so no backdrop
+const CURATED = [{"seed":71085,"s":{"base":"figure","colors":["#C8302A","#F0B82B","#1F4E8D","#151515","#EEEBE3"],"complexity":3,"finish":"brushed","form":"freeform","glassFinish":"clear","glassTint":"sea","metal":"brass","mode":"glass","mount":"standing","paint":"satin","palette":"calder","wire":"auto"}},{"seed":85731,"s":{"base":"cradle","colors":["#B5121B","#D92B22","#141414","#F3F3F0","#7C0D12"],"complexity":4,"finish":"mirror","form":"freeform","metal":"copper","mode":"metal","mount":"standing","paint":"satin","palette":"inkred","wire":"steel"}},{"seed":65447,"s":{"base":"arch","colors":["#B5121B","#D92B22","#141414","#F3F3F0","#7C0D12"],"complexity":3,"finish":"brushed","form":"freeform","metal":"silver","mode":"metal","mount":"standing","paint":"satin","palette":"inkred","wire":"auto"}},{"seed":14335,"s":{"base":"arch","colors":["#B5121B","#D92B22","#141414","#F3F3F0","#7C0D12"],"complexity":3,"finish":"mirror","form":"freeform","metal":"silver","mode":"metal","mount":"standing","paint":"satin","palette":"inkred","wire":"auto"}},{"seed":3200,"s":{"base":"cairn","colors":["#C8302A","#F0B82B","#1F4E8D","#151515","#EEEBE3"],"complexity":3,"finish":"brushed","form":"freeform","glassFinish":"frosted","glassTint":"rose","metal":"brass","mode":"glass","mount":"standing","paint":"satin","palette":"calder","wire":"steel"}}];
+let CUR = 0;
+function showCurated(i){
+  CUR = (i + CURATED.length) % CURATED.length;
+  const c = CURATED[CUR], keep = { backdrop:S.backdrop, breeze:S.breeze, view:S.view };
+  Object.assign(S, JSON.parse(JSON.stringify(c.s)), keep);
+  show(c.seed, true); setTimeout(nudge, 60);
+}
+// colour scheme: left to this page's CSS, which follows the system, as the <iframe> on the page does (color-scheme: light dark),
+// so the two always agree and the frame stays transparent whichever look the visitor picks on the page
+let PAUSED = false;
+addEventListener('message', e=>{
+  if (e.origin !== location.origin) return;
+  const d = e.data || {};
+  if (d.type==='pause') PAUSED = true;
+  else if (d.type==='play'){ if (PAUSED){ PAUSED = false; tPrev = performance.now(); } }
+  else if (d.type==='generate') showCurated(CUR+1);
+  else if (d.type==='nudge') nudge();
+  else if (d.type==='breath'){ for (const j of JOINTS) j.w += (Math.random()<.5?-1:1)*(.05+Math.random()*.05)*j.drive; }   // a soft stir, a tenth of a nudge
+  else if (d.type==='backdrop' && d.bitmap){
+    const c = BACK.canvas || (BACK.canvas = document.createElement('canvas'));
+    c.width = d.bitmap.width; c.height = d.bitmap.height; c.getContext('2d').drawImage(d.bitmap, 0, 0); if (d.bitmap.close) d.bitmap.close();
+    if (BACK.texRaw) BACK.texRaw.dispose(); if (BACK.texEnv) BACK.texEnv.dispose();
+    BACK.texRaw = new THREE.CanvasTexture(c); BACK.texRaw.minFilter = THREE.LinearFilter; BACK.texRaw.generateMipmaps = false;
+    BACK.texEnv = new THREE.CanvasTexture(c); BACK.texEnv.encoding = THREE.sRGBEncoding;
+    BACK.uniforms.tBack.value = BACK.texRaw; BACK.uniforms.uHas.value = 1;
+    delete ENV.haze; delete ENV.night; applyBackdrop();   // rebuild the reflected world with the page in it
+  }
+  else if (d.type==='layout'){ LAYOUT = {land:!!d.land, top:+d.top, hz:+d.hz}; if (LASTFRAME) frame(...LASTFRAME); }
+  else if (d.type==='theme'){
+    const k = d.dark ? 'night' : 'haze';
+    if (d.shadow) SHADOW[k] = d.shadow;
+    if (S.backdrop !== k){ S.backdrop = k; } applyBackdrop();
+  }
+});
+function loop(now){
+  const dt = Math.min(.05, (now - tPrev)/1000); tPrev = now;
+  if (S.view==='render' && !PAUSED){
+    step(dt); controls.update(); renderer.render(scene, camera);
+    reportWorld();
+  }
+  requestAnimationFrame(loop);
+}
+
+/* ───────────────────────── blueprint ───────────────────────── */
+const bp = $('#bp');
+const BPC = { bg:'#0E2B5C', grid:'rgba(160,190,255,.09)', grid2:'rgba(160,190,255,.18)', line:'#E4EEFF', dim:'#9FC1FF', soft:'rgba(228,238,255,.55)', fill:'rgba(200,220,255,.10)', hl:'#FFD47A' };
+function collect(){
+  const st=STUDY, prims={ wires:[], plates:[], loops:[], pivots:[], plan:[] };
+  const walk=(A,ox,oy)=>{
+    prims.wires.push(A.rel.map(q=>[q[0]+ox,q[1]+oy]));
+    prims.pivots.push({x:ox,y:oy,A});
+    prims.plan.push({x:ox, r:A.sweepR, A});
+    A.kids.forEach((k,side)=>{
+      const E=[k.relE[0]+ox, k.relE[1]+oy];
+      if (k.type==='mounted'){
+        const P=k.pts3.map(q=>[q[0]+ox,q[1]+oy, q[2]]);
+        const lf=k.leaf, c=lf.c*lf.s;
+        prims.plates.push({pts:P, leaf:lf, cx:E[0]+Math.cos(k.ang)*c, cy:E[1]+Math.sin(k.ang)*c, sphere:lf.sphere, axisX:ox});
+      } else {
+        prims.wires.push([[E[0],E[1]],[E[0],E[1]-k.h]]);
+        prims.loops.push([E[0],E[1]-k.h]);
+        if (k.type==='arm') walk(k.node, E[0], E[1]-k.h);
+        else {
+          const P=k.pend; prims.plan.push({x:E[0], r:P.sweepR, pend:true});
+          P.pieces.forEach(pc=>{
+            const pts=pc.world.map(q=>[q[0]+E[0], q[1]+E[1]-k.h, 0]);
+            const lf=pc.leaf; prims.plates.push({pts, leaf:lf, cx:E[0], cy:E[1]-k.h+pc.hole[1]-lf.c*lf.s, axisX:E[0]});
+            prims.loops.push([E[0], E[1]-k.h+pc.hole[1]]);
+          });
+        }
+      }
+    });
+  };
+  const y0 = S.mount==='standing' ? st.base.hookY : 0;
+  walk(st.root, 0, y0);
+  return prims;
+}
+function drawBlueprint(){
+  if (!STUDY) return;
+  const dpr = Math.min(2, window.devicePixelRatio||1), W = stage.clientWidth, H = stage.clientHeight;
+  bp.width = W*dpr; bp.height = H*dpr;
+  const x = bp.getContext('2d'); x.setTransform(dpr,0,0,dpr,0,0);
+  x.fillStyle=BPC.bg; x.fillRect(0,0,W,H);
+  for (let i=0;i<W;i+=12){ x.fillStyle = i%60===0 ? BPC.grid2 : BPC.grid; x.fillRect(i,0,1,H); }
+  for (let j=0;j<H;j+=12){ x.fillStyle = j%60===0 ? BPC.grid2 : BPC.grid; x.fillRect(0,j,W,1); }
+  const st=STUDY, pr=collect(), standing=S.mount==='standing';
+  // bounds
+  let minX=Infinity,maxX=-Infinity,minY=Infinity,maxY=-Infinity;
+  const ext=(a,b)=>{minX=Math.min(minX,a);maxX=Math.max(maxX,a);minY=Math.min(minY,b);maxY=Math.max(maxY,b);};
+  pr.wires.forEach(w=>w.forEach(p=>ext(p[0],p[1]))); pr.plates.forEach(p=>p.pts.forEach(q=>ext(q[0],q[1])));
+  if (standing){ ext(st.base.ext.x0,0); ext(st.base.ext.x1,0); ext(0,st.base.ext.top); }
+  else ext(0, maxY+60);
+  const narrow = W < 620;
+  const padL=36, padR = narrow?24:36, padT=118, padB = narrow ? 150 : 110;
+  const planW = narrow ? 0 : Math.min(200, W*.24);
+  const availW = W - padL - padR - (planW? planW+28 : 0), availH = H - padT - padB;
+  const sc = Math.min(availW/(maxX-minX), availH/(maxY-minY));
+  const ox = padL + (availW-(maxX-minX)*sc)/2 - minX*sc, oy = padT + (availH-(maxY-minY)*sc)/2 + maxY*sc;
+  const X = v=>ox+v*sc, Y = v=>oy-v*sc;
+  x.lineJoin='round'; x.lineCap='round';
+  const mono = (px,w=500)=>`${w} ${px}px "JetBrains Mono", ui-monospace, monospace`;
+
+  // ceiling or floor
+  x.strokeStyle=BPC.soft; x.lineWidth=1;
+  if (standing){
+    const fy=Y(0); x.beginPath(); x.moveTo(X(minX)-30,fy); x.lineTo(X(maxX)+30,fy); x.stroke();
+    for (let i=X(minX)-30;i<X(maxX)+30;i+=9){ x.beginPath(); x.moveTo(i,fy); x.lineTo(i-6,fy+7); x.stroke(); }
+    // base: plates in the drawing plane as outlines, crossing plates edge-on, rods as centrelines
+    x.lineWidth=1.3;
+    st.base.spec.plates.forEach(pl=>{ const P=pl.info.P;
+      if (pl.plane==='xy'){ x.fillStyle='rgba(228,238,255,.16)'; x.strokeStyle=BPC.line; x.beginPath(); P.forEach((q,i)=> i? x.lineTo(X(q[0]),Y(q[1])) : x.moveTo(X(q[0]),Y(q[1]))); x.closePath(); x.fill(); x.stroke(); }
+      else { let y1=0; P.forEach(q=>y1=Math.max(y1,q[1])); x.setLineDash([4,3]); x.strokeStyle=BPC.soft; x.strokeRect(X(pl.off-pl.t/2), Y(y1), Math.max(1,pl.t*sc), y1*sc); x.setLineDash([]); }
+    });
+    st.base.spec.rods.forEach(rd=>{ x.strokeStyle = rd.drop ? BPC.line : BPC.line; x.lineWidth = rd.drop ? 1 : Math.max(1.6, rd.r*2*sc); x.beginPath(); rd.pts.forEach((q,i)=> i? x.lineTo(X(q[0]),Y(q[1])) : x.moveTo(X(q[0]),Y(q[1]))); x.stroke(); });
+    (st.base.spec.horns||[]).forEach(h=>{ const P=h.pts, up=[], dn=[];
+      for (let i=0;i<P.length;i++){ const a=P[Math.max(0,i-1)], b=P[Math.min(P.length-1,i+1)], dx=b[0]-a[0], dy=b[1]-a[1], L=Math.hypot(dx,dy)||1;
+        up.push([P[i][0]-dy/L*h.a[i], P[i][1]+dx/L*h.a[i]]); dn.push([P[i][0]+dy/L*h.a[i], P[i][1]-dx/L*h.a[i]]); }
+      const ol=up.concat(dn.reverse()).map(q=>[q[0], Math.max(h.clipY ?? -Infinity, q[1])]); x.fillStyle='rgba(228,238,255,.16)'; x.strokeStyle=BPC.line; x.lineWidth=1.3; x.beginPath(); ol.forEach((q,i)=> i? x.lineTo(X(q[0]),Y(q[1])) : x.moveTo(X(q[0]),Y(q[1]))); x.closePath(); x.fill(); x.stroke(); });
+    st.base.spec.spheres.forEach(sp=>{ x.fillStyle='rgba(228,238,255,.16)'; x.strokeStyle=BPC.line; x.beginPath(); x.arc(X(sp.c[0]),Y(sp.c[1]),sp.r*sc,0,7); x.fill(); x.stroke(); });
+    // combined centre of mass over the footprint
+    const tm=st.base.metrics; x.fillStyle=BPC.hl; x.beginPath(); x.moveTo(X(tm.total[0]),Y(0)-2); x.lineTo(X(tm.total[0])-5,Y(0)+8); x.lineTo(X(tm.total[0])+5,Y(0)+8); x.closePath(); x.fill();
+  } else {
+    const cy=Y(maxY); x.beginPath(); x.moveTo(X(-60),cy); x.lineTo(X(60),cy); x.stroke();
+    for (let i=X(-60);i<X(60);i+=8){ x.beginPath(); x.moveTo(i,cy); x.lineTo(i+6,cy-6); x.stroke(); }
+    x.beginPath(); x.moveTo(X(0),cy); x.lineTo(X(0),Y(7)); x.stroke();
+  }
+  // plates
+  pr.plates.forEach(p=>{
+    x.beginPath(); p.pts.forEach((q,i)=> i? x.lineTo(X(q[0]),Y(q[1])) : x.moveTo(X(q[0]),Y(q[1]))); x.closePath();
+    const lf=p.leaf;
+    x.fillStyle = lf.mat.kind==='glass' ? 'rgba(228,238,255,.06)' : lf.mat.kind==='paint' ? hexA(S.colors[lf.mat.ci%S.colors.length], .38) : 'rgba(228,238,255,.14)'; x.fill();
+    x.strokeStyle=BPC.line; x.lineWidth=1.2; x.stroke();
+    if (lf.mat.kind==='metal'){ // hatch metal parts
+      x.save(); x.clip(); x.strokeStyle='rgba(228,238,255,.28)'; x.lineWidth=.7;
+      const bb=p.pts.reduce((b,q)=>[Math.min(b[0],X(q[0])),Math.max(b[1],X(q[0])),Math.min(b[2],Y(q[1])),Math.max(b[3],Y(q[1]))],[1e9,-1e9,1e9,-1e9]);
+      for (let i=bb[0]-(bb[3]-bb[2]); i<bb[1]; i+=5){ x.beginPath(); x.moveTo(i,bb[3]); x.lineTo(i+(bb[3]-bb[2]),bb[2]); x.stroke(); }
+      x.restore();
+    }
+    // centroid mark
+    const cx=X(p.cx), cy=Y(p.cy); x.strokeStyle=BPC.hl; x.lineWidth=1;
+    x.beginPath(); x.arc(cx,cy,2.6,0,7); x.stroke(); x.beginPath(); x.moveTo(cx-5,cy); x.lineTo(cx+5,cy); x.moveTo(cx,cy-5); x.lineTo(cx,cy+5); x.stroke();
+  });
+  // wires
+  x.strokeStyle=BPC.line; x.lineWidth=1.6;
+  pr.wires.forEach(w=>{ x.beginPath(); w.forEach((p,i)=> i? x.lineTo(X(p[0]),Y(p[1])) : x.moveTo(X(p[0]),Y(p[1]))); x.stroke(); });
+  x.lineWidth=1; pr.loops.forEach(p=>{ x.beginPath(); x.arc(X(p[0]),Y(p[1])+3,3,0,7); x.stroke(); });
+  // pivots, arm labels, dimensions
+  const showDims = sc > .18;
+  pr.pivots.forEach(({x:px,y:py,A})=>{
+    const hx=X(px), hy=Y(py);
+    x.fillStyle=BPC.hl; x.beginPath(); x.moveTo(hx,hy-1); x.lineTo(hx-5,hy-9); x.lineTo(hx+5,hy-9); x.closePath(); x.fill();
+    x.font=mono(10.5,600); x.fillStyle=BPC.hl; x.textAlign='left'; x.fillText('A'+A.id, hx+7, hy-9);
+    if (showDims){
+      const yL = A.rel[0][1]+py, yR = A.rel[A.rel.length-1][1]+py;
+      const lX=X(px-A.p), rX=X(px-A.p+A.L);
+      const dyy = Math.min(Math.min(hy, Y(Math.max(yL,yR))) - 20, Y(A.top+py) - 12);
+      x.strokeStyle=BPC.dim; x.fillStyle=BPC.dim; x.lineWidth=.8;
+      x.beginPath(); x.moveTo(lX,dyy); x.lineTo(rX,dyy); x.stroke();
+      [lX,hx,rX].forEach(t=>{ x.beginPath(); x.moveTo(t,dyy-4); x.lineTo(t,dyy+4); x.stroke(); });
+      x.setLineDash([2,3]); x.beginPath(); x.moveTo(hx,dyy); x.lineTo(hx,hy-10); x.stroke(); x.setLineDash([]);
+      x.font=mono(9.5); x.textAlign='center';
+      if (hx-lX>34) x.fillText(Math.round(A.p), (lX+hx)/2, dyy-4);
+      if (rX-hx>34) x.fillText(Math.round(A.L-A.p), (hx+rX)/2, dyy-4);
+    }
+  });
+  // part labels
+  x.font=mono(9.5); x.fillStyle=BPC.line; x.textAlign='left';
+  pr.plates.forEach(p=>{
+    let mx=-1e9, my=0; p.pts.forEach(q=>{ if (X(q[0])>mx){ mx=X(q[0]); my=Y(q[1]); } });
+    const lbl = `P${p.leaf.id} ${fmt(leafMass(p.leaf),0)}g`;
+    x.fillText(lbl, Math.min(mx+5, W-60), my+3);
+  });
+  // overall centre of mass and plumb line
+  const root=st.root, ry = standing ? st.base.hookY : 0;
+  const cmy = Y(ry+root.comY), cmx = X(0);
+  x.strokeStyle=BPC.hl; x.lineWidth=1; x.setLineDash([5,4]); x.beginPath(); x.moveTo(cmx, Y(ry)); x.lineTo(cmx, standing? Y(0): cmy+24); x.stroke(); x.setLineDash([]);
+  x.beginPath(); x.arc(cmx,cmy,7,0,7); x.stroke();
+  x.fillStyle=BPC.hl; x.beginPath(); x.moveTo(cmx,cmy); x.arc(cmx,cmy,7,-Math.PI/2,0); x.closePath(); x.fill(); x.beginPath(); x.moveTo(cmx,cmy); x.arc(cmx,cmy,7,Math.PI/2,Math.PI); x.closePath(); x.fill();
+  x.font=mono(10,600); x.textAlign='left'; x.fillText(`CoM ${fmt(-root.comY,0)} mm below ${standing && !st.base.hook?'tip':'hook'}`, cmx+11, cmy+4);
+
+  // header
+  x.font=mono(11,600); x.fillStyle=BPC.line; x.textAlign='left';
+  x.fillText(narrow ? 'FRONT ELEVATION · AT REST' : 'FRONT ELEVATION · REST POSITION · ALL ARMS IN PLANE', 18, 74);
+  x.font=mono(10); x.fillStyle=BPC.soft;
+  x.fillText(narrow ? 'mm · ⊕ centre of mass · ▽ pivot' : 'dimensions in mm · ⊕ centre of mass · ▽ balance point · ⌖ part centroid', 18, 90);
+
+  // plan view of sweep envelopes
+  if (planW){
+    const px0 = W - padR - planW, py0 = padT, ph = planW;
+    x.strokeStyle=BPC.soft; x.lineWidth=1; x.strokeRect(px0, py0, planW, ph);
+    x.font=mono(9.5,600); x.fillStyle=BPC.line; x.fillText('PLAN · SWEEP ENVELOPES', px0, py0-8);
+    const R0 = root.sweepR, fpR = standing ? st.base.metrics.hull.reduce((m,q)=>Math.max(m,Math.hypot(q[0],q[1])),0) : 0, s2 = (planW/2-12)/Math.max(R0,fpR), cx0=px0+planW/2, cy0=py0+ph/2;
+    x.setLineDash([4,3]); x.strokeStyle=BPC.line;
+    x.beginPath(); x.arc(cx0,cy0,R0*s2,0,7); x.stroke();
+    x.strokeStyle=BPC.dim; pr.plan.slice(1).forEach(c=>{ x.beginPath(); x.arc(cx0+c.x*s2, cy0, c.r*s2, 0, 7); x.stroke(); });
+    x.setLineDash([]);
+    x.strokeStyle=BPC.line; x.lineWidth=1.3;
+    pr.plates.forEach(p=>{ x.beginPath(); p.pts.forEach((q,i)=> i? x.lineTo(cx0+q[0]*s2, cy0-q[2]*s2) : x.moveTo(cx0+q[0]*s2, cy0-q[2]*s2)); x.stroke(); });
+    pr.wires.forEach(w=>{ x.beginPath(); x.moveTo(cx0+w[0][0]*s2,cy0); x.lineTo(cx0+w[w.length-1][0]*s2,cy0); x.stroke(); });
+    if (standing){ const h=st.base.metrics.hull; x.strokeStyle=BPC.soft; x.setLineDash([2,3]); x.beginPath(); h.forEach((q,i)=> i? x.lineTo(cx0+q[0]*s2, cy0-q[1]*s2) : x.moveTo(cx0+q[0]*s2, cy0-q[1]*s2)); x.closePath(); x.stroke(); x.setLineDash([]);
+      const t=st.base.metrics.total; x.fillStyle=BPC.hl; x.beginPath(); x.arc(cx0+t[0]*s2, cy0-t[1]*s2, 3, 0, 7); x.fill(); }
+    x.font=mono(9); x.fillStyle=BPC.soft; x.fillText(`Ø ${fmt(R0*2,0)} turning circle`, px0, py0+ph+14);
+  }
+
+  // title block
+  const tbW = narrow ? W-32 : 300, tbH = 96, tx = narrow ? 16 : W-tbW-18, ty = H-tbH-16;
+  x.fillStyle='rgba(14,43,92,.92)'; x.fillRect(tx,ty,tbW,tbH);
+  x.strokeStyle=BPC.line; x.lineWidth=1; x.strokeRect(tx,ty,tbW,tbH);
+  x.beginPath(); x.moveTo(tx,ty+28); x.lineTo(tx+tbW,ty+28); x.moveTo(tx,ty+62); x.lineTo(tx+tbW,ty+62); x.moveTo(tx+tbW*.55,ty+28); x.lineTo(tx+tbW*.55,ty+96); x.stroke();
+  x.fillStyle=BPC.line; x.font=`800 14px Archivo, Arial, sans-serif`; x.textAlign='left';
+  x.fillText('EQUIPOISE', tx+10, ty+19);
+  x.font=mono(10,600); x.textAlign='right'; x.fillText(`STUDY No. ${pad(st.seed)}`, tx+tbW-10, ty+18);
+  x.textAlign='left'; x.font=mono(9.5);
+  const T = totals();
+  const scl = 1/(sc*3.78);
+  x.fillText(`MASS ${fmt(T.mass,0)} g`, tx+10, ty+42); x.fillText(`H ${fmt(T.h,0)} · W ${fmt(T.w,0)} mm`, tx+10, ty+55);
+  x.fillText(`SCALE ≈ 1:${scl>=1? Math.round(scl): fmt(scl,1)}`, tx+tbW*.55+10, ty+42); x.fillText(`${st.arms.length} ARMS · ${st.parts.length} PARTS`, tx+tbW*.55+10, ty+55);
+  x.fillText(materialLine().toUpperCase().slice(0,30), tx+10, ty+80);
+  x.fillStyle=BPC.hl; x.fillText('ΣM = 0 AT EVERY PIVOT', tx+tbW*.55+10, ty+80);
+}
+const hexA=(h,a)=>{ const n=parseInt(h.slice(1),16); return `rgba(${n>>16&255},${n>>8&255},${n&255},${a})`; };
+const fmt=(v,d=1)=> Number(v).toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});
+const pad=n=>String(n).padStart(5,'0');
+function materialLine(){
+  if (S.mode==='metal') return `${METALS[S.metal].label} · ${S.finish}`;
+  if (S.mode==='colored') return `Painted aluminium · ${S.paint}`;
+  if (S.mode==='glass') return `${(GLASS[S.glassTint]||GLASS.clear).label} glass · ${S.glassFinish}`;
+  return `${METALS[S.metal].label} + painted aluminium`;
+}
+function totals(){
+  const st=STUDY, r=st.root, standing=S.mount==='standing';
+  const h = standing ? Math.max(st.base.hookY + r.top, st.base.ext.top) : r.top - r.bottom;
+  if (st.restW == null){ let a=Infinity,b=-Infinity; const pr=collect(); pr.wires.forEach(w=>w.forEach(q=>{a=Math.min(a,q[0]);b=Math.max(b,q[0]);})); pr.plates.forEach(pl=>pl.pts.forEach(q=>{a=Math.min(a,q[0]);b=Math.max(b,q[0]);})); if (standing){ a=Math.min(a,st.base.ext.x0); b=Math.max(b,st.base.ext.x1); } st.restW=b-a; }
+  return { mass:r.M, h, w:st.restW, turn:r.sweepR*2 };
+}
+
+/* ───────────────────────── balance sheet ───────────────────────── */
+const SHAPE_NAMES = { disc:'Disc', ellipse:'Oval', petal:'Leaf', wedge:'Fan', halfmoon:'Half-moon', triangle:'Rounded tri.', crescent:'Crescent', sphere:'Hollow sphere' };
+function renderSheet(){
+  const st=STUDY, T=totals(), standing=S.mount==='standing';
+  $('#stats').innerHTML = [
+    [fmt(T.mass,0)+' g','Total mass'], [fmt(T.h,0)+' × '+fmt(T.w,0),'H × W mm'], [fmt(T.turn,0),'Turning Ø mm'],
+    [fmt(-st.root.comY,0), standing && !st.base.hook ? 'CoM below tip' : 'CoM below hook']
+  ].map(([b,s])=>`<div class="stat"><b>${b}</b><span>${s}</span></div>`).join('');
+  let h = `<thead><tr><th>Arm</th><th class="r">Span</th><th class="r">a · b</th><th class="r">M← N·mm</th><th class="r">M→ N·mm</th><th class="r">Below</th></tr></thead><tbody>`;
+  st.arms.forEach(A=>{
+    h += `<tr><td>A${A.id}</td><td class="r">${fmt(A.L,0)}</td><td class="r">${fmt(A.p,0)} · ${fmt(A.L-A.p,0)}</td><td class="r">${fmt(A.ML,1)}</td><td class="r okc">${fmt(A.MR,1)}</td><td class="r">${fmt(-A.comY,0)}</td></tr>`;
+  });
+  $('#armT').innerHTML = h + '</tbody>';
+  let p = `<thead><tr><th>Part</th><th>Shape</th><th class="r">Size</th><th>Material</th><th class="r">Mass g</th></tr></thead><tbody>`;
+  st.parts.forEach(({leaf:lf,mount})=>{
+    const col = lf.mat.kind==='paint' ? S.colors[lf.mat.ci%S.colors.length] : null;
+    const matName = lf.mat.kind==='glass' ? `<span class="dot" style="background:${(GLASS[S.glassTint]||GLASS.clear).sw}"></span>Glass ${lf.t}` : lf.mat.kind==='paint' ? `<span class="dot" style="background:${col}"></span>Alu ${lf.t}` : `<span class="dot" style="background:${METALS[S.metal].sw}"></span>${METALS[S.metal].label} ${lf.t}`;
+    p += `<tr><td>P${lf.id}</td><td>${SHAPE_NAMES[lf.kind]||lf.kind}${mount!=='Mounted'?' · '+mount.toLowerCase():''}</td><td class="r">${fmt(lf.s,0)}</td><td>${matName}</td><td class="r">${fmt(leafMass(lf),1)}</td></tr>`;
+  });
+  $('#partT').innerHTML = p + '</tbody>';
+  try{ parent.postMessage({type:'study', seed:pad(st.seed), arms:st.arms.length, shapes:st.parts.length}, location.origin); }catch(e){}
+  $('#studyNo').textContent = `Study No. ${pad(st.seed)} · ${st.arms.length} arm${st.arms.length>1?'s':''} · ${st.parts.length} shapes${st.baseType?' · '+BASE_LABEL[st.baseType]:''}`;
+  const bi=$('#baseInfo'); bi.hidden = !st.base;
+  if (st.base){ const m=st.base.metrics; bi.textContent = `${BASE_LABEL[st.baseType]} base: ${fmt(m.M/1000,2)} kg. The combined centre of mass of base and mobile sits ${fmt(m.margin,0)} mm inside the footprint, so it cannot tip. ${st.base.tilt!=null ? `The hull settles at ${fmt(Math.abs(st.base.tilt)*180/Math.PI,0)}° of tilt, where the centre of mass sits right above a small flat ground into its belly. The mobile hangs from the end of the spiral` : st.base.hook ? 'The mobile hangs from the end of the rod' : 'The top arm balances on the needle tip'} and every turning part clears the base by at least ${GAP} mm.`; }
+  $('#cxOut').textContent = `${st.arms.length} arm${st.arms.length>1?'s':''} · ${st.parts.length} shapes`;
+}
+
+/* ───────────────────────── controls ───────────────────────── */
+function newSeed(){ return 1 + Math.floor(Math.random()*99998); }
+function show(seed, reframe){
+  STUDY = generate(seed);
+  build(reframe);
+  renderSheet();
+  if (S.view==='blue') drawBlueprint();
+  $('#prev').disabled = hIdx<=0; $('#next').disabled = hIdx>=history.length-1;
+  if (typeof syncSaveBtn==='function') syncSaveBtn();
+}
+function fresh(){ const s=newSeed(); history.splice(hIdx+1); history.push(s); hIdx=history.length-1; show(s,true); setTimeout(nudge, 60); }
+function rebuild(){ if (STUDY) show(STUDY.seed, false); }
+
+function seg(id, keyName, after){
+  const el=$(id);
+  el.addEventListener('click', e=>{ const b=e.target.closest('button'); if(!b) return; S[keyName]=b.dataset.v;
+    el.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed', String(x===b))); after && after(); });
+}
+seg('#form','form', ()=>fresh());
+seg('#mount','mount', ()=>{ syncBaseRow(); fresh(); });
+seg('#mode','mode', ()=>{ syncBoxes(); rebuild(); });
+seg('#finish','finish', rebuild);
+seg('#paint','paint', rebuild);
+seg('#wire','wire', rebuild);
+function syncBaseRow(){ $('#base').hidden = S.mount!=='standing'; }
+$('#base').innerHTML = ['random', ...BASE_TYPES].map(k=>`<button class="chip plain" data-v="${k}" aria-pressed="${k===S.base}">${k==='random'?'Any base':BASE_LABEL[k]}</button>`).join('');
+$('#base').addEventListener('click', e=>{ const b=e.target.closest('button'); if(!b) return; S.base=b.dataset.v;
+  $('#base').querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed', String(x===b))); if (STUDY) show(STUDY.seed, true); });
+function syncBoxes(){ $('#metalBox').hidden = S.mode==='colored' || S.mode==='glass'; $('#paintBox').hidden = S.mode==='metal' || S.mode==='glass'; $('#glassBox').hidden = S.mode!=='glass'; }
+$('#glassTint').innerHTML = Object.entries(GLASS).map(([k,g])=>`<button class="chip" data-v="${k}" aria-pressed="${k===S.glassTint}"><span class="sw" style="background:${g.sw}"></span>${g.label}</button>`).join('');
+$('#glassTint').addEventListener('click', e=>{ const b=e.target.closest('button'); if(!b) return; S.glassTint=b.dataset.v;
+  $('#glassTint').querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed', String(x===b))); rebuild(); });
+seg('#glassFinish','glassFinish', rebuild);
+
+// metal chips
+$('#metal').innerHTML = Object.entries(METALS).map(([k,m])=>`<button class="chip" data-v="${k}" aria-pressed="${k===S.metal}"><span class="sw" style="background:${m.sw}"></span>${m.label}</button>`).join('');
+$('#metalInfo').textContent = METALS[S.metal].info;
+$('#metal').addEventListener('click', e=>{ const b=e.target.closest('button'); if(!b) return; S.metal=b.dataset.v;
+  $('#metal').querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed', String(x===b))); $('#metalInfo').textContent=METALS[S.metal].info; rebuild(); });
+
+// palettes
+function renderPalettes(){
+  $('#palette').innerHTML = Object.entries(PALETTES).map(([k,p])=>`<button class="chip" data-v="${k}" aria-pressed="${k===S.palette}"><span class="pal">${p.c.map(c=>`<i style="background:${c}"></i>`).join('')}</span>${p.label}</button>`).join('')
+    + `<button class="chip plain" data-v="custom" aria-pressed="${S.palette==='custom'}">Custom</button>`;
+  $('#swatches').innerHTML = S.colors.map((c,i)=>`<label title="Edit colour ${i+1}"><input type="color" id="sw${i}" data-i="${i}" value="${c}" aria-label="Colour ${i+1}"></label>`).join('') + `<small>Tap to edit</small>`;
+  S.colors.forEach((c,i)=>{ const l=$('#sw'+i).parentElement; l.style.background=c; });
+}
+renderPalettes();
+$('#palette').addEventListener('click', e=>{ const b=e.target.closest('button'); if(!b) return; const v=b.dataset.v;
+  if (v!=='custom'){ S.palette=v; S.colors=PALETTES[v].c.slice(); } else S.palette='custom';
+  renderPalettes(); rebuild(); });
+let swT=0;
+$('#swatches').addEventListener('input', e=>{ const t=e.target; if (!t.dataset.i) return; S.colors[+t.dataset.i]=t.value; t.parentElement.style.background=t.value;
+  if (S.palette!=='custom'){ S.palette='custom'; $('#palette').querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed', String(x.dataset.v==='custom'))); }
+  cancelAnimationFrame(swT); swT=requestAnimationFrame(()=>{ build(false); renderSheet(); syncSaveBtn(); if (S.view==='blue') drawBlueprint(); }); });
+
+// backdrops
+$('#backdrop').innerHTML = Object.entries(BACKDROPS).map(([k,b])=>`<button class="chip" data-v="${k}" aria-pressed="${k===S.backdrop}"><span class="sw" style="background:${b.stops ? 'linear-gradient(180deg,'+b.stops.filter((_,i)=>i%3===0).map(s=>s[1]+' '+(s[0]*100).toFixed(0)+'%').join(',')+')' : b.c}"></span>${b.label}</button>`).join('');
+$('#backdrop').addEventListener('click', e=>{ const b=e.target.closest('button'); if(!b) return; S.backdrop=b.dataset.v;
+  $('#backdrop').querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed', String(x===b)));
+  applyBackdrop(); if (LASTFRAME) frame(...LASTFRAME); syncSaveBtn(); });
+
+$('#cx').addEventListener('input', e=>{ S.complexity=+e.target.value; const n=CX_ARMS[S.complexity-1]; $('#cxOut').textContent = `${n} arm${n>1?'s':''}`; });
+$('#cx').addEventListener('change', ()=>fresh());
+const brName = v => v<.02 ? 'Still' : v<.25 ? 'Faint' : v<.5 ? 'Light' : v<.8 ? 'Draught' : 'Open window';
+$('#breeze').addEventListener('input', e=>{ S.breeze=+e.target.value; $('#brOut').textContent=brName(S.breeze); });
+$('#brOut').textContent = brName(S.breeze);
+
+$('#gen').addEventListener('click', fresh);
+$('#nudge').addEventListener('click', ()=>{ if (S.view==='render') nudge(); });
+$('#prev').addEventListener('click', ()=>{ if (hIdx>0){ hIdx--; show(history[hIdx], true); } });
+$('#next').addEventListener('click', ()=>{ if (hIdx<history.length-1){ hIdx++; show(history[hIdx], true); } });
+document.addEventListener('keydown', e=>{
+  const el = document.activeElement;
+  if (e.code==='Space' && !e.repeat && !(el && (el.type==='color' || el.tagName==='TEXTAREA' || el.tagName==='SELECT'))){ e.preventDefault(); fresh(); }
+});
+function setView(v){
+  S.view=v; $('#vRender').setAttribute('aria-pressed', String(v==='render')); $('#vBlue').setAttribute('aria-pressed', String(v==='blue'));
+  bp.hidden = v!=='blue'; glc.style.visibility = v==='blue' ? 'hidden':'visible'; sky.style.visibility = v==='blue' ? 'hidden':'visible';
+  $('#hint').textContent = v==='blue' ? 'Front elevation at rest · plan shows each turning circle' : 'Drag to orbit · tap the sculpture to set it turning';
+  $('#nudge').hidden = v==='blue';
+  if (v==='blue') drawBlueprint();
+}
+$('#vRender').addEventListener('click', ()=>setView('render'));
+$('#vBlue').addEventListener('click', ()=>setView('blue'));
+let down=null;
+glc.addEventListener('pointerdown', e=>{ down={x:e.clientX,y:e.clientY,t:performance.now()}; });
+glc.addEventListener('pointerup', e=>{ if (down && Math.hypot(e.clientX-down.x,e.clientY-down.y)<6 && performance.now()-down.t<350) (COARSE ? showCurated(CUR+1) : nudge()); down=null; });
+
+/* ───────────────────────── library (saved studies) ─────────────────────────
+   A saved study is its seed plus every setting: generation is deterministic, so this rebuilds the exact structure.
+   Stored privately per person in the artifact's database; falls back to this browser when signed out. */
+const SAVE_KEYS = ['complexity','form','mount','mode','metal','finish','palette','colors','paint','wire','backdrop','base','glassTint','glassFinish'];
+const LIB = { db:null, uid:null, items:[], local:false, unsub:null };
+const LS_KEY = 'counterweight-library-v1';
+function lsRead(){ try { return JSON.parse(localStorage.getItem(LS_KEY)||'[]'); } catch(e){ return []; } }
+function lsWrite(a){ try { localStorage.setItem(LS_KEY, JSON.stringify(a)); return true; } catch(e){ return false; } }
+
+function thumbnail(){
+  const W=240, H=300, c=document.createElement('canvas'); c.width=W; c.height=H; const x=c.getContext('2d');
+  const b=BACKDROPS[S.backdrop];
+  if (b.stops){ const g=x.createLinearGradient(0,0,0,H); b.stops.forEach(st=>g.addColorStop(st[0],st[1])); x.fillStyle=g; } else x.fillStyle=b.c;
+  x.fillRect(0,0,W,H);
+  renderer.render(scene, camera); // draw now so the buffer holds this frame
+  const sw=glc.width, sh=glc.height, a=sw/sh, t=W/H;
+  let cw=sw, ch=sh; if (a>t) cw=sh*t; else ch=sw/t;
+  x.drawImage(glc, (sw-cw)/2, (sh-ch)/2, cw, ch, 0, 0, W, H);
+  return c.toDataURL('image/jpeg', .82);
+}
+function toast(msg){
+  const old=stage.querySelector('.toast'); if (old) old.remove();
+  const t=document.createElement('div'); t.className='toast'; t.setAttribute('role','status'); t.textContent=msg; stage.appendChild(t);
+  setTimeout(()=>t.remove(), 2600);
+}
+function savedKey(){ return STUDY ? STUDY.seed+'|'+JSON.stringify(SAVE_KEYS.map(k=>k==='base' ? (STUDY.baseType||S.base) : S[k])) : ''; }
+/* ── shareable link: the page's #name always describes the sculpture on screen, so the artifact's
+   Share › Copy link opens exactly this piece for whoever receives it. Format: s<seed>-<codes>[-<custom hex colours>] */
+const LINK_OPTS = {
+  form:['cascade','branching','freeform'], mount:['hanging','standing'], mode:['metal','colored','mixed','glass'],
+  metal:['silver','brass','gold','copper','black'], finish:['mirror','polished','brushed','matte'], paint:['gloss','satin','matte'],
+  wire:['auto','steel','brass'], backdrop:['daybreak','dusk','altitude','afterglow','stone','charcoal'],
+  palette:['calder','midcentury','inkred','sage','riviera','nocturne','custom']
+};
+const LINK_BASES = ['spire','figure','arch','cairn','cradle','nautilus','creature'];
+const LINK_ORDER = ['form','mount','mode','metal','finish','paint','wire','backdrop','palette'];
+let lastHash = '';
+function encodeLink(){
+  if (!STUDY) return '';
+  let h = 's'+STUDY.seed+'-'+S.complexity+LINK_ORDER.map(k=>Math.max(0,LINK_OPTS[k].indexOf(S[k])).toString(36)).join('')
+    + (STUDY.baseType ? Math.max(0,LINK_BASES.indexOf(STUDY.baseType)).toString(36) : '');
+  if (S.palette==='custom') h += '-'+S.colors.map(c=>c.slice(1).toLowerCase()).join('');
+  if (S.mode==='glass') h += '-g'+Math.max(0,GLASS_KEYS.indexOf(S.glassTint))+(S.glassFinish==='frosted'?1:0);
+  return h;
+}
+function decodeLink(h){
+  const m = /^s(\d{1,6})-([1-7])([0-9a-z]{9})([0-9a-z])?(?:-((?:[0-9a-f]{6}){5}))?(?:-g([0-9])([01]))?$/.exec(h||''); if (!m) return null;
+  const out = { seed:+m[1], settings:{ complexity:+m[2] } };
+  for (let i=0;i<LINK_ORDER.length;i++){ const k=LINK_ORDER[i], v=LINK_OPTS[k][parseInt(m[3][i],36)]; if (v===undefined) return null; out.settings[k]=v; }
+  const pal = out.settings.palette;
+  if (m[4]){ const bt=LINK_BASES[parseInt(m[4],36)]; if (!bt) return null; out.settings.base=bt; } else if (out.settings.mount==='standing') out.settings.base='spire';
+  if (m[6]){ out.settings.glassTint = GLASS_KEYS[+m[6]] || 'clear'; out.settings.glassFinish = m[7]==='1' ? 'frosted' : 'clear'; }
+  out.settings.colors = pal==='custom' ? (m[5] ? m[5].match(/.{6}/g).map(x=>'#'+x.toUpperCase()) : PALETTES.calder.c.slice()) : PALETTES[pal].c.slice();
+  return out;
+}
+function writeLink(){
+  const h = encodeLink(); if (!h || h===lastHash) return; lastHash = h;
+  try { location.replace('#'+h); } catch(e){}
+}
+function openLink(h){
+  const d = decodeLink(h); if (!d) return false;
+  Object.assign(S, d.settings); syncControls();
+  history.splice(hIdx+1); history.push(d.seed); hIdx=history.length-1;
+  lastHash = h; show(d.seed, true); setTimeout(nudge, 60);
+  return true;
+}
+addEventListener('hashchange', ()=>{ const h=location.hash.slice(1); if (h && h!==lastHash) openLink(h); });
+
+function syncSaveBtn(){
+  writeLink();
+  const k=savedKey(), hit=LIB.items.find(it=>it.key===k);
+  const btn=$('#save'); btn.dataset.state = hit ? 'saved' : ''; btn.querySelector('span').textContent = hit ? 'Saved' : 'Save';
+  document.querySelectorAll('.lib-open').forEach(el=>el.setAttribute('aria-current', String(el.dataset.id===(hit&&hit.id))));
+}
+async function saveStudy(){
+  if (!STUDY) return;
+  const k=savedKey();
+  if (LIB.items.some(it=>it.key===k)){ toast('Already in your library'); return; }
+  const wasBlue = S.view==='blue'; if (wasBlue) setView('render');
+  const item = { key:k, seed:STUDY.seed, savedAt:Date.now(), settings:Object.fromEntries(SAVE_KEYS.map(kk=>[kk, kk==='base' ? (STUDY.baseType||S.base) : Array.isArray(S[kk])?S[kk].slice():S[kk]])),
+    arms:STUDY.arms.length, parts:STUDY.parts.length, mass:Math.round(STUDY.root.M), thumb:thumbnail() };
+  if (wasBlue) setView('blue');
+  if (LIB.db && LIB.uid && !LIB.local){
+    try { await LIB.db.collection('data/users/'+LIB.uid).add(item); toast('Saved to your library'); return; }
+    catch(e){ if (e && e.code==='quota_exceeded'){ toast('Library is full. Delete a few saved pieces first.'); return; } }
+  }
+  const arr = lsRead(); item.id = 'l'+Date.now(); arr.unshift(item);
+  if (lsWrite(arr)){ item.local=true; LIB.items = LIB.local ? arr.map(i=>Object.assign(i,{local:true})) : LIB.items.concat(item); renderLib(); toast('Saved in this browser'); } else toast('Could not save here. Sign in to keep a library.');
+}
+async function deleteStudy(id){
+  const it = LIB.items.find(i=>i.id===id); if (!it) return;
+  if (it.local || LIB.local){ const arr=lsRead().filter(i=>i.id!==id); lsWrite(arr); LIB.items=LIB.items.filter(i=>i.id!==id); renderLib(); return; }
+  try { await LIB.db.collection('data/users/'+LIB.uid).doc(id).delete(); } catch(e){ toast('Could not delete. Try again.'); }
+}
+function openStudy(id){
+  const it = LIB.items.find(i=>i.id===id); if (!it) return;
+  Object.assign(S, JSON.parse(JSON.stringify(it.settings)));
+  if (!BACKDROPS[S.backdrop]) S.backdrop = 'stone';
+  if (S.wire==='black') S.wire = 'auto';
+  if (!('base' in it.settings) && S.mount==='standing') S.base = 'spire';
+  syncControls();
+  history.splice(hIdx+1); history.push(it.seed); hIdx=history.length-1;
+  show(it.seed, true); setTimeout(nudge, 60);
+  if (innerWidth <= 860) stage.scrollIntoView({behavior:'smooth', block:'start'});
+}
+function syncControls(){
+  const press=(id,v)=>document.querySelectorAll(id+' button').forEach(b=>b.setAttribute('aria-pressed', String(b.dataset.v===v)));
+  press('#form',S.form); press('#mount',S.mount); press('#mode',S.mode); press('#finish',S.finish); press('#paint',S.paint); press('#wire',S.wire); press('#glassTint',S.glassTint); press('#glassFinish',S.glassFinish);
+  press('#metal',S.metal); press('#backdrop',S.backdrop); press('#base',S.base); syncBaseRow();
+  $('#metalInfo').textContent = METALS[S.metal].info;
+  $('#cx').value = S.complexity; renderPalettes(); syncBoxes();
+}
+function renderLib(){
+  const strip=$('#libStrip'), items=LIB.items;
+  $('#libEmpty').hidden = items.length>0; strip.hidden = items.length===0;
+  $('#libInfo').textContent = items.length ? `${items.length} saved${LIB.local?' · this browser':''}` : '';
+  strip.innerHTML = '';
+  for (const it of items){
+    const card=document.createElement('div'); card.className='lib-card';
+    const open=document.createElement('button'); open.className='lib-open'; open.dataset.id=it.id;
+    open.setAttribute('aria-label', `Open study ${pad(it.seed)}`);
+    const img=document.createElement('img'); img.alt=''; img.src=it.thumb; img.loading='lazy';
+    const cap=document.createElement('span'); cap.textContent=`No. ${pad(it.seed)}`;
+    open.append(img,cap); open.addEventListener('click', ()=>openStudy(it.id));
+    const del=document.createElement('button'); del.className='lib-del'; del.textContent='✕'; del.setAttribute('aria-label', `Delete study ${pad(it.seed)}`);
+    let tm=0;
+    del.addEventListener('click', e=>{ e.stopPropagation();
+      if (del.dataset.armed==='true'){ clearTimeout(tm); deleteStudy(it.id); return; }
+      del.dataset.armed='true'; del.textContent='Delete'; tm=setTimeout(()=>{ del.dataset.armed='false'; del.textContent='✕'; }, 3000); });
+    card.append(open,del); strip.appendChild(card);
+  }
+  syncSaveBtn();
+}
+async function initLibrary(){
+  LIB.items = lsRead().map(i=>Object.assign(i,{local:true})); LIB.local = true; renderLib();
+  const c = window.claude; if (!c || !c.use) return;
+  try {
+    const [db, user] = await Promise.all([c.use('db'), c.use('user')]);
+    const uid = user ? await user.id() : null;
+    if (!db || !uid) return;
+    LIB.db=db; LIB.uid=uid;
+    LIB.unsub = db.collection('data/users/'+uid).orderBy('savedAt','desc').limit(200).onSnapshot(snap=>{
+      LIB.local=false;
+      const remote = snap.docs.map(d=>Object.assign({id:d.id}, d.data()));
+      const local = lsRead().map(i=>Object.assign({}, i, {local:true}));
+      LIB.items = remote.concat(local);
+      renderLib();
+    }, ()=>{});
+  } catch(e){ /* keep the browser-only library */ }
+}
+$('#save').addEventListener('click', saveStudy);
+
+/* ───────────────────────── start ───────────────────────── */
+syncBoxes(); syncBaseRow();
+resize();
+$('#load').remove();
+showCurated(parseInt(location.hash.slice(1))||0);
+requestAnimationFrame(loop);
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(()=>{ if (S.view==='blue') drawBlueprint(); });
+})();
+</script>
+
+</body></html>
