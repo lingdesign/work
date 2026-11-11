@@ -9,9 +9,9 @@ hello: Hi, I'm Ling. I design complex workflows people can trust, and I build th
 order: provider, goals, monument
 
 lines:
-- Built a redesign in Claude Code and merged it to production myself.
-- Prototyped license management live with an engineer, shipped in a day.
-- Defined to-dos from our data, one pattern every new ask reuses.
-- Designed every state of a workflow, edge cases included.
+- Built the provider appointment redesign in Claude Code and merged it to production myself.
+- Prototyped license management for providers live with an engineer, shipped in a day.
+- Used data to define what counts as a provider to-do, so urgent tasks don't get buried.
+- Redesigned providers' busiest screen around the one action that matters now, edge cases included.
 - Prototyped AI goal writing, a dietitian confirms before anything is sent.
 - Built a research practice from zero, insights any team can ask AI about.

@@ -11,8 +11,8 @@ order: provider, goals, monument
 provider: From one nudge to a system the next ask reuses.
 
 lines:
-- Turned two one-off asks into one notification system.
-- Ran the numbers first, and changed the ask with my PM.
-- Built research from zero, insights that shaped acquisition and retention.
-- Brought five teams together to find where conversion broke.
-- Led 4 designers and an engineer to build a first design system.
+- Turned two one-off provider requests into one To-dos center that holds them all.
+- Used data to show one requested to-do would pile up 36 at once, then redefined it.
+- Built a patient research practice from zero, insights that shaped acquisition and retention.
+- Brought five teams together to find why people dropped out of onboarding.
+- Led 4 designers and an engineer to build a security company's first design system.

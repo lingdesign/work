@@ -11,9 +11,9 @@ order: provider, monument, goals
 provider: From one nudge to a system that flags problems before they happen.
 
 lines:
-- Flagged what was due before notes locked or licenses lapsed, every deadline met.
-- Turned what customer support kept seeing into a fix, fail rate from 33.3% to 0%.
-- Built a workflow redesign with Claude Code and merged it to production myself.
+- Designed provider to-dos that flag notes and licenses before they lapse, every deadline met.
+- Tested a clearer treatment choice at checkout after support flagged it, fail rate from 33% to 0%.
+- Built the provider appointment redesign in Claude Code and merged it to production myself.
 - Built a research practice from zero, insights any team can ask AI about.
-- Prototyped license management live with an engineer, shipped in a day.
+- Prototyped license management for providers live with an engineer, shipped in a day.
 - Designed a security console that grouped alerts into one incident.

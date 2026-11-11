@@ -10,9 +10,9 @@ hello: Hi, I'm Ling. I design products end to end, from understanding what peopl
 order: goals, monument, provider
 
 lines:
-- Replaced a prize draw with real progress, a daily habit that counts.
-- Simplified onboarding, signup-to-paid conversion from 26.7% to 56%.
+- Replaced a goals prize draw with goals from patients' dietitians and progress they can see.
+- Redesigned onboarding for a recovery treatment service, signup-to-paid from 26.7% to 56%.
 - Prototyped and tested a clearer way to choose a treatment at checkout, fail rate from 33% to 0%.
-- Directed motion with a contract animator, built into our app.
-- Redesigned to-dos for experts, every deadline met.
-- Prototyped in Figma and Claude Code, working versions, not static mockups.
+- Directed an onboarding animation with a motion contractor, from storyboard to build.
+- Designed provider to-dos that flag notes and licenses before they lapse, every deadline met.
+- Prototyped AI-assisted goal writing in code, so the team reacted to working versions.

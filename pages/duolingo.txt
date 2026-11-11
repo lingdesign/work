@@ -9,9 +9,9 @@ hello: Hi, I'm Ling. I design simple mobile apps people come back to, with the m
 order: goals, monument, provider
 
 lines:
-- Directed a loading animation our engineer called his favorite screen.
-- Replaced a prize draw with real progress, a daily habit that counts.
-- Moved a celebration to an overlay, built in a day for the release.
+- Directed an onboarding animation that sets a calm pace, our engineer's favorite screen.
+- Replaced a goals prize draw with goals from patients' dietitians and progress they can see.
+- Saved a goal-completion animation from the cut by finding a one-day way to build it.
 - Prototyped and tested a clearer way to choose a treatment at checkout, fail rate from 33% to 0%.
 - Designed a Times Square billboard for a pricing launch.
-- Built Glasswork from scratch with AI, free in the browser.
+- Built Glasswork with AI, a free browser tool that puts any photo behind glass.
