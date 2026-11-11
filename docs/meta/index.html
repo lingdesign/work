@@ -258,6 +258,7 @@ html .rv.rv-in .pre-facts::before{transform:none;transition:transform 1.1s cubic
 .sides-list{display:flex;flex-direction:column;gap:var(--s-2);margin:0;padding:0;list-style:none}
 .side{color:var(--ink)}
 .sides.rotating .sides-list{display:grid;grid-template-columns:minmax(0,1fr)}
+.hero-sub .sides-list{max-width:56ch}
 .sides.rotating .side{grid-area:1 / 1;opacity:0;transform:translateY(.7em);
   transition:transform 1.2s cubic-bezier(.3,0,.15,1) .25s,opacity 1.1s cubic-bezier(.3,0,.15,1) .25s}
 .sides.rotating .side:not(.on){pointer-events:none}

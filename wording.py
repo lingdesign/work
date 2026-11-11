@@ -67,6 +67,10 @@ WORK_EDITS = [
 ]
 
 WORK_EDITS += [
+  # rotating lines under the headline: wrap within the headline's column instead of running under the sculpture
+  ('.sides.rotating .sides-list{display:grid;grid-template-columns:minmax(0,1fr)}',
+   '.sides.rotating .sides-list{display:grid;grid-template-columns:minmax(0,1fr)}\n.hero-sub .sides-list{max-width:56ch}'),
+
   ('<title>Ling-Hsuan Wang</title>', '<title>Ling-Hsuan Wang</title>\n' + NOINDEX),
   ('<meta property="og:image" content="https://lingdesign.github.io/assets/og.jpg">',
    '<meta property="og:image" content="https://lingdesign.github.io/work/assets/og.jpg">'),
