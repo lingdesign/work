@@ -2,8 +2,8 @@
 # The post asks for: three-sided marketplace, preventing issues before they happen, internal tools for support teams,
 # prototyping in production and contributing to the codebase, building LLM tools, data, clarity through shipped work.
 
-headline: Designing help people can rely on,
-headline2: before they need to ask.
+headline: Designing for
+headline2: every side of the marketplace.
 
 hello: Hi, I'm Ling. I design for every side of a product: the people using it, the experts serving them, and the teams behind the scenes who keep it running.
 
