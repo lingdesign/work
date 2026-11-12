@@ -78,7 +78,7 @@ function geo(kind) {
         p23: [`M${c2+72} ${P} H${c3-72}`, [c3-72, P, "r"]],
         p34: [`M${c3+72} ${P} H${c4-80}`, [c4-80, P, "r"]],
         miss:[`M${c2} ${D+h} V${M-12}`, null, "dash", `M${c2-6} ${M-6} L${c2+6} ${M+6} M${c2+6} ${M-6} L${c2-6} ${M+6}`, ["Goals never reached the app", c2+16, M+4, "start"]],
-        loop:[`M${c4} ${P+h} V${P+56} H${c3} V${P+h}`, [c3, P+h, "u"], "", null, ["Repeat", (c3+c4)/2, P+48, "middle"], 1.6],
+        loop:[`M${c4} ${P+h} V${P+44} Q${c4} ${P+56} ${c4-12} ${P+56} H${c3+12} Q${c3} ${P+56} ${c3} ${P+44} V${P+h}`, [c3, P+h, "u"], "", null, ["Repeat", (c3+c4)/2, P+48, "middle"], 1.6],
         sent:[`M${c2} ${D+h} V${P-h}`, [c2, P-h, "d"], "new", null, ["Goals sent after the visit", c2+16, M+4, "start"], 1.8],
         sync:[`M${c4} ${P-h} V${D+h}`, [c4, D+h, "u"], "new", null, ["Synced", c4-16, M+4, "end"], 1.8],
       }};
@@ -91,7 +91,7 @@ function geo(kind) {
       p23: ["M270 334 V364", [270, 364, "d"]],
       p34: ["M270 410 V440", [270, 440, "d"]],
       miss:["M160 236 H172 Q184 236 184 248 V262", null, "dash", "M179 263 L189 273 M189 263 L179 273", ["Not sent", 184, 292, "middle"]],
-      loop:["M340 464 H350 V388 H342", [342, 388, "l"], "", null, null, 1.4],
+      loop:["M340 464 Q350 464 350 454 V398 Q350 388 342 388", [342, 388, "l"], "", null, null, 1.4],
       sent:["M160 236 H172 Q184 236 184 248 V300 Q184 312 196 312 H198", [198, 312, "r"], "new", null, null, 1.8],
       sync:["M200 464 H162", [162, 464, "l"], "new", null, null, 1.4],
     }};
