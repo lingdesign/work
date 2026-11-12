@@ -38,7 +38,7 @@ WORK_EDITS = [
    '<p class="pre-text">Hi, I’m Ling. I design products people trust: for the people who use them, the experts who serve them, and the business making it possible.</p>'),
   ('<p class="pre-text">I own projects from setting product strategy to crafting the final details in production. Over six years, I’ve designed for mental health, physical health, sports, sleep, and nutrition. I&nbsp;bring patient insights and data into business decisions to shape where the experience goes next, protect what patients value, and help more people reach the care they need.</p>',
    '<p class="pre-text">I own projects from setting product strategy to crafting the final details in production. Over eight years, I’ve designed consumer apps and expert tools, mostly in healthcare, where trust is hard to earn and easy to lose. I&nbsp;bring research and data into product decisions, and I prototype in code with Claude Code, so teams react to working versions, not static mockups.</p>'),
-  ('<div><dt>Domain</dt><dd>Consumer, healthcare, expert tools</dd></div>',
+  ('<div><dt>Domain</dt><dd>Consumer, healthcare, clinician tools</dd></div>',
    '<div><dt>Domain</dt><dd>Consumer apps, expert tools, healthcare</dd></div>'),
   ('<div><dt>Strengths</dt><dd>Problem framing, complex workflows, end-to-end&nbsp;craft</dd></div>',
    '<div><dt>Strengths</dt><dd>Problem framing, design systems, end-to-end&nbsp;craft</dd></div>\n          <div><dt>Tools</dt><dd>Figma, Claude Code</dd></div>'),
