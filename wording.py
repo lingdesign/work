@@ -40,8 +40,8 @@ WORK_EDITS = [
    '<p class="pre-text">I own projects from setting product strategy to crafting the final details in production. Over eight years, I’ve designed consumer apps and expert tools, mostly in healthcare, where trust is hard to earn and easy to lose. I&nbsp;bring research and data into product decisions, and I prototype in code with Claude Code, so teams react to working versions, not static mockups.</p>'),
   ('<div><dt>Domain</dt><dd>Consumer, healthcare, clinician tools</dd></div>',
    '<div><dt>Domain</dt><dd>Consumer apps, expert tools, healthcare</dd></div>'),
-  ('<div><dt>Strengths</dt><dd>Problem framing, complex workflows, end-to-end&nbsp;craft</dd></div>',
-   '<div><dt>Strengths</dt><dd>Problem framing, design systems, end-to-end&nbsp;craft</dd></div>\n          <div><dt>Tools</dt><dd>Figma, Claude Code</dd></div>'),
+  ('<div><dt>Strengths</dt><dd>Problem framing, simplifying complex flows, <span class="nw">end-to-end craft</span></dd></div>',
+   '<div><dt>Strengths</dt><dd>Problem framing, simplifying complex flows, <span class="nw">end-to-end craft</span></dd></div>\n          <div><dt>Tools</dt><dd>Figma, Claude Code</dd></div>'),
   # project 1
   ('<p class="thesis">From a dopamine hit to strengthening the patient–provider relationship.</p>',
    '<p class="thesis">From a prize draw to progress that counts.</p>'),
