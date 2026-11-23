@@ -9,9 +9,9 @@ hello: Hi, I'm Ling. I design simple mobile apps people come back to, with the m
 order: goals, monument, provider
 
 lines:
+- Designed daily habits around people's emotional connection with their provider.
+- Redesigned daily goals for long-term retention, building DAU on real progress.
+- Redesigned providers' most-used screen and how they're notified, built to scale without overload.
+- Redesigned onboarding and its payment page: 25% more insured users reached a first visit.
 - Directed an onboarding animation that sets a calm pace, our engineer's favorite screen.
-- Replaced a goals prize draw with goals from patients' dietitians and progress they can see.
-- Saved a goal-completion animation from the cut by finding a one-day way to build it.
-- Prototyped and tested a clearer way to choose a treatment at checkout, fail rate from 33% to 0%.
-- Designed a Times Square billboard for a pricing launch.
-- Built Glasswork with AI, a free browser tool that puts any photo behind glass.
+- Saved a celebration animation from the cut by working out the technical fix with our engineers.
