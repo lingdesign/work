@@ -35,7 +35,8 @@ def parse(path, curly):
 
 def render(data):
     esc = lambda s: html.escape(s, quote=False)
-    body = "\n".join(f"        <p>{esc(p)}</p>" for p in data["paras"])
+    glue = lambda s: re.sub(r"\b(I|a|A) ", "\\1\u00a0", s)   # never leave "I" or "a" alone at the end of a line
+    body = "\n".join(f"        <p>{esc(glue(p))}</p>" for p in data["paras"])
     label = f'<p class="lt-label">{esc(data["label"])}</p>' if data.get("label") else ""
     name_line = f'        <p class="lt-name">&mdash; {esc(data["name"])}</p>\n' if data.get("name") else ""
     markup = f"""
@@ -50,8 +51,11 @@ def render(data):
         <h2 class="lt-greeting" id="lt-greeting">{esc(data["greeting"])}</h2>
 {body}
         <p class="lt-closing">{esc(data["closing"])}</p>
-        <p class="lt-sig">{esc(data["signature"])}</p>
-{name_line}        <button class="lt-go" type="button" data-close>{esc(data["button"])}</button>
+        <div class="lt-foot">
+          <div><p class="lt-sig">{esc(data["signature"])}</p>
+{name_line}          </div>
+          <button class="lt-go" type="button" data-close>{esc(data["button"])}<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h11m-4-4.5L15.5 10 11 14.5"/></svg></button>
+        </div>
       </div>
     </article>
   </div>
@@ -78,7 +82,7 @@ CSS = """
 .lt-sheet::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:1;
   background:linear-gradient(to bottom,transparent calc(33.33% - 18px),rgba(23,21,31,.028) 33.33%,rgba(255,255,255,.35) calc(33.33% + 2px),transparent calc(33.33% + 22px),
     transparent calc(66.66% - 18px),rgba(23,21,31,.028) 66.66%,rgba(255,255,255,.35) calc(66.66% + 2px),transparent calc(66.66% + 22px))}
-.lt-scroll{position:relative;z-index:2;overflow:auto;overscroll-behavior:contain;padding:44px 56px 20px;outline:none;border-radius:inherit}
+.lt-scroll{position:relative;z-index:2;overflow:auto;overscroll-behavior:contain;padding:44px 56px 34px;outline:none;border-radius:inherit}
 .lt-scroll:focus-visible{box-shadow:inset 0 0 0 2px #17151F}
 .lt-mark{display:flex;justify-content:center;margin-bottom:14px}
 .lt-mark svg{width:48px;height:48px;color:#111!important}
@@ -86,10 +90,13 @@ CSS = """
 .lt-greeting{font-family:"Idealist",Georgia,serif;font-weight:400;font-size:clamp(30px,5vw,40px);line-height:1.08;letter-spacing:-.01em;margin:0 0 16px}
 .lt-scroll p{font:400 17px/1.58 "Instrument Sans",system-ui,sans-serif;margin:0 0 14px;text-wrap:pretty}
 .lt-closing{margin-top:18px!important}
-.lt-sig{font-family:"Mrs Saint Delafield",cursive!important;font-size:58px!important;line-height:1!important;margin:0 0 0 -4px!important;transform:rotate(-4deg);transform-origin:left;color:#111}
+.lt-foot{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-top:22px}
+.lt-sig{font-family:"Mrs Saint Delafield",cursive!important;font-size:58px!important;line-height:1!important;margin:0 0 0 -4px!important;padding-top:4px;transform:rotate(-4deg);transform-origin:left;color:#111}
 .lt-name{font-weight:600!important;margin-top:2px!important}
-.lt-go{display:inline-flex;align-items:center;gap:8px;margin-top:14px;padding:12px 20px;border:0;border-radius:999px;cursor:pointer;
+.lt-go{display:inline-flex;align-items:center;gap:8px;margin:0 0 6px;padding:12px 18px 12px 20px;flex:none;border:0;border-radius:999px;cursor:pointer;
   background:#17151F;color:#fff;font:500 15px/1 "Instrument Sans",system-ui,sans-serif}
+.lt-go svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;transition:transform .2s ease}
+.lt-go:hover svg{transform:translateX(3px)}
 .lt-go:focus-visible,.lt-x:focus-visible,.lt-reopen:focus-visible{outline:2px solid #17151F;outline-offset:3px}
 .lt-x{position:absolute;top:18px;right:18px;z-index:3;width:40px;height:40px;border-radius:999px;border:0;background:transparent;cursor:pointer;display:grid;place-items:center;color:#5D5970}
 .lt-x:hover{background:rgba(23,21,31,.06);color:#17151F}
