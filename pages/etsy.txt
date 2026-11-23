@@ -4,6 +4,8 @@
 # Gap: high-traffic discovery and commerce at scale.
 
 headline: Designing for
+# the second half is long, so it gets a wider measure than the default 7.2em
+headline-width: 9em
 headline2: every step from first look to checkout.
 
 hello: Hi, I'm Ling. I design consumer mobile experiences end to end, using research and data to find what's in people's way, and craft to make the next step feel simple and trustworthy.

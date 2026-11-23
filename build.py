@@ -76,6 +76,20 @@ def work_page(main_index):
     return t
 
 
+def fit_headline(page_html, where, width="7.2em"):
+    """A long headline gets a smaller size, so it stays at three lines on a laptop instead of four."""
+    m = re.search(r'<h1 class="headline" id="hero-h">(.*?)</h1>', page_html, re.S)
+    if not m: raise BuildError(f"{where}: headline not found")
+    chars = len(" ".join(re.sub(r"<[^>]+>", "", m.group(1)).split()))
+    if chars <= LONG_HEADLINE: return page_html
+    t = edit_once(page_html, '<h1 class="headline" id="hero-h">',
+                  f'<h1 class="headline" id="hero-h" style="font-size:min(calc(var(--fs-display) * {HEADLINE_SCALE}), {HEADLINE_VW}vw);max-width:{width}">', where)
+    # each half of the headline starts on its own line, so it breaks at the comma rather than mid-phrase
+    return edit_once(t, '<span class="lead">', '<span class="lead" style="display:block">', where)
+
+LONG_HEADLINE, HEADLINE_SCALE, HEADLINE_VW = 40, 0.8, 9.6
+
+
 def company_page(work_html, slug, page):
     t, where = work_html, f"pages/{slug}.txt"
     esc = lambda s: html.escape(s, quote=False)
@@ -163,7 +177,7 @@ def main(main_dir):
         p.write_text(t)
 
     work_html = work_page(main_dir / "index.html")
-    (OUT / "index.html").write_text(work_html)
+    (OUT / "index.html").write_text(fit_headline(work_html, "index.html"))
     images = [(OUT / "assets" / "og.jpg", "Designing products people trust, from onboarding to daily habit.")]
 
     for src in sorted(p for p in (ROOT / "pages").glob("*.txt") if not p.name.endswith(".letter.txt")):
@@ -174,7 +188,7 @@ def main(main_dir):
         if letter_src.exists():
             out_html = add_letter(out_html, letter_src, slug)
         (OUT / slug).mkdir()
-        (OUT / slug / "index.html").write_text(out_html)
+        (OUT / slug / "index.html").write_text(fit_headline(out_html, f"pages/{slug}.txt", page.get("headline-width", "7.2em")))
         images.append((OUT / slug / "og.jpg", title))
         print(f"  /work/{slug}/")
 

@@ -3,6 +3,7 @@
 # Not covered by the work: VR/AR/spatial interfaces (preferred, not required).
 
 headline: Designing one system
+headline-width: 7.8em
 headline2: for every side of the product.
 
 hello: Hi, I'm Ling. I set direction for products with more than one side, and design the systems that keep them consistent as they grow.

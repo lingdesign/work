@@ -45,16 +45,14 @@ WORK_EDITS = [
   # project 1
   ('<p class="thesis">From a dopamine hit to strengthening the patient–provider relationship.</p>',
    '<p class="thesis">From a prize draw to progress that counts.</p>'),
-  ('I owned visual, interaction and motion design, and added its patterns to the design system.</p>',
-   'I owned visual, interaction and motion design, prototyped AI-assisted goal writing with Claude, and added its patterns to the design system.</p>'),
   # project 2
   ('<p class="thesis">From one nudge to a notification system providers can act on.</p>',
    '<p class="thesis">From one nudge to a notification system, built in code.</p>'),
   ('<p>Asked for one nudge, I redesigned the appointment blade around each provider’s main task, built it in code, and turned two separate asks into one notification system. By the end, every provider was compliant and every appointment was submitted within 72 hours.</p>',
    '<p>Asked for one nudge, I used our data to redefine the ask, redesigned the appointment blade around each provider’s main task, and built it with Claude Code. Two separate asks became one pattern in the design system. By the end, every provider was compliant and every appointment was submitted within 72 hours.</p>'),
   # project 3
-  ('<p class="caps">Health and wellness<i class="dot"></i>Consumer product</p>',
-   '<p class="caps">Consumer product<i class="dot"></i>Onboarding and conversion</p>'),
+  ('<p class="caps"><span class="lg-only">Health and wellness<i class="dot"></i>Consumer product</span>',
+   '<p class="caps"><span class="lg-only">Consumer product<i class="dot"></i>Onboarding and conversion</span>'),
   ('<p class="thesis">From signup to treatment in 2 days, down from 11.</p>',
    '<p class="thesis">Signup-to-paid conversion from 26.7% to 56%, in the first week.</p>'),
   ('<p>I led the onboarding redesign for people starting alcohol recovery treatment, fixing the three biggest drop-off points we found in funnel analysis. In the first week after launch, signup-to-paid conversion rose from 26.7% to 56%.</p>',

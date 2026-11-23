@@ -289,6 +289,9 @@ html .rv.rv-in .pre-facts::before{transform:none;transition:transform 1.1s cubic
   grid-template-areas:"head head head head" "visual visual visual visual" "facts facts facts facts";row-gap:var(--s-5)}
 .p-head{grid-area:head;display:flex;flex-direction:column;gap:var(--s-3)}
 .p-head .caps{margin-bottom:calc(var(--s-2) - var(--s-3))}
+/* card labels: a shorter version on phones */
+.sm-only{display:none}
+@media (max-width:639px){ .lg-only{display:none} .sm-only{display:inline} .p-head .thesis{display:none} }   /* phones: no case study subtitle */
 .p-head h3{}
 
 .p-visual{grid-area:visual;display:block;position:relative;aspect-ratio:5/4;max-width:100%;border-radius:var(--radius);overflow:hidden;text-decoration:none}
@@ -607,7 +610,7 @@ html.gal-open{overflow:hidden}
         <button class="theme-tg" type="button" aria-pressed="false" aria-label="Switch to dark mode"><span class="tg-bead" aria-hidden="true"></span><svg class="tg-sun" viewBox="0 0 16 16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="8" cy="8" r="3"/><path d="M8 1.5v1.3M8 13.2v1.3M1.5 8h1.3M13.2 8h1.3M3.4 3.4l.9.9M11.7 11.7l.9.9M3.4 12.6l.9-.9M11.7 4.3l.9-.9"/></svg><svg class="tg-moon" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path fill="currentColor" d="M13.6 10.4A6 6 0 0 1 5.6 2.4a6 6 0 1 0 8 8z"/></svg></button>
       </nav>
       </div>
-      <h1 class="headline" id="hero-h"><span class="lead">Designing products people trust,</span> <span class="rest">from onboarding to daily habit.</span></h1>
+      <h1 class="headline" id="hero-h" style="font-size:min(calc(var(--fs-display) * 0.8), 9.6vw);max-width:7.2em"><span class="lead" style="display:block">Designing products people trust,</span> <span class="rest">from onboarding to daily habit.</span></h1>
       <script>/* hold the title back until it can enter with its first line (see .headline.entering) */if(!matchMedia("(prefers-reduced-motion: reduce)").matches)document.getElementById("hero-h").classList.add("waiting")</script>
       <div class="hero-sub sides" aria-label="What I’ve designed">
         <ul class="sides-list">
@@ -655,7 +658,7 @@ html.gal-open{overflow:hidden}
     <div class="projects">
       <article class="project grid" aria-labelledby="p1">
         <header class="p-head">
-          <p class="caps">Patient and dietitian apps<i class="dot"></i><span class="nw">iOS, Android, Web</span></p>
+          <p class="caps"><span class="lg-only">Patient and dietitian apps<i class="dot"></i></span><span class="nw">iOS, Android, Web</span></p>
           <h3 id="p1">Goals redesign</h3>
           <p class="thesis">From a prize draw to progress that counts.</p>
         </header>
@@ -668,7 +671,7 @@ html.gal-open{overflow:hidden}
           <span class="sr">The moment a patient receives new goals from their dietitian, onboarding that sets their first daily goals, and goal tracking since the last appointment.</span>
         </a>
         <div class="p-facts">
-          <p>An end-to-end, multi-flow redesign across the patient app and the dietitian’s web workflow, from onboarding to long-term tracking. I owned visual, interaction and motion design, prototyped AI-assisted goal writing with Claude, and added its patterns to the design system.</p>
+          <p>An end-to-end redesign across the patient app and dietitian web workflow, where I owned visual, interaction and motion design.</p>
           <dl class="dl">
             <div><dt>Company</dt><dd>Fay Nutrition</dd></div>
             <div><dt>Role</dt><dd>Lead designer</dd></div>
@@ -704,7 +707,7 @@ html.gal-open{overflow:hidden}
 
       <article class="project grid" aria-labelledby="p3">
         <header class="p-head">
-          <p class="caps">Consumer product<i class="dot"></i>Onboarding and conversion</p>
+          <p class="caps"><span class="lg-only">Consumer product<i class="dot"></i>Onboarding and conversion</span><span class="sm-only">Consumer<i class="dot"></i>Onboarding</span></p>
           <h3 id="p3">Onboarding redesign for alcohol recovery treatment</h3>
           <p class="thesis">Signup-to-paid conversion from 26.7% to 56%, in the first week.</p>
         </header>
