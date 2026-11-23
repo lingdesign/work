@@ -4,7 +4,7 @@
 headline: Designing products people trust,
 headline2: from onboarding to daily habit.
 
-hello: Hi, I'm Ling. I design simple mobile apps people come back to, with the motion and small details that make each step feel worth taking.
+hello: Hi, I'm Ling. I design consumer mobile apps that are beautiful, intentional and clear, distilling complex workflows down to the details that make each step feel right.
 
 order: goals, monument, provider
 
