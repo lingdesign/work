@@ -15,7 +15,7 @@ def parse(path, curly):
         line = raw.strip()
         if line.startswith("#"):
             continue
-        m = re.match(r"^(label|greeting|closing|signature|button):\s*(.*)$", line)
+        m = re.match(r"^(label|greeting|closing|signature|name|button):\s*(.*)$", line)
         if m:
             data[m.group(1)] = curly(m.group(2))
             continue
@@ -37,6 +37,7 @@ def render(data):
     esc = lambda s: html.escape(s, quote=False)
     body = "\n".join(f"        <p>{esc(p)}</p>" for p in data["paras"])
     label = f'<p class="lt-label">{esc(data["label"])}</p>' if data.get("label") else ""
+    name_line = f'        <p class="lt-name">&mdash; {esc(data["name"])}</p>\n' if data.get("name") else ""
     markup = f"""
 <div class="lt" id="letter" hidden>
   <div class="lt-bg" data-close></div>
@@ -49,9 +50,8 @@ def render(data):
         <h2 class="lt-greeting" id="lt-greeting">{esc(data["greeting"])}</h2>
 {body}
         <p class="lt-closing">{esc(data["closing"])}</p>
-        <p class="lt-sig" aria-hidden="true">{esc(data["signature"])}</p>
-        <p class="lt-name">&mdash; {esc(data["signature"])}</p>
-        <button class="lt-go" type="button" data-close>{esc(data["button"])}</button>
+        <p class="lt-sig">{esc(data["signature"])}</p>
+{name_line}        <button class="lt-go" type="button" data-close>{esc(data["button"])}</button>
       </div>
     </article>
   </div>
@@ -70,28 +70,28 @@ CSS = """
   -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);opacity:0;transition:opacity .45s ease}
 .lt.on .lt-bg{opacity:1}
 .lt-stage{position:relative;perspective:1800px;width:min(600px,calc(100vw - 32px))}
-.lt-sheet{position:relative;max-height:min(88vh,980px);display:flex;flex-direction:column;
+.lt-sheet{position:relative;max-height:min(92vh,980px);display:flex;flex-direction:column;
   background:#FFFEFC var(--paper-grain,none);color:#17151F;border-radius:14px;
   box-shadow:0 1px 0 #ECE9F4,0 2px 0 #E2DEEE,0 3px 0 #D9D4E8,0 30px 80px -20px rgba(120,100,210,.35),0 10px 30px -10px rgba(23,21,31,.18)}
 .lt-sheet:focus{outline:none}
 .lt-sheet::before{content:"";position:absolute;inset:10px;border:1px solid rgba(23,21,31,.08);border-radius:8px;pointer-events:none;z-index:1}
 .lt-sheet::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:1;
-  background:linear-gradient(to bottom,transparent calc(33.33% - 1px),rgba(23,21,31,.06) 33.33%,rgba(255,255,255,.7) calc(33.33% + 1px),transparent calc(33.33% + 6px),
-    transparent calc(66.66% - 1px),rgba(23,21,31,.06) 66.66%,rgba(255,255,255,.7) calc(66.66% + 1px),transparent calc(66.66% + 6px))}
-.lt-scroll{overflow:auto;overscroll-behavior:contain;padding:56px 56px 48px;outline:none;border-radius:inherit}
+  background:linear-gradient(to bottom,transparent calc(33.33% - 18px),rgba(23,21,31,.028) 33.33%,rgba(255,255,255,.35) calc(33.33% + 2px),transparent calc(33.33% + 22px),
+    transparent calc(66.66% - 18px),rgba(23,21,31,.028) 66.66%,rgba(255,255,255,.35) calc(66.66% + 2px),transparent calc(66.66% + 22px))}
+.lt-scroll{position:relative;z-index:2;overflow:auto;overscroll-behavior:contain;padding:44px 56px 28px;outline:none;border-radius:inherit}
 .lt-scroll:focus-visible{box-shadow:inset 0 0 0 2px #17151F}
-.lt-mark{display:flex;justify-content:center;margin-bottom:22px}
-.lt-mark svg{width:56px;height:56px;color:#111!important}
-.lt-label{font:500 12px/1.4 "Instrument Sans",system-ui,sans-serif;letter-spacing:.12em;text-transform:uppercase;text-align:center;color:#5D5970;margin:0 0 26px}
-.lt-greeting{font-family:"Idealist",Georgia,serif;font-weight:400;font-size:clamp(30px,5vw,40px);line-height:1.08;letter-spacing:-.01em;margin:0 0 22px}
+.lt-mark{display:flex;justify-content:center;margin-bottom:14px}
+.lt-mark svg{width:48px;height:48px;color:#111!important}
+.lt-label{font:500 12px/1.4 "Instrument Sans",system-ui,sans-serif;letter-spacing:.12em;text-transform:uppercase;text-align:center;color:#5D5970;margin:0 0 18px}
+.lt-greeting{font-family:"Idealist",Georgia,serif;font-weight:400;font-size:clamp(30px,5vw,40px);line-height:1.08;letter-spacing:-.01em;margin:0 0 16px}
 .lt-scroll p{font:400 17px/1.62 "Instrument Sans",system-ui,sans-serif;margin:0 0 16px;text-wrap:pretty}
-.lt-closing{margin-top:26px!important}
-.lt-sig{font-family:"Mrs Saint Delafield",cursive!important;font-size:64px!important;line-height:1!important;margin:6px 0 0 -4px!important;transform:rotate(-4deg);transform-origin:left;color:#111}
+.lt-closing{margin-top:20px!important}
+.lt-sig{font-family:"Mrs Saint Delafield",cursive!important;font-size:58px!important;line-height:1!important;margin:0 0 0 -4px!important;transform:rotate(-4deg);transform-origin:left;color:#111}
 .lt-name{font-weight:600!important;margin-top:2px!important}
-.lt-go{display:inline-flex;align-items:center;gap:8px;margin-top:22px;padding:12px 20px;border:0;border-radius:999px;cursor:pointer;
+.lt-go{display:inline-flex;align-items:center;gap:8px;margin-top:14px;padding:12px 20px;border:0;border-radius:999px;cursor:pointer;
   background:#17151F;color:#fff;font:500 15px/1 "Instrument Sans",system-ui,sans-serif}
 .lt-go:focus-visible,.lt-x:focus-visible,.lt-reopen:focus-visible{outline:2px solid #17151F;outline-offset:3px}
-.lt-x{position:absolute;top:18px;right:18px;z-index:2;width:40px;height:40px;border-radius:999px;border:0;background:transparent;cursor:pointer;display:grid;place-items:center;color:#5D5970}
+.lt-x{position:absolute;top:18px;right:18px;z-index:3;width:40px;height:40px;border-radius:999px;border:0;background:transparent;cursor:pointer;display:grid;place-items:center;color:#5D5970}
 .lt-x:hover{background:rgba(23,21,31,.06);color:#17151F}
 .lt-x svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round}
 /* the fold: three strips of the sheet, hinged at the creases */
@@ -113,7 +113,7 @@ CSS = """
   box-shadow:0 8px 24px -8px rgba(120,100,210,.4);opacity:0;transform:translateY(8px);transition:opacity .4s ease,transform .4s ease}
 .lt-reopen.on{opacity:1;transform:none}
 .lt-reopen-mark svg{width:22px;height:22px;display:block;color:#111!important}
-@media (max-width:600px){.lt-scroll{padding:48px 26px 36px}.lt-scroll p{font-size:16px}.lt-sig{font-size:54px!important}.lt-reopen{left:14px;bottom:14px}}
+@media (max-width:600px){.lt-scroll{padding:40px 26px 32px}.lt-scroll p{font-size:16px}.lt-sig{font-size:54px!important}.lt-reopen{left:14px;bottom:14px}}
 @media (prefers-reduced-motion:reduce){.lt-panel,.lt-move,.lt-bg,.lt-reopen{transition:none!important}}
 </style>
 """
