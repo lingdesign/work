@@ -1344,7 +1344,7 @@ html.gal-open{overflow:hidden}
 .lt-x svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round}
 /* the fold: three strips of the sheet, hinged at the creases */
 .lt-fold{position:absolute;left:0;top:0;width:100%;transform-style:preserve-3d;pointer-events:none}
-.lt-panel{position:absolute;left:0;width:100%;transform-style:preserve-3d;transition:transform .8s cubic-bezier(.3,.7,.2,1)}
+.lt-panel{position:absolute;left:0;width:100%;transform-style:preserve-3d}
 .lt-face,.lt-back{position:absolute;inset:0;overflow:hidden;backface-visibility:hidden;-webkit-backface-visibility:hidden;background:#FFFEFC var(--paper-grain,none)}
 .lt-back{transform:rotateX(180deg);background:#FBFAF7 var(--paper-grain,none);display:grid;place-items:center;align-content:center;gap:10px}
 .lt-back svg{width:28px;height:28px;color:#111!important;fill:currentColor;overflow:visible}
@@ -1358,11 +1358,9 @@ html.gal-open{overflow:hidden}
   transition:top .8s cubic-bezier(.3,.7,.2,1),height 1s cubic-bezier(.3,.7,.2,1)}
 /* the folded letter casts its shadow from the packet it is folded into */
 .lt.folded .lt-shade{top:33.333%;height:33.334%;border-radius:4px}
-.lt.folded .lt-p0{transform:rotateX(-179.5deg)}
-.lt.folded .lt-p2{transform:rotateX(179deg)}
 .lt-move{transition:transform .55s cubic-bezier(.3,.7,.2,1),opacity .55s ease}
 @media (max-width:600px){.lt-scroll{padding:40px 26px 32px}.lt-sig{font-size:54px!important}}
-@media (prefers-reduced-motion:reduce){.lt-panel,.lt-move,.lt-bg,.lt-shade{transition:none!important}}
+@media (prefers-reduced-motion:reduce){.lt-move,.lt-bg,.lt-shade{transition:none!important}}
 </style>
 
 <div class="lt" id="letter" hidden>
@@ -1412,6 +1410,24 @@ html.gal-open{overflow:hidden}
   }
 
   // three strips of the sheet as it looks now, hinged at the creases
+  const SHUT = [-179.5, 0, 179];
+  function turn(p, a) {
+    p.style.transform = 'rotateX(' + a + 'deg)';
+    const away = Math.abs(a) > 90, face = p.querySelector('.lt-face'), back = p.querySelector('.lt-back');
+    face.style.visibility = away ? 'hidden' : 'visible';
+    if (back) back.style.visibility = away ? 'visible' : 'hidden';
+  }
+  const ease = t => 1 - Math.pow(1 - t, 3);
+  function swing(p, from, to, ms, delay) {
+    return new Promise(done => {
+      let t0 = null;
+      const step = now => { if (t0 === null) t0 = now + delay;
+        const t = Math.min(1, Math.max(0, (now - t0) / ms));
+        turn(p, from + (to - from) * ease(t));
+        if (t < 1) requestAnimationFrame(step); else done(); };
+      requestAnimationFrame(step);
+    });
+  }
   function buildFold() {
     const h = sheet.offsetHeight, third = h / 3, top = scroller.scrollTop;
     const fold = document.createElement('div');
@@ -1432,6 +1448,7 @@ html.gal-open{overflow:hidden}
           if (m) back.appendChild(m.cloneNode(true)); if (l) { const s = document.createElement('span'); s.textContent = l.textContent; back.appendChild(s); } }
         p.appendChild(back); }
       p.appendChild(face); fold.appendChild(p);
+      if (i !== 1) turn(p, root.classList.contains('folded') ? SHUT[i] : 0);
       requestAnimationFrame(() => { copy.querySelector('.lt-scroll').scrollTop = top; });
     }
     stage.appendChild(fold);
@@ -1461,10 +1478,8 @@ html.gal-open{overflow:hidden}
     await frame();
     root.classList.add('on'); fold.style.opacity = '1'; fold.style.transform = 'none';
     await wait(500);
-    fold.querySelector('.lt-p0').style.transitionDelay = '0s';
-    fold.querySelector('.lt-p2').style.transitionDelay = '.22s';
-    root.classList.remove('folded');
-    await wait(1050);
+    root.classList.remove('folded');   // the shadow opens with the letter
+    await Promise.all([swing(fold.querySelector('.lt-p0'), SHUT[0], 0, 800, 0), swing(fold.querySelector('.lt-p2'), SHUT[2], 0, 800, 220)]);
     sheet.style.visibility = ''; fold.remove();
     sheet.focus({ preventScroll: true });
     busy = false;
@@ -1478,10 +1493,8 @@ html.gal-open{overflow:hidden}
     if (!calm) {
       const fold = buildFold(); sheet.style.visibility = 'hidden';
       await frame();
-      fold.querySelector('.lt-p2').style.transitionDelay = '0s';
-      fold.querySelector('.lt-p0').style.transitionDelay = '.18s';
       root.classList.add('folded');
-      await wait(900);
+      await Promise.all([swing(fold.querySelector('.lt-p2'), 0, SHUT[2], 700, 0), swing(fold.querySelector('.lt-p0'), 0, SHUT[0], 700, 180)]);
       fold.classList.add('lt-move'); fold.style.transform = 'translateY(48px) scale(.9)'; fold.style.opacity = '0';
       root.classList.remove('on');
       await wait(560);
