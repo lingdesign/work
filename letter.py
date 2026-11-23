@@ -85,7 +85,7 @@ CSS = """
 .lt-scroll{position:relative;z-index:2;overflow:auto;overscroll-behavior:contain;padding:44px 56px 34px;outline:none;border-radius:inherit}
 .lt-scroll:focus-visible{box-shadow:inset 0 0 0 2px #17151F}
 .lt-mark{display:flex;justify-content:center;margin-bottom:14px}
-.lt-mark svg{width:48px;height:48px;color:#111!important;fill:currentColor;overflow:visible}
+.lt-mark svg{width:30px;height:30px;color:#111!important;fill:currentColor;overflow:visible}
 .lt-scroll .lt-label{font-family:var(--text,"Instrument Sans",system-ui,sans-serif);font-weight:400;font-size:var(--fs-label,.8333rem);line-height:1.3;letter-spacing:.08em;text-transform:uppercase;text-align:center;color:var(--ink-2,#5D5970);margin:0 0 18px}
 .lt-greeting{font-family:"Idealist",Georgia,serif;font-weight:400;font-size:clamp(30px,5vw,40px);line-height:1.08;letter-spacing:-.01em;margin:0 0 16px}
 .lt-scroll p{font-family:var(--text,"Instrument Sans",system-ui,sans-serif);font-weight:400;font-size:var(--fs-body,17px);line-height:1.58;margin:0 0 14px;text-wrap:pretty}
@@ -105,7 +105,7 @@ CSS = """
 .lt-panel{position:absolute;left:0;width:100%;transform-style:preserve-3d;transition:transform .8s cubic-bezier(.3,.7,.2,1)}
 .lt-face,.lt-back{position:absolute;inset:0;overflow:hidden;backface-visibility:hidden;-webkit-backface-visibility:hidden;background:#FFFEFC var(--paper-grain,none)}
 .lt-back{transform:rotateX(180deg);background:#FBFAF7 var(--paper-grain,none);display:grid;place-items:center;align-content:center;gap:10px}
-.lt-back svg{width:44px;height:44px;color:#111!important;fill:currentColor;overflow:visible}
+.lt-back svg{width:28px;height:28px;color:#111!important;fill:currentColor;overflow:visible}
 .lt-back span{font:500 11px/1.4 "Instrument Sans",system-ui,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#5D5970}
 .lt-p0{transform-origin:50% 100%}.lt-p2{transform-origin:50% 0}
 .lt-p0 .lt-face{border-radius:14px 14px 0 0}.lt-p2 .lt-face{border-radius:0 0 14px 14px}

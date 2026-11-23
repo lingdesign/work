@@ -97,6 +97,11 @@ def company_page(work_html, slug, page):
                    lambda m: m.group(1) + esc(page["hello"]) + m.group(2), t)
     if n != 1: raise BuildError(f"{where}: bio not found")
 
+    # optional footer line, in place of the one every /work page shares
+    if page.get("footer"):
+        t = edit_once(t, "I’m looking for my next Staff or Senior role on a team building products people rely on. Always happy to talk about product, design, and creative practice.",
+                      esc(page["footer"]), f"{where}: footer")
+
     # project one-liners, then project order
     for name, pid in PROJECTS.items():
         if page.get(name):

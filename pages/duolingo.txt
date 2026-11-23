@@ -4,6 +4,7 @@
 headline: Designing products people trust,
 headline2: from onboarding to daily habit.
 
+footer: I'm looking for my next Staff or Senior role on a team building products people love. Always happy to talk about product, design, and creative practice.
 hello: Hi, I'm Ling. I design consumer mobile apps that are beautiful, intentional and clear, distilling complex workflows down to the details that make each step feel right.
 
 order: goals, monument, provider
