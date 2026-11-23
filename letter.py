@@ -55,7 +55,7 @@ def render(data):
         <div class="lt-foot">
           <div><p class="lt-sig">{esc(data["signature"])}</p>
 {name_line}          </div>
-          <button class="lt-go" type="button" data-close>{esc(data["button"])}{ARROW}</button>
+          <button class="cta lt-go" type="button" data-close>{esc(data["button"])}{ARROW}</button>
         </div>
       </div>
     </article>
@@ -93,9 +93,8 @@ CSS = """
 .lt-foot{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-top:22px}
 .lt-sig{font-family:"Mrs Saint Delafield",cursive!important;font-size:58px!important;line-height:1!important;margin:0 0 0 -4px!important;padding-top:4px;transform:rotate(-4deg);transform-origin:left;color:#111}
 .lt-name{font-weight:600!important;margin-top:2px!important}
-.lt-go{display:inline-flex;align-items:center;gap:8px;margin:0 0 6px;padding:12px 18px 12px 20px;flex:none;border:0;border-radius:999px;cursor:pointer;
-  background:#17151F;color:#fff;font-family:var(--text,"Instrument Sans",system-ui,sans-serif);font-weight:500;font-size:var(--fs-small,15px);line-height:1}
-.lt-go svg{width:18px;height:18px;flex:none;fill:currentColor;overflow:visible}
+.lt-scroll .lt-go{margin:0 0 6px;flex:none;align-self:auto}
+.lt-go svg{fill:currentColor;overflow:visible}
 .lt-go:focus-visible,.lt-x:focus-visible{outline:2px solid #17151F;outline-offset:3px}
 .lt-x{position:absolute;top:18px;right:18px;z-index:3;width:40px;height:40px;border-radius:999px;border:0;background:transparent;cursor:pointer;display:grid;place-items:center;color:#5D5970}
 .lt-x:hover{background:rgba(23,21,31,.06);color:#17151F}
@@ -141,6 +140,12 @@ JS = """
   const mark = root.querySelector('.lt-mark svg'), go = root.querySelector('.lt-go'), arrow = go && go.querySelector('svg');
   if (mark) mark.addEventListener('pointerenter', () => play(mark));
   if (go) { go.addEventListener('pointerenter', () => play(arrow)); go.addEventListener('focus', () => play(arrow)); }
+  // the sheen follows the mouse, as on the site's other buttons
+  if (go && !calm) {
+    go.addEventListener('pointermove', e => { if (e.pointerType !== 'mouse') return; const r = go.getBoundingClientRect();
+      go.style.setProperty('--sx', (100 - (e.clientX - r.left) / r.width * 100) + '%'); });
+    go.addEventListener('pointerleave', () => go.style.removeProperty('--sx'));
+  }
 
   // three strips of the sheet as it looks now, hinged at the creases
   function buildFold() {
