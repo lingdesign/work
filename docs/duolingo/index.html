@@ -1506,7 +1506,8 @@ html.gal-open{overflow:hidden}
   }
 
   root.querySelectorAll('[data-close]').forEach(el => el.addEventListener('click', close));
-  if (seen()) root.remove();
+  // phones don't get the letter: the fold doesn't hold up on small screens
+  if (seen() || matchMedia('(max-width: 700px)').matches) root.remove();
   else if (document.readyState === 'complete') open();
   else addEventListener('load', () => setTimeout(open, 250), { once: true });
 })();
