@@ -78,14 +78,14 @@ CSS = """
 .lt-sheet::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:1;
   background:linear-gradient(to bottom,transparent calc(33.33% - 18px),rgba(23,21,31,.028) 33.33%,rgba(255,255,255,.35) calc(33.33% + 2px),transparent calc(33.33% + 22px),
     transparent calc(66.66% - 18px),rgba(23,21,31,.028) 66.66%,rgba(255,255,255,.35) calc(66.66% + 2px),transparent calc(66.66% + 22px))}
-.lt-scroll{position:relative;z-index:2;overflow:auto;overscroll-behavior:contain;padding:44px 56px 28px;outline:none;border-radius:inherit}
+.lt-scroll{position:relative;z-index:2;overflow:auto;overscroll-behavior:contain;padding:44px 56px 20px;outline:none;border-radius:inherit}
 .lt-scroll:focus-visible{box-shadow:inset 0 0 0 2px #17151F}
 .lt-mark{display:flex;justify-content:center;margin-bottom:14px}
 .lt-mark svg{width:48px;height:48px;color:#111!important}
 .lt-label{font:500 12px/1.4 "Instrument Sans",system-ui,sans-serif;letter-spacing:.12em;text-transform:uppercase;text-align:center;color:#5D5970;margin:0 0 18px}
 .lt-greeting{font-family:"Idealist",Georgia,serif;font-weight:400;font-size:clamp(30px,5vw,40px);line-height:1.08;letter-spacing:-.01em;margin:0 0 16px}
-.lt-scroll p{font:400 17px/1.62 "Instrument Sans",system-ui,sans-serif;margin:0 0 16px;text-wrap:pretty}
-.lt-closing{margin-top:20px!important}
+.lt-scroll p{font:400 17px/1.58 "Instrument Sans",system-ui,sans-serif;margin:0 0 14px;text-wrap:pretty}
+.lt-closing{margin-top:18px!important}
 .lt-sig{font-family:"Mrs Saint Delafield",cursive!important;font-size:58px!important;line-height:1!important;margin:0 0 0 -4px!important;transform:rotate(-4deg);transform-origin:left;color:#111}
 .lt-name{font-weight:600!important;margin-top:2px!important}
 .lt-go{display:inline-flex;align-items:center;gap:8px;margin-top:14px;padding:12px 20px;border:0;border-radius:999px;cursor:pointer;
