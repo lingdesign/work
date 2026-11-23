@@ -65,7 +65,7 @@ async def main(shots):
                     if h["wide"]: problems.append(f"{name} ({size}): headline wider than the screen")
                     if size == "phone" and h["lines"] > 4: problems.append(f"{name} (phone): headline runs {h['lines']} lines")
                     if path:
-                        text = await pg.evaluate("document.body.innerText")
+                        text = await pg.evaluate("(() => { const b = document.body.cloneNode(true); b.querySelector('#letter')?.remove(); return b.innerText; })()")
                         for c in COMPANIES:
                             if re.search(rf"\b{c}\b", text): problems.append(f"{name}: page text names {c}")
                         og = await pg.evaluate("document.querySelector('meta[property=\"og:image\"]').content")

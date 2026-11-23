@@ -126,6 +126,18 @@ def company_page(work_html, slug, page):
     return t, title
 
 
+def add_letter(page_html, src, slug):
+    """Inject the cover letter for one company page: styles in the head, the letter after <body>, script at the end."""
+    import letter
+    try:
+        data = letter.parse(src, curly)
+    except ValueError as e:
+        raise BuildError(str(e))
+    markup, css, js = letter.render(data)
+    # the site leaves out the optional <head> and <body> tags, so the letter goes at the end of the page
+    return page_html.rstrip() + "\n" + css + markup + js
+
+
 def main(main_dir):
     main_dir = pathlib.Path(main_dir).resolve()
     if not (main_dir / "index.html").exists():
@@ -149,10 +161,13 @@ def main(main_dir):
     (OUT / "index.html").write_text(work_html)
     images = [(OUT / "assets" / "og.jpg", "Designing products people trust, from onboarding to daily habit.")]
 
-    for src in sorted((ROOT / "pages").glob("*.txt")):
+    for src in sorted(p for p in (ROOT / "pages").glob("*.txt") if not p.name.endswith(".letter.txt")):
         slug = src.stem
         page = parse_page(src)
         out_html, title = company_page(work_html, slug, page)
+        letter_src = ROOT / "pages" / f"{slug}.letter.txt"
+        if letter_src.exists():
+            out_html = add_letter(out_html, letter_src, slug)
         (OUT / slug).mkdir()
         (OUT / slug / "index.html").write_text(out_html)
         images.append((OUT / slug / "og.jpg", title))

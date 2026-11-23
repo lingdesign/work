@@ -1,0 +1,19 @@
+# Cover letter shown on /work/duolingo only. DRAFT: not approved yet.
+# Paragraphs are separated by a blank line. Lines starting with # are notes and never appear.
+
+label: A letter to the Duolingo team
+greeting: Dear Duolingo team,
+
+My first design job started in college. My classmates at National Taiwan University were building PaGamO, a game where middle and high school students conquer territory on a map by answering questions from their schoolwork. Its name is Taiwanese for "play the game and learn." It taught me that a good game can make people want to learn.
+
+Since then, I've spent most of my career in healthcare, where the stakes are different but the question is the same: what keeps someone coming back, long after the novelty wears off?
+
+At Fay, daily goals ran on a prize draw. It lifted DAU, but my research showed people stay for their dietitian. So I redesigned goals around that relationship, with progress people can see. I also took on the screen providers use most, one design, product and engineering had put off for years, and set a strict limit on what deserves their attention.
+
+I care about the small things too: an onboarding animation that sets a calm pace, and a celebration I fought to keep in the release.
+
+Duolingo is where I started: learning and play, together. I'd love to help you keep people learning for years.
+
+closing: Thanks for reading.
+signature: Ling
+button: See my work
