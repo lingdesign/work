@@ -6,7 +6,7 @@ greeting: Dear Duolingo team,
 
 My first design job started in college. My classmates at National Taiwan University were building PaGamO (Taiwanese for "play the game and learn"), where middle and high school students conquer islands by answering questions from their schoolwork. I visualized the first version of the game's terrain map and drew the first mobile flows on paper.
 
-Since then, I've spent most of my career in healthcare, where the stakes are different but the question is the same: what keeps someone engaged in their long-term outcome, be it health or learning?
+Since then, I've spent most of my product design career in healthcare, where the stakes are different but the question is the same: what keeps someone engaged in their long-term outcome, be it health or learning?
 
 For me, it's trust, and trust comes from clarity. I ask why before deciding what to build, give every screen one clear focus, push for transparency even when it's hard, and refine every detail until it feels right.
 
