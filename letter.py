@@ -6,7 +6,8 @@ build injects into that one page. Without JavaScript the letter never shows and 
 import html, pathlib, re
 
 HERE = pathlib.Path(__file__).resolve().parent
-ICON = (HERE / "og" / "letter-icon.svg").read_text().strip()
+ICON = (HERE / "og" / "letter-rocker.svg").read_text().strip()   # the rocker from the main site's "New sculpture" button
+ARROW = (HERE / "og" / "letter-arrow.svg").read_text().strip()  # the dot and arrow from "Read the case study"
 
 
 def parse(path, curly):
@@ -54,13 +55,12 @@ def render(data):
         <div class="lt-foot">
           <div><p class="lt-sig">{esc(data["signature"])}</p>
 {name_line}          </div>
-          <button class="lt-go" type="button" data-close>{esc(data["button"])}<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h11m-4-4.5L15.5 10 11 14.5"/></svg></button>
+          <button class="lt-go" type="button" data-close>{esc(data["button"])}{ARROW}</button>
         </div>
       </div>
     </article>
   </div>
 </div>
-<button class="lt-reopen" id="letter-reopen" type="button" hidden aria-label="Open my letter again"><span class="lt-reopen-mark" aria-hidden="true">{ICON}</span><span>Letter</span></button>
 """
     return markup, CSS, JS
 
@@ -69,7 +69,7 @@ CSS = """
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mrs+Saint+Delafield&display=swap">
 <style id="letter-css">
 .lt{position:fixed;inset:0;z-index:1000;display:grid;place-items:center}
-.lt[hidden],.lt-reopen[hidden]{display:none}
+.lt[hidden]{display:none}
 .lt-bg{position:absolute;inset:0;background:color-mix(in srgb,var(--paper,#F6F5FB) 62%,transparent);
   -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);opacity:0;transition:opacity .45s ease}
 .lt.on .lt-bg{opacity:1}
@@ -85,19 +85,18 @@ CSS = """
 .lt-scroll{position:relative;z-index:2;overflow:auto;overscroll-behavior:contain;padding:44px 56px 34px;outline:none;border-radius:inherit}
 .lt-scroll:focus-visible{box-shadow:inset 0 0 0 2px #17151F}
 .lt-mark{display:flex;justify-content:center;margin-bottom:14px}
-.lt-mark svg{width:48px;height:48px;color:#111!important}
-.lt-label{font:500 12px/1.4 "Instrument Sans",system-ui,sans-serif;letter-spacing:.12em;text-transform:uppercase;text-align:center;color:#5D5970;margin:0 0 18px}
+.lt-mark svg{width:48px;height:48px;color:#111!important;fill:currentColor;overflow:visible}
+.lt-scroll .lt-label{font-family:var(--text,"Instrument Sans",system-ui,sans-serif);font-weight:400;font-size:var(--fs-label,.8333rem);line-height:1.3;letter-spacing:.08em;text-transform:uppercase;text-align:center;color:var(--ink-2,#5D5970);margin:0 0 18px}
 .lt-greeting{font-family:"Idealist",Georgia,serif;font-weight:400;font-size:clamp(30px,5vw,40px);line-height:1.08;letter-spacing:-.01em;margin:0 0 16px}
-.lt-scroll p{font:400 17px/1.58 "Instrument Sans",system-ui,sans-serif;margin:0 0 14px;text-wrap:pretty}
+.lt-scroll p{font-family:var(--text,"Instrument Sans",system-ui,sans-serif);font-weight:400;font-size:var(--fs-body,17px);line-height:1.58;margin:0 0 14px;text-wrap:pretty}
 .lt-closing{margin-top:18px!important}
 .lt-foot{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-top:22px}
 .lt-sig{font-family:"Mrs Saint Delafield",cursive!important;font-size:58px!important;line-height:1!important;margin:0 0 0 -4px!important;padding-top:4px;transform:rotate(-4deg);transform-origin:left;color:#111}
 .lt-name{font-weight:600!important;margin-top:2px!important}
 .lt-go{display:inline-flex;align-items:center;gap:8px;margin:0 0 6px;padding:12px 18px 12px 20px;flex:none;border:0;border-radius:999px;cursor:pointer;
-  background:#17151F;color:#fff;font:500 15px/1 "Instrument Sans",system-ui,sans-serif}
-.lt-go svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;transition:transform .2s ease}
-.lt-go:hover svg{transform:translateX(3px)}
-.lt-go:focus-visible,.lt-x:focus-visible,.lt-reopen:focus-visible{outline:2px solid #17151F;outline-offset:3px}
+  background:#17151F;color:#fff;font-family:var(--text,"Instrument Sans",system-ui,sans-serif);font-weight:500;font-size:var(--fs-small,15px);line-height:1}
+.lt-go svg{width:18px;height:18px;flex:none;fill:currentColor;overflow:visible}
+.lt-go:focus-visible,.lt-x:focus-visible{outline:2px solid #17151F;outline-offset:3px}
 .lt-x{position:absolute;top:18px;right:18px;z-index:3;width:40px;height:40px;border-radius:999px;border:0;background:transparent;cursor:pointer;display:grid;place-items:center;color:#5D5970}
 .lt-x:hover{background:rgba(23,21,31,.06);color:#17151F}
 .lt-x svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round}
@@ -106,43 +105,49 @@ CSS = """
 .lt-panel{position:absolute;left:0;width:100%;transform-style:preserve-3d;transition:transform .8s cubic-bezier(.3,.7,.2,1)}
 .lt-face,.lt-back{position:absolute;inset:0;overflow:hidden;backface-visibility:hidden;-webkit-backface-visibility:hidden;background:#FFFEFC var(--paper-grain,none)}
 .lt-back{transform:rotateX(180deg);background:#FBFAF7 var(--paper-grain,none);display:grid;place-items:center;align-content:center;gap:10px}
-.lt-back svg{width:44px;height:44px;color:#111!important}
+.lt-back svg{width:44px;height:44px;color:#111!important;fill:currentColor;overflow:visible}
 .lt-back span{font:500 11px/1.4 "Instrument Sans",system-ui,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#5D5970}
 .lt-p0{transform-origin:50% 100%}.lt-p2{transform-origin:50% 0}
 .lt-p0 .lt-face{border-radius:14px 14px 0 0}.lt-p2 .lt-face{border-radius:0 0 14px 14px}
 .lt-p0 .lt-back{border-radius:0 0 14px 14px}.lt-p2 .lt-back{border-radius:14px 14px 0 0}
 .lt-face>.lt-copy{position:absolute;left:0;width:100%}
+.lt-shade{position:absolute;left:0;top:0;width:100%;height:100%;border-radius:14px;pointer-events:none;
+  box-shadow:0 1px 0 #ECE9F4,0 2px 0 #E2DEEE,0 3px 0 #D9D4E8,0 30px 80px -20px rgba(120,100,210,.35),0 10px 30px -10px rgba(23,21,31,.18);
+  transition:top .8s cubic-bezier(.3,.7,.2,1),height 1s cubic-bezier(.3,.7,.2,1)}
+/* the folded letter casts its shadow from the packet it is folded into */
+.lt.folded .lt-shade{top:33.333%;height:33.334%;border-radius:4px}
 .lt.folded .lt-p0{transform:rotateX(-179.5deg)}
 .lt.folded .lt-p2{transform:rotateX(179deg)}
 .lt-move{transition:transform .55s cubic-bezier(.3,.7,.2,1),opacity .55s ease}
-.lt-reopen{position:fixed;left:20px;bottom:20px;z-index:900;display:inline-flex;align-items:center;gap:8px;padding:8px 14px 8px 10px;border-radius:999px;
-  border:1px solid rgba(23,21,31,.1);background:#FFFEFC;color:#17151F;cursor:pointer;font:500 14px/1 "Instrument Sans",system-ui,sans-serif;
-  box-shadow:0 8px 24px -8px rgba(120,100,210,.4);opacity:0;transform:translateY(8px);transition:opacity .4s ease,transform .4s ease}
-.lt-reopen.on{opacity:1;transform:none}
-.lt-reopen-mark svg{width:22px;height:22px;display:block;color:#111!important}
-@media (max-width:600px){.lt-scroll{padding:40px 26px 32px}.lt-scroll p{font-size:16px}.lt-sig{font-size:54px!important}.lt-reopen{left:14px;bottom:14px}}
-@media (prefers-reduced-motion:reduce){.lt-panel,.lt-move,.lt-bg,.lt-reopen{transition:none!important}}
+@media (max-width:600px){.lt-scroll{padding:40px 26px 32px}.lt-sig{font-size:54px!important}}
+@media (prefers-reduced-motion:reduce){.lt-panel,.lt-move,.lt-bg,.lt-shade{transition:none!important}}
 </style>
 """
 
 JS = """
 <script>
 (() => {
-  const root = document.getElementById('letter'), reopen = document.getElementById('letter-reopen');
+  const root = document.getElementById('letter');
   if (!root) return;
   const sheet = root.querySelector('.lt-sheet'), stage = root.querySelector('.lt-stage'), scroller = root.querySelector('.lt-scroll');
   const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const seen = () => { try { return sessionStorage.getItem('letter-seen') === '1'; } catch (e) { return false; } };
-  const markSeen = () => { try { sessionStorage.setItem('letter-seen', '1'); } catch (e) {} };
+  const seen = () => { try { return localStorage.getItem('letter-seen') === '1'; } catch (e) { return false; } };
+  const markSeen = () => { try { localStorage.setItem('letter-seen', '1'); } catch (e) {} };
   const wait = ms => new Promise(r => setTimeout(r, ms));
   const frame = () => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
   let opener = null, busy = false;
+  // play an icon's motion once, as the main site does
+  const play = svg => { if (!svg || calm) return; svg.querySelectorAll('animateTransform').forEach(a => { try { a.beginElement(); } catch (e) {} }); };
+  const mark = root.querySelector('.lt-mark svg'), go = root.querySelector('.lt-go'), arrow = go && go.querySelector('svg');
+  if (mark) mark.addEventListener('pointerenter', () => play(mark));
+  if (go) { go.addEventListener('pointerenter', () => play(arrow)); go.addEventListener('focus', () => play(arrow)); }
 
   // three strips of the sheet as it looks now, hinged at the creases
   function buildFold() {
     const h = sheet.offsetHeight, third = h / 3, top = scroller.scrollTop;
     const fold = document.createElement('div');
     fold.className = 'lt-fold'; fold.setAttribute('aria-hidden', 'true'); fold.style.height = h + 'px';
+    const shade = document.createElement('div'); shade.className = 'lt-shade'; fold.appendChild(shade);
     for (let i = 0; i < 3; i++) {
       const p = document.createElement('div');
       p.className = 'lt-panel lt-p' + i; p.style.top = (i * third) + 'px'; p.style.height = third + 'px';
@@ -176,7 +181,6 @@ JS = """
   async function open() {
     if (busy) return; busy = true;
     opener = document.activeElement;
-    reopen.classList.remove('on'); reopen.hidden = true;
     root.hidden = false; document.documentElement.style.overflow = 'hidden';
     document.addEventListener('keydown', trap);
     if (calm) { root.classList.add('on'); sheet.focus(); busy = false; return; }
@@ -195,6 +199,7 @@ JS = """
     sheet.style.visibility = ''; fold.remove();
     sheet.focus({ preventScroll: true });
     busy = false;
+    setTimeout(() => play(mark), 150);
   }
 
   async function close() {
@@ -208,24 +213,18 @@ JS = """
       fold.querySelector('.lt-p0').style.transitionDelay = '.18s';
       root.classList.add('folded');
       await wait(900);
-      const r = reopen.getBoundingClientRect(), s = stage.getBoundingClientRect();
-      reopen.hidden = false;
-      const rr = reopen.getBoundingClientRect();
-      const dx = (rr.left + rr.width / 2) - (s.left + s.width / 2), dy = (rr.top + rr.height / 2) - (s.top + sheet.offsetHeight / 2);
-      fold.classList.add('lt-move'); fold.style.transform = 'translate(' + dx + 'px,' + dy + 'px) scale(.12)'; fold.style.opacity = '0';
+      fold.classList.add('lt-move'); fold.style.transform = 'translateY(48px) scale(.9)'; fold.style.opacity = '0';
       root.classList.remove('on');
       await wait(560);
       fold.remove(); root.classList.remove('folded');
-    } else { reopen.hidden = false; root.classList.remove('on'); }
+    } else { root.classList.remove('on'); }
     sheet.style.visibility = ''; root.hidden = true; document.documentElement.style.overflow = '';
-    reopen.hidden = false; await frame(); reopen.classList.add('on');
     if (opener && opener !== document.body && document.contains(opener)) opener.focus({ preventScroll: true });
-    busy = false;
+    root.remove();   // once closed, the letter is gone for good
   }
 
   root.querySelectorAll('[data-close]').forEach(el => el.addEventListener('click', close));
-  reopen.addEventListener('click', open);
-  if (seen()) { reopen.hidden = false; requestAnimationFrame(() => reopen.classList.add('on')); }
+  if (seen()) root.remove();
   else if (document.readyState === 'complete') open();
   else addEventListener('load', () => setTimeout(open, 250), { once: true });
 })();
