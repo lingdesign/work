@@ -8,8 +8,7 @@ My first design job started in college. My classmates at National Taiwan Univers
 
 Since then, I've spent most of my career in healthcare, where the stakes are different but the question is the same: what keeps someone engaged in their long-term outcome, be it health or learning?
 
-# Approach paragraph: option B. A and C are in the chat.
-I design for clarity first. I ask why before deciding what to build, give every screen one clear focus, and tell people plainly what's happening.
+I design for clarity first. I ask why before deciding what to build, give every screen one clear focus, tell people plainly what's happening, and refine every detail until it feels right.
 
 closing: Thanks for reading,
 signature: Ling
