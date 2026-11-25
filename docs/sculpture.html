@@ -7,9 +7,6 @@ html,body{height:100%!important;overflow:hidden;background:transparent!important
 .stage{height:100%!important;min-height:0!important;background:transparent!important;cursor:grab}
 </style>
 <meta name="claude:viewport-fit-sides" content="cover">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=JetBrains+Mono:wght@400;500;600&display=swap">
 <style>
 /* Layout: full-height studio stage (3D render or blueprint sheet) beside a narrow drafting panel of controls and the balance sheet. */
 :root{
@@ -270,8 +267,8 @@ td.r,th.r{text-align:right}
   </aside>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="assets/vendor/three.min.js"></script>
+<script src="assets/vendor/OrbitControls.js"></script>
 <script>
 (() => {
 'use strict';
@@ -738,8 +735,7 @@ function makeEnv(world){
   const t = pm.fromScene(sc, .012).texture; pm.dispose();
   return t;
 }
-const ENV = { studio: makeEnv(null) };
-scene.environment = ENV.studio;
+const ENV = {};
 
 const hemi = new THREE.HemisphereLight(0xffffff, 0x50504c, .45); scene.add(hemi);
 const key = new THREE.DirectionalLight(0xffffff, 1.6);
@@ -1397,7 +1393,7 @@ function applyBackdrop(){
     { const sc = new THREE.Color(SHADOW[S.backdrop] || SHADOW.haze).convertSRGBToLinear(); catcher.material.color.copy(sc); wallCatcher.material.color.copy(sc); }
     drawSky();
   } else {
-    scene.environment = ENV.studio;
+    scene.environment = ENV.studio || (ENV.studio = makeEnv(null));
     cycMat.color.copy(linHex(b.c));
     renderer.setClearColor(linHex(b.c).convertLinearToSRGB(), 1);
     hemi.color.set(0xffffff); hemi.groundColor.set(0x50504c);
@@ -1489,7 +1485,11 @@ function showCurated(i){
 }
 // colour scheme: left to this page's CSS, which follows the system, as the <iframe> on the page does (color-scheme: light dark),
 // so the two always agree and the frame stays transparent whichever look the visitor picks on the page
-let PAUSED = false;
+let PAUSED = false, GOT_BACK = false, GOT_THEME = false, READY = false;
+function readySoon(){   // two frames after the page's layout, theme and backdrop are all in
+  if (READY || !GOT_BACK || !GOT_THEME || !LAYOUT) return; READY = true;
+  requestAnimationFrame(() => requestAnimationFrame(() => { try{ parent.postMessage({type:'ready'}, location.origin); }catch(e){} }));
+}
 addEventListener('message', e=>{
   if (e.origin !== location.origin) return;
   const d = e.data || {};
@@ -1505,13 +1505,16 @@ addEventListener('message', e=>{
     BACK.texRaw = new THREE.CanvasTexture(c); BACK.texRaw.minFilter = THREE.LinearFilter; BACK.texRaw.generateMipmaps = false;
     BACK.texEnv = new THREE.CanvasTexture(c); BACK.texEnv.encoding = THREE.sRGBEncoding;
     BACK.uniforms.tBack.value = BACK.texRaw; BACK.uniforms.uHas.value = 1;
-    delete ENV.haze; delete ENV.night; applyBackdrop();   // rebuild the reflected world with the page in it
+    if (d.env !== false || !GOT_BACK){ delete ENV.haze; delete ENV.night; applyBackdrop(); }   // rebuild the reflected world with the page in it
+    else BACK.texEnv.needsUpdate = true;
+    GOT_BACK = true; readySoon();
   }
-  else if (d.type==='layout'){ LAYOUT = {land:!!d.land, top:+d.top, hz:+d.hz}; if (LASTFRAME) frame(...LASTFRAME); }
+  else if (d.type==='layout'){ LAYOUT = {land:!!d.land, top:+d.top, hz:+d.hz}; if (LASTFRAME) frame(...LASTFRAME); readySoon(); }
   else if (d.type==='theme'){
     const k = d.dark ? 'night' : 'haze';
     if (d.shadow) SHADOW[k] = d.shadow;
     if (S.backdrop !== k){ S.backdrop = k; } applyBackdrop();
+    GOT_THEME = true; readySoon();
   }
 });
 function loop(now){
@@ -1990,6 +1993,7 @@ resize();
 $('#load').remove();
 showCurated(parseInt(location.hash.slice(1))||0);
 requestAnimationFrame(loop);
+{ const hi = () => { if (READY) return clearInterval(hiT); try{ parent.postMessage({type:'hello'}, location.origin); }catch(e){} }, hiT = setInterval(hi, 250); hi(); setTimeout(() => clearInterval(hiT), 8000); }   // repeat until the page has answered
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(()=>{ if (S.view==='blue') drawBlueprint(); });
 })();
 </script>

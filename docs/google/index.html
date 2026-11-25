@@ -20,6 +20,7 @@
 <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="../assets/favicon-32.png" type="image/png" sizes="32x32">
 <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+<link rel="preload" href="../assets/vendor/three.min.js" as="script">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..600;1,400..600&family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..600&display=swap">
@@ -31,7 +32,7 @@
 :root{
   /* color */
   --paper:#F6F5FB; --ink:#17151F; --ink-2:#5D5970; --sub:#6E6896;
-  --cast-shadow:#5D5970;   /* the sculpture's shadows, drawn at 50% on the floor: a shade darker than the purple world */ --line:#DDDAE8; --accent:#4A4FC8; --tbd:#B0563A;
+  --cast-shadow:#5D5970; --b2-hi:rgba(255,255,255,.6); --b2-lo:rgba(29,28,46,.08); --b2-rim:rgba(255,255,255,.9); --b2-sheen:rgba(255,255,255,.8); --b2-drop:rgba(40,36,90,.16);   /* the sculpture's shadows, drawn at 50% on the floor: a shade darker than the purple world */ --line:#DDDAE8; --accent:#4A4FC8; --tbd:#B0563A;
   --frame-shadow:rgba(170,174,254,.45);
   /* hero world: low-contrast wall, a soft horizon, a slightly deeper floor */
   --w-base:#DADCF5; --w-1:#C5C4F2; --w-2:#FFE6A8; --w-3:#EEDDF6; --w-4:#BCC8F1; --w-5:#FFF0CC; --w-glow:rgba(255,230,170,.65); --grain:.5;
@@ -62,6 +63,7 @@
 @media (min-width:1024px){ :root{ --cols:12; --gutter:24px; --margin:48px } }
 @media (min-width:1440px){ :root{ --gutter:32px; --margin:64px } }
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --btn2-base:#2B2A40; --b2-hi:rgba(255,255,255,.12); --b2-lo:rgba(0,0,0,.28); --b2-rim:rgba(255,255,255,.16); --b2-sheen:rgba(255,255,255,.16); --b2-drop:rgba(0,0,0,.4);
   --tg-track:rgba(255,255,255,.07); --tg-hi:rgba(255,255,255,.22); --tg-rim:rgba(255,255,255,.12); --tg-drop:rgba(0,0,0,.35); --tg-thumb:rgba(255,255,255,.2); --tg-thumb-hi:rgba(255,255,255,.45);
     --paper:#1D1C2E; --ink:#E7E4F1; --ink-2:#A9A5B9; --sub:#C3CBF2; --cast-shadow:#0A1150; --line:#34324A; --accent:#AAAEFE; --tbd:#F0AF96;
   --frame-shadow:rgba(44,56,153,.55); --tint:rgba(231,228,241,.06); --btn-hi:rgba(255,255,255,.55); --btn-lo:rgba(29,28,46,.14); --btn-rim:rgba(255,255,255,.7); --btn-sheen:rgba(255,255,255,.75); --btn-drop:rgba(0,0,0,.45);   /* matte light metal */
@@ -69,6 +71,7 @@
   --w-base:#16216F; --w-1:#2E3A9E; --w-2:rgba(222,176,108,.30); --w-3:#3E3A78; --w-4:#141739; --w-5:#4B3F72; --w-glow:rgba(255,214,150,.14); --grain:.22;
   color-scheme:dark } }
 :root[data-theme="dark"]{
+  --btn2-base:#2B2A40; --b2-hi:rgba(255,255,255,.12); --b2-lo:rgba(0,0,0,.28); --b2-rim:rgba(255,255,255,.16); --b2-sheen:rgba(255,255,255,.16); --b2-drop:rgba(0,0,0,.4);
   --tg-track:rgba(255,255,255,.07); --tg-hi:rgba(255,255,255,.22); --tg-rim:rgba(255,255,255,.12); --tg-drop:rgba(0,0,0,.35); --tg-thumb:rgba(255,255,255,.2); --tg-thumb-hi:rgba(255,255,255,.45);
     --paper:#1D1C2E; --ink:#E7E4F1; --ink-2:#A9A5B9; --sub:#C3CBF2; --cast-shadow:#0A1150; --line:#34324A; --accent:#AAAEFE; --tbd:#F0AF96;
   --frame-shadow:rgba(44,56,153,.55); --tint:rgba(231,228,241,.06); --btn-hi:rgba(255,255,255,.55); --btn-lo:rgba(29,28,46,.14); --btn-rim:rgba(255,255,255,.7); --btn-sheen:rgba(255,255,255,.75); --btn-drop:rgba(0,0,0,.45);   /* matte light metal */
@@ -162,7 +165,9 @@ p{text-wrap:pretty}
 .ground{top:calc(var(--hz, 84%) - 75%);height:150%}   /* 1.5 × hero tall; its midline (75% of the hero's height down) is the horizon */
 .world::after,.cover::after,.site-foot::after{content:"";position:absolute;inset:0;opacity:var(--grain);mix-blend-mode:screen;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.15' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 2.4 0 0 0 -1.2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
-.stage3d{position:absolute;inset:0;z-index:2;width:100%;height:100%;border:0;display:block;color-scheme:light dark}   /* the system's scheme, like the sculpture page inside, so a frame never paints an opaque backdrop when the visitor picks the other look */
+.stage3d{position:absolute;inset:0;z-index:2;width:100%;height:100%;border:0;display:block;color-scheme:light dark;opacity:0;transition:opacity 1.1s cubic-bezier(.2,.7,.2,1)}
+.stage3d.ready{opacity:1}   /* hidden until the sculpture has its layout, light and backdrop, then fades in once */
+@media (prefers-reduced-motion: reduce){ .stage3d{transition:none} }   /* the system's scheme, like the sculpture page inside, so a frame never paints an opaque backdrop when the visitor picks the other look */
 
 .hero-grid{flex:1;width:100%;padding-block:var(--s-5) calc(var(--s-5) + var(--arc));grid-template-rows:auto 1fr auto auto var(--s-7) auto}
 .hero-grid > *{position:relative;z-index:3}
@@ -202,6 +207,11 @@ p{text-wrap:pretty}
 .pill:active,.btn:active,.cta:active{transform:translateY(1px);box-shadow:inset 0 1px 0 var(--btn-rim),inset 0 -1px 0 var(--btn-lo),0 1px 1px var(--btn-drop)}
 .pill svg,.cta svg{width:18px;height:18px;flex:none}
 .bi{fill:currentColor;overflow:visible}   /* balance-set icons in buttons */
+/* secondary button: the same metal, inverted, so it never outweighs a primary (light on light pages, dark on dark) */
+.btn.btn-2{color:var(--ink);
+  --btn-hi:var(--b2-hi); --btn-lo:var(--b2-lo); --btn-rim:var(--b2-rim); --btn-sheen:var(--b2-sheen); --btn-drop:var(--b2-drop);
+  background:linear-gradient(105deg,transparent 40%,var(--btn-sheen) 50%,transparent 60%) var(--sx,35%) 0 / 300% 100% no-repeat,
+             linear-gradient(180deg,var(--btn-hi),transparent 50%,var(--btn-lo)),var(--btn2-base,#F6F5FB)}
 .hero-foot{grid-row:6;grid-column:1 / -1;display:flex;align-items:center;justify-content:space-between;gap:var(--s-4)}
 .hero-foot .study{font-size:var(--fs-label);line-height:1.3;color:var(--ink-2);opacity:.85}   /* Label size, sentence case: the one caption on the page */
 .hero-foot .study i{font-style:italic}
@@ -382,8 +392,10 @@ img.lq.landed{transition:filter .7s ease,transform .6s cubic-bezier(.2,.7,.2,1)}
    words in a frosted bubble at the bottom. Arrows, tapping either side or the keyboard step through frames, then on to
    the next story; Esc closes. */
 .spots{padding-block:var(--section)}
-.spot-row{list-style:none;margin:0;padding:0 var(--margin);display:grid;grid-auto-flow:column;grid-auto-columns:84%;gap:var(--gutter);
-  overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-inline:var(--margin);scrollbar-width:none;margin-inline:calc(-1 * var(--margin))}
+.spot-row{list-style:none;margin:0;padding:0;display:grid;grid-auto-flow:column;grid-auto-columns:84%;gap:var(--gutter);
+  overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;
+  /* full bleed: the row runs to both edges of the window, its first card still lined up with the page content */
+  --bleed:max(var(--margin), calc(50vw - var(--content) / 2));margin-inline:calc(50% - 50vw);padding-inline:var(--bleed);scroll-padding-inline:var(--bleed)}
 .spot-row::-webkit-scrollbar{display:none}
 @media (min-width:640px){ .spot-row{grid-auto-columns:calc((100% - var(--gutter)) / 2.15)} }
 @media (min-width:1024px){ .spot-row{grid-auto-columns:calc((100% - 2*var(--gutter)) / 3.2)} }
@@ -624,7 +636,7 @@ html.gal-open{overflow:hidden}
       </div>
       <div class="hero-foot small">
         <div class="tools">
-          <button class="btn icon-btn" id="regen" type="button" ><svg class="rocker" viewBox="3.5 5.5 17 17" aria-hidden="true" focusable="false"><g fill="currentColor"><g><animateTransform attributeName="transform" type="translate" dur="5.5s" begin="indefinite" calcMode="linear" keyTimes="0.0000;0.0091;0.0182;0.0273;0.0364;0.0455;0.0545;0.0636;0.0727;0.0818;0.0909;0.1000;0.1091;0.1182;0.1273;0.1364;0.1455;0.1545;0.1636;0.1727;0.1818;0.1909;0.2000;0.2091;0.2182;0.2273;0.2364;0.2455;0.2545;0.2636;0.2727;0.2818;0.2909;0.3000;0.3091;0.3182;0.3273;0.3364;0.3455;0.3545;0.3636;0.3727;0.3818;0.3909;0.4000;0.4091;0.4182;0.4273;0.4364;0.4455;0.4545;0.4636;0.4727;0.4818;0.4909;0.5000;0.5091;0.5182;0.5273;0.5364;0.5455;0.5545;0.5636;0.5727;0.5818;0.5909;0.6000;0.6091;0.6182;0.6273;0.6364;0.6455;0.6545;0.6636;0.6727;0.6818;0.6909;0.7000;0.7091;0.7182;0.7273;0.7364;0.7455;0.7545;0.7636;0.7727;0.7818;0.7909;0.8000;0.8091;0.8182;0.8273;0.8364;0.8455;0.8545;0.8636;0.8727;0.8818;0.8909;0.9000;0.9091;0.9182;0.9273;0.9364;0.9455;0.9545;0.9636;0.9727;0.9818;0.9909;1.0000" values="0.000 0;0.095 0;0.352 0;0.713 0;0.832 0;0.881 0;0.863 0;0.783 0;0.652 0;0.484 0;0.294 0;0.096 0;-0.093 0;-0.260 0;-0.396 0;-0.493 0;-0.546 0;-0.556 0;-0.524 0;-0.457 0;-0.361 0;-0.247 0;-0.123 0;-0.000 0;0.114 0;0.210 0;0.284 0;0.332 0;0.351 0;0.344 0;0.312 0;0.260 0;0.193 0;0.117 0;0.038 0;-0.037 0;-0.104 0;-0.158 0;-0.196 0;-0.218 0;-0.221 0;-0.209 0;-0.182 0;-0.144 0;-0.098 0;-0.049 0;-0.000 0;0.045 0;0.084 0;0.113 0;0.132 0;0.140 0;0.137 0;0.124 0;0.104 0;0.077 0;0.047 0;0.015 0;-0.015 0;-0.041 0;-0.063 0;-0.078 0;-0.087 0;-0.088 0;-0.083 0;-0.073 0;-0.057 0;-0.039 0;-0.020 0;0.000 0;0.018 0;0.033 0;0.045 0;0.053 0;0.056 0;0.055 0;0.050 0;0.041 0;0.031 0;0.019 0;0.006 0;-0.006 0;-0.016 0;-0.025 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0"/><g><animateTransform attributeName="transform" type="rotate" dur="5.5s" begin="indefinite" calcMode="linear" keyTimes="0.0000;0.0091;0.0182;0.0273;0.0364;0.0455;0.0545;0.0636;0.0727;0.0818;0.0909;0.1000;0.1091;0.1182;0.1273;0.1364;0.1455;0.1545;0.1636;0.1727;0.1818;0.1909;0.2000;0.2091;0.2182;0.2273;0.2364;0.2455;0.2545;0.2636;0.2727;0.2818;0.2909;0.3000;0.3091;0.3182;0.3273;0.3364;0.3455;0.3545;0.3636;0.3727;0.3818;0.3909;0.4000;0.4091;0.4182;0.4273;0.4364;0.4455;0.4545;0.4636;0.4727;0.4818;0.4909;0.5000;0.5091;0.5182;0.5273;0.5364;0.5455;0.5545;0.5636;0.5727;0.5818;0.5909;0.6000;0.6091;0.6182;0.6273;0.6364;0.6455;0.6545;0.6636;0.6727;0.6818;0.6909;0.7000;0.7091;0.7182;0.7273;0.7364;0.7455;0.7545;0.7636;0.7727;0.7818;0.7909;0.8000;0.8091;0.8182;0.8273;0.8364;0.8455;0.8545;0.8636;0.8727;0.8818;0.8909;0.9000;0.9091;0.9182;0.9273;0.9364;0.9455;0.9545;0.9636;0.9727;0.9818;0.9909;1.0000" values="0.000 12 15;0.778 12 15;2.878 12 15;5.834 12 15;6.809 12 15;7.214 12 15;7.063 12 15;6.409 12 15;5.339 12 15;3.963 12 15;2.404 12 15;0.789 12 15;-0.758 12 15;-2.132 12 15;-3.244 12 15;-4.035 12 15;-4.472 12 15;-4.549 12 15;-4.289 12 15;-3.737 12 15;-2.955 12 15;-2.019 12 15;-1.007 12 15;-0.000 12 15;0.930 12 15;1.720 12 15;2.325 12 15;2.714 12 15;2.875 12 15;2.815 12 15;2.554 12 15;2.128 12 15;1.579 12 15;0.958 12 15;0.315 12 15;-0.302 12 15;-0.850 12 15;-1.293 12 15;-1.608 12 15;-1.782 12 15;-1.813 12 15;-1.709 12 15;-1.489 12 15;-1.178 12 15;-0.805 12 15;-0.401 12 15;-0.000 12 15;0.371 12 15;0.686 12 15;0.926 12 15;1.081 12 15;1.146 12 15;1.122 12 15;1.018 12 15;0.848 12 15;0.629 12 15;0.382 12 15;0.125 12 15;-0.120 12 15;-0.339 12 15;-0.515 12 15;-0.641 12 15;-0.710 12 15;-0.722 12 15;-0.681 12 15;-0.594 12 15;-0.469 12 15;-0.321 12 15;-0.160 12 15;0.000 12 15;0.148 12 15;0.273 12 15;0.369 12 15;0.431 12 15;0.457 12 15;0.447 12 15;0.406 12 15;0.338 12 15;0.251 12 15;0.152 12 15;0.050 12 15;-0.048 12 15;-0.135 12 15;-0.205 12 15;0.000 12 15;0.000 12 15;0.000 12 15;0.000 12 15;0.000 12 15;0.000 12 15;0.000 12 15;0.000 12 15;0.000 12 15;0.000 12 15;0.000 12 15;0.000 12 15;0.000 12 15;0.000 12 15;0.000 12 15;0.000 12 15;0.000 12 15;0.000 12 15;0.000 12 15;0.000 12 15;0.000 12 15;0.000 12 15;0.000 12 15;0.000 12 15;0.000 12 15;0.000 12 15;0.000 12 15"/><path d="M5 15 A7 7 0 0 0 19 15 Z"/><g><animateTransform attributeName="transform" type="translate" dur="5.5s" begin="indefinite" calcMode="linear" keyTimes="0.0000;0.0091;0.0182;0.0273;0.0364;0.0455;0.0545;0.0636;0.0727;0.0818;0.0909;0.1000;0.1091;0.1182;0.1273;0.1364;0.1455;0.1545;0.1636;0.1727;0.1818;0.1909;0.2000;0.2091;0.2182;0.2273;0.2364;0.2455;0.2545;0.2636;0.2727;0.2818;0.2909;0.3000;0.3091;0.3182;0.3273;0.3364;0.3455;0.3545;0.3636;0.3727;0.3818;0.3909;0.4000;0.4091;0.4182;0.4273;0.4364;0.4455;0.4545;0.4636;0.4727;0.4818;0.4909;0.5000;0.5091;0.5182;0.5273;0.5364;0.5455;0.5545;0.5636;0.5727;0.5818;0.5909;0.6000;0.6091;0.6182;0.6273;0.6364;0.6455;0.6545;0.6636;0.6727;0.6818;0.6909;0.7000;0.7091;0.7182;0.7273;0.7364;0.7455;0.7545;0.7636;0.7727;0.7818;0.7909;0.8000;0.8091;0.8182;0.8273;0.8364;0.8455;0.8545;0.8636;0.8727;0.8818;0.8909;0.9000;0.9091;0.9182;0.9273;0.9364;0.9455;0.9545;0.9636;0.9727;0.9818;0.9909;1.0000" values="0.000 0;0.000 0;0.000 0;0.003 0;0.094 0;0.291 0;0.516 0;0.590 0;0.614 0;0.592 0;0.529 0;0.432 0;0.311 0;0.177 0;0.040 0;-0.089 0;-0.202 0;-0.292 0;-0.353 0;-0.384 0;-0.384 0;-0.357 0;-0.306 0;-0.236 0;-0.155 0;-0.068 0;0.017 0;0.094 0;0.158 0;0.206 0;0.235 0;0.245 0;0.236 0;0.211 0;0.172 0;0.124 0;0.070 0;0.016 0;-0.036 0;-0.081 0;-0.116 0;-0.141 0;-0.153 0;-0.153 0;-0.142 0;-0.122 0;-0.094 0;-0.062 0;-0.027 0;0.007 0;0.037 0;0.063 0;0.082 0;0.094 0;0.098 0;0.094 0;0.084 0;0.069 0;0.049 0;0.028 0;0.006 0;-0.014 0;-0.032 0;-0.046 0;-0.056 0;-0.061 0;-0.061 0;-0.057 0;-0.049 0;-0.038 0;-0.025 0;-0.011 0;0.003 0;0.015 0;0.025 0;0.033 0;0.037 0;0.039 0;0.037 0;0.033 0;0.027 0;0.020 0;0.011 0;0.003 0;-0.006 0;-0.013 0;-0.018 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0"/><circle cx="12" cy="10.5" r="3.5"/></g></g></g></g></svg><span class="btn-text">New sculpture</span></button>
+          <button class="btn btn-2 icon-btn" id="regen" type="button" ><svg class="rocker" viewBox="3.5 5.5 17 17" aria-hidden="true" focusable="false"><g fill="currentColor"><g><animateTransform attributeName="transform" type="translate" dur="5.5s" begin="indefinite" calcMode="linear" keyTimes="0.0000;0.0091;0.0182;0.0273;0.0364;0.0455;0.0545;0.0636;0.0727;0.0818;0.0909;0.1000;0.1091;0.1182;0.1273;0.1364;0.1455;0.1545;0.1636;0.1727;0.1818;0.1909;0.2000;0.2091;0.2182;0.2273;0.2364;0.2455;0.2545;0.2636;0.2727;0.2818;0.2909;0.3000;0.3091;0.3182;0.3273;0.3364;0.3455;0.3545;0.3636;0.3727;0.3818;0.3909;0.4000;0.4091;0.4182;0.4273;0.4364;0.4455;0.4545;0.4636;0.4727;0.4818;0.4909;0.5000;0.5091;0.5182;0.5273;0.5364;0.5455;0.5545;0.5636;0.5727;0.5818;0.5909;0.6000;0.6091;0.6182;0.6273;0.6364;0.6455;0.6545;0.6636;0.6727;0.6818;0.6909;0.7000;0.7091;0.7182;0.7273;0.7364;0.7455;0.7545;0.7636;0.7727;0.7818;0.7909;0.8000;0.8091;0.8182;0.8273;0.8364;0.8455;0.8545;0.8636;0.8727;0.8818;0.8909;0.9000;0.9091;0.9182;0.9273;0.9364;0.9455;0.9545;0.9636;0.9727;0.9818;0.9909;1.0000" values="0.000 0;0.095 0;0.352 0;0.713 0;0.832 0;0.881 0;0.863 0;0.783 0;0.652 0;0.484 0;0.294 0;0.096 0;-0.093 0;-0.260 0;-0.396 0;-0.493 0;-0.546 0;-0.556 0;-0.524 0;-0.457 0;-0.361 0;-0.247 0;-0.123 0;-0.000 0;0.114 0;0.210 0;0.284 0;0.332 0;0.351 0;0.344 0;0.312 0;0.260 0;0.193 0;0.117 0;0.038 0;-0.037 0;-0.104 0;-0.158 0;-0.196 0;-0.218 0;-0.221 0;-0.209 0;-0.182 0;-0.144 0;-0.098 0;-0.049 0;-0.000 0;0.045 0;0.084 0;0.113 0;0.132 0;0.140 0;0.137 0;0.124 0;0.104 0;0.077 0;0.047 0;0.015 0;-0.015 0;-0.041 0;-0.063 0;-0.078 0;-0.087 0;-0.088 0;-0.083 0;-0.073 0;-0.057 0;-0.039 0;-0.020 0;0.000 0;0.018 0;0.033 0;0.045 0;0.053 0;0.056 0;0.055 0;0.050 0;0.041 0;0.031 0;0.019 0;0.006 0;-0.006 0;-0.016 0;-0.025 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0"/><g><animateTransform attributeName="transform" type="rotate" dur="5.5s" begin="indefinite" calcMode="linear" keyTimes="0.0000;0.0091;0.0182;0.0273;0.0364;0.0455;0.0545;0.0636;0.0727;0.0818;0.0909;0.1000;0.1091;0.1182;0.1273;0.1364;0.1455;0.1545;0.1636;0.1727;0.1818;0.1909;0.2000;0.2091;0.2182;0.2273;0.2364;0.2455;0.2545;0.2636;0.2727;0.2818;0.2909;0.3000;0.3091;0.3182;0.3273;0.3364;0.3455;0.3545;0.3636;0.3727;0.3818;0.3909;0.4000;0.4091;0.4182;0.4273;0.4364;0.4455;0.4545;0.4636;0.4727;0.4818;0.4909;0.5000;0.5091;0.5182;0.5273;0.5364;0.5455;0.5545;0.5636;0.5727;0.5818;0.5909;0.6000;0.6091;0.6182;0.6273;0.6364;0.6455;0.6545;0.6636;0.6727;0.6818;0.6909;0.7000;0.7091;0.7182;0.7273;0.7364;0.7455;0.7545;0.7636;0.7727;0.7818;0.7909;0.8000;0.8091;0.8182;0.8273;0.8364;0.8455;0.8545;0.8636;0.8727;0.8818;0.8909;0.9000;0.9091;0.9182;0.9273;0.9364;0.9455;0.9545;0.9636;0.9727;0.9818;0.9909;1.0000" values="0.000 12 15;0.778 12 15;2.878 12 15;5.834 12 15;6.809 12 15;7.214 12 15;7.063 12 15;6.409 12 15;5.339 12 15;3.963 12 15;2.404 12 15;0.789 12 15;-0.758 12 15;-2.132 12 15;-3.244 12 15;-4.035 12 15;-4.472 12 15;-4.549 12 15;-4.289 12 15;-3.737 12 15;-2.955 12 15;-2.019 12 15;-1.007 12 15;-0.000 12 15;0.930 12 15;1.720 12 15;2.325 12 15;2.714 12 15;2.875 12 15;2.815 12 15;2.554 12 15;2.128 12 15;1.579 12 15;0.958 12 15;0.315 12 15;-0.302 12 15;-0.850 12 15;-1.293 12 15;-1.608 12 15;-1.782 12 15;-1.813 12 15;-1.709 12 15;-1.489 12 15;-1.178 12 15;-0.805 12 15;-0.401 12 15;-0.000 12 15;0.371 12 15;0.686 12 15;0.926 12 15;1.081 12 15;1.146 12 15;1.122 12 15;1.018 12 15;0.848 12 15;0.629 12 15;0.382 12 15;0.125 12 15;-0.120 12 15;-0.339 12 15;-0.515 12 15;-0.641 12 15;-0.710 12 15;-0.722 12 15;-0.681 12 15;-0.594 12 15;-0.469 12 15;-0.321 12 15;-0.160 12 15;0.000 12 15;0.148 12 15;0.273 12 15;0.369 12 15;0.431 12 15;0.457 12 15;0.447 12 15;0.406 12 15;0.338 12 15;0.251 12 15;0.152 12 15;0.050 12 15;-0.048 12 15;-0.135 12 15;-0.205 12 15;0.000 12 15;0.000 12 15;0.000 12 15;0.000 12 15;0.000 12 15;0.000 12 15;0.000 12 15;0.000 12 15;0.000 12 15;0.000 12 15;0.000 12 15;0.000 12 15;0.000 12 15;0.000 12 15;0.000 12 15;0.000 12 15;0.000 12 15;0.000 12 15;0.000 12 15;0.000 12 15;0.000 12 15;0.000 12 15;0.000 12 15;0.000 12 15;0.000 12 15;0.000 12 15;0.000 12 15"/><path d="M5 15 A7 7 0 0 0 19 15 Z"/><g><animateTransform attributeName="transform" type="translate" dur="5.5s" begin="indefinite" calcMode="linear" keyTimes="0.0000;0.0091;0.0182;0.0273;0.0364;0.0455;0.0545;0.0636;0.0727;0.0818;0.0909;0.1000;0.1091;0.1182;0.1273;0.1364;0.1455;0.1545;0.1636;0.1727;0.1818;0.1909;0.2000;0.2091;0.2182;0.2273;0.2364;0.2455;0.2545;0.2636;0.2727;0.2818;0.2909;0.3000;0.3091;0.3182;0.3273;0.3364;0.3455;0.3545;0.3636;0.3727;0.3818;0.3909;0.4000;0.4091;0.4182;0.4273;0.4364;0.4455;0.4545;0.4636;0.4727;0.4818;0.4909;0.5000;0.5091;0.5182;0.5273;0.5364;0.5455;0.5545;0.5636;0.5727;0.5818;0.5909;0.6000;0.6091;0.6182;0.6273;0.6364;0.6455;0.6545;0.6636;0.6727;0.6818;0.6909;0.7000;0.7091;0.7182;0.7273;0.7364;0.7455;0.7545;0.7636;0.7727;0.7818;0.7909;0.8000;0.8091;0.8182;0.8273;0.8364;0.8455;0.8545;0.8636;0.8727;0.8818;0.8909;0.9000;0.9091;0.9182;0.9273;0.9364;0.9455;0.9545;0.9636;0.9727;0.9818;0.9909;1.0000" values="0.000 0;0.000 0;0.000 0;0.003 0;0.094 0;0.291 0;0.516 0;0.590 0;0.614 0;0.592 0;0.529 0;0.432 0;0.311 0;0.177 0;0.040 0;-0.089 0;-0.202 0;-0.292 0;-0.353 0;-0.384 0;-0.384 0;-0.357 0;-0.306 0;-0.236 0;-0.155 0;-0.068 0;0.017 0;0.094 0;0.158 0;0.206 0;0.235 0;0.245 0;0.236 0;0.211 0;0.172 0;0.124 0;0.070 0;0.016 0;-0.036 0;-0.081 0;-0.116 0;-0.141 0;-0.153 0;-0.153 0;-0.142 0;-0.122 0;-0.094 0;-0.062 0;-0.027 0;0.007 0;0.037 0;0.063 0;0.082 0;0.094 0;0.098 0;0.094 0;0.084 0;0.069 0;0.049 0;0.028 0;0.006 0;-0.014 0;-0.032 0;-0.046 0;-0.056 0;-0.061 0;-0.061 0;-0.057 0;-0.049 0;-0.038 0;-0.025 0;-0.011 0;0.003 0;0.015 0;0.025 0;0.033 0;0.037 0;0.039 0;0.037 0;0.033 0;0.027 0;0.020 0;0.011 0;0.003 0;-0.006 0;-0.013 0;-0.018 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0;0.000 0"/><circle cx="12" cy="10.5" r="3.5"/></g></g></g></g></svg><span class="btn-text">New sculpture</span></button>
         </div>
       </div>
     </div>
@@ -959,19 +971,21 @@ html.gal-open{overflow:hidden}
     el.querySelectorAll('.dot').forEach(d => { const r = d.getBoundingClientRect(); x.fillStyle = getComputedStyle(d).backgroundColor;
       x.beginPath(); x.arc(r.left - hb.left + r.width/2, r.top - hb.top + r.height/2, r.width/2, 0, Math.PI*2); x.fill(); });
   }
-  async function sendBackdrop(){
+  async function sendBackdrop(env = true){
     if (!frame.contentWindow || !window.createImageBitmap) return;
-    const hb = hero.getBoundingClientRect(), dpr = Math.min(2, devicePixelRatio || 1), W = Math.round(hb.width*dpr), H = Math.round(hb.height*dpr);
+    const hb = hero.getBoundingClientRect(), dpr = Math.min(1.5, devicePixelRatio || 1), W = Math.round(hb.width*dpr), H = Math.round(hb.height*dpr);
     if (!W || !H) return;
     const c = document.createElement('canvas'); c.width = W; c.height = H; const x = c.getContext('2d');
     x.drawImage(wash, 0, 0, W, H);
     const gr = ground.getBoundingClientRect(); x.drawImage(ground, (gr.left - hb.left)*dpr, (gr.top - hb.top)*dpr, gr.width*dpr, gr.height*dpr);
     x.scale(dpr, dpr);
     hero.querySelectorAll('.role, .headline, .hero-sub').forEach(el => drawWords(x, el, hb));
-    try { const bitmap = await createImageBitmap(c); frame.contentWindow.postMessage({type:'backdrop', bitmap}, location.origin, [bitmap]); } catch(e){}
+    try { const bitmap = await createImageBitmap(c); frame.contentWindow.postMessage({type:'backdrop', bitmap, env}, location.origin, [bitmap]); } catch(e){}
   }
   let bdTimer = 0;
-  function queueBackdrop(ms){ clearTimeout(bdTimer); bdTimer = setTimeout(() => (document.fonts ? document.fonts.ready : Promise.resolve()).then(sendBackdrop), ms); }
+  // env: also rebuild the light the metal reflects (a heavy GPU pass). Only for a new size or theme; a new line of text skips it.
+  let bdEnv = false;
+  function queueBackdrop(ms, env = true){ bdEnv = bdEnv || env; clearTimeout(bdTimer); bdTimer = setTimeout(() => (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => { const e = bdEnv; bdEnv = false; sendBackdrop(e); }), ms); }
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(sendLayout);
   paintWorld(); sendLayout();
   if ('ResizeObserver' in window) new ResizeObserver(() => requestAnimationFrame(() => { paintWorld(); sendLayout(); queueBackdrop(250); })).observe(hero);
@@ -983,7 +997,11 @@ html.gal-open{overflow:hidden}
   addEventListener('message', e=>{
     if (e.origin !== location.origin || !e.data) return;
     const d = e.data;
+    if (d.type === 'hello'){ lastLayout = ''; sendLayout(); sendTheme(); queueBackdrop(0); }   // the sculpture's script is up: hand it everything at once
+    else if (d.type === 'ready') frame.classList.add('ready');
   });
+  setTimeout(() => frame.classList.add('ready'), 6000);   // never leave it hidden
+  sendTheme(); queueBackdrop(0);   // the frame may have loaded before this script ran; whichever comes last hands it everything
   /* Button icons from the balance set: they replay on hover, focus and press. The down arrow also loops on its own.
      Reduced motion: every icon rests in its still pose. */
   const stillIcons = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -1026,7 +1044,7 @@ html.gal-open{overflow:hidden}
     let at = 0, timer = 0, held = false, seen = false;
     const show = i => {
       const prev = at;
-      if (i !== prev){ send({type:'breath'}); queueBackdrop(1400); }
+      if (i !== prev){ send({type:'breath'}); queueBackdrop(1400, false); }
       at = i;
       items.forEach((it, k) => {
         it.classList.toggle('on', k === i); it.classList.toggle('prev', k === prev && prev !== i);
@@ -1037,7 +1055,7 @@ html.gal-open{overflow:hidden}
       words.forEach((w, k) => { const s = document.createElement('span'); s.className = 'w'; s.style.setProperty('--i', k); s.textContent = w; it.append(s, k < words.length - 1 ? ' ' : ''); }); });
     sides.classList.add('rotating', 'settling', 'entering'); show(0);   // settle instantly: only the first line shows, and it enters from the left
     const title = hero.querySelector('.headline'); title.classList.replace('waiting', 'entering') || title.classList.add('entering');   // with the title, in step
-    title.addEventListener('animationend', () => { title.classList.remove('entering'); queueBackdrop(60); }, {once:true});   // the sculpture's glass reads the settled title
+    title.addEventListener('animationend', () => { title.classList.remove('entering'); queueBackdrop(60, false); }, {once:true});   // the sculpture's glass reads the settled title
     items[0].addEventListener('animationend', () => sides.classList.remove('entering'), {once:true});
     requestAnimationFrame(() => requestAnimationFrame(() => sides.classList.remove('settling')));
     sides.addEventListener('pointerenter', () => { held = true; restart(); }); sides.addEventListener('pointerleave', () => { held = false; restart(); });
