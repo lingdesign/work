@@ -23,7 +23,7 @@
 :root{
   /* color */
   --paper:#F6F5FB; --ink:#17151F; --ink-2:#5D5970; --sub:#6E6896;
-  --cast-shadow:#5D5970;   /* the sculpture's shadows, drawn at 50% on the floor: a shade darker than the purple world */ --line:#DDDAE8; --accent:#4A4FC8; --tbd:#B0563A;
+  --cast-shadow:#5D5970; --b2-hi:rgba(255,255,255,.6); --b2-lo:rgba(29,28,46,.08); --b2-rim:rgba(255,255,255,.9); --b2-sheen:rgba(255,255,255,.8); --b2-drop:rgba(40,36,90,.16);   /* the sculpture's shadows, drawn at 50% on the floor: a shade darker than the purple world */ --line:#DDDAE8; --accent:#4A4FC8; --tbd:#B0563A;
   --frame-shadow:rgba(170,174,254,.45);
   /* hero world: low-contrast wall, a soft horizon, a slightly deeper floor */
   --w-base:#DADCF5; --w-1:#C5C4F2; --w-2:#FFE6A8; --w-3:#EEDDF6; --w-4:#BCC8F1; --w-5:#FFF0CC; --w-glow:rgba(255,230,170,.65); --grain:.5;
@@ -54,6 +54,7 @@
 @media (min-width:1024px){ :root{ --cols:12; --gutter:24px; --margin:48px } }
 @media (min-width:1440px){ :root{ --gutter:32px; --margin:64px } }
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --btn2-base:#2B2A40; --b2-hi:rgba(255,255,255,.12); --b2-lo:rgba(0,0,0,.28); --b2-rim:rgba(255,255,255,.16); --b2-sheen:rgba(255,255,255,.16); --b2-drop:rgba(0,0,0,.4);
   --tg-track:rgba(255,255,255,.07); --tg-hi:rgba(255,255,255,.22); --tg-rim:rgba(255,255,255,.12); --tg-drop:rgba(0,0,0,.35); --tg-thumb:rgba(255,255,255,.2); --tg-thumb-hi:rgba(255,255,255,.45);
     --paper:#1D1C2E; --ink:#E7E4F1; --ink-2:#A9A5B9; --sub:#C3CBF2; --cast-shadow:#0A1150; --line:#34324A; --accent:#AAAEFE; --tbd:#F0AF96;
   --frame-shadow:rgba(44,56,153,.55); --tint:rgba(231,228,241,.06); --btn-hi:rgba(255,255,255,.55); --btn-lo:rgba(29,28,46,.14); --btn-rim:rgba(255,255,255,.7); --btn-sheen:rgba(255,255,255,.75); --btn-drop:rgba(0,0,0,.45);   /* matte light metal */
@@ -61,6 +62,7 @@
   --w-base:#16216F; --w-1:#2E3A9E; --w-2:rgba(222,176,108,.30); --w-3:#3E3A78; --w-4:#141739; --w-5:#4B3F72; --w-glow:rgba(255,214,150,.14); --grain:.22;
   color-scheme:dark } }
 :root[data-theme="dark"]{
+  --btn2-base:#2B2A40; --b2-hi:rgba(255,255,255,.12); --b2-lo:rgba(0,0,0,.28); --b2-rim:rgba(255,255,255,.16); --b2-sheen:rgba(255,255,255,.16); --b2-drop:rgba(0,0,0,.4);
   --tg-track:rgba(255,255,255,.07); --tg-hi:rgba(255,255,255,.22); --tg-rim:rgba(255,255,255,.12); --tg-drop:rgba(0,0,0,.35); --tg-thumb:rgba(255,255,255,.2); --tg-thumb-hi:rgba(255,255,255,.45);
     --paper:#1D1C2E; --ink:#E7E4F1; --ink-2:#A9A5B9; --sub:#C3CBF2; --cast-shadow:#0A1150; --line:#34324A; --accent:#AAAEFE; --tbd:#F0AF96;
   --frame-shadow:rgba(44,56,153,.55); --tint:rgba(231,228,241,.06); --btn-hi:rgba(255,255,255,.55); --btn-lo:rgba(29,28,46,.14); --btn-rim:rgba(255,255,255,.7); --btn-sheen:rgba(255,255,255,.75); --btn-drop:rgba(0,0,0,.45);   /* matte light metal */
@@ -154,7 +156,9 @@ p{text-wrap:pretty}
 .ground{top:calc(var(--hz, 84%) - 75%);height:150%}   /* 1.5 × hero tall; its midline (75% of the hero's height down) is the horizon */
 .world::after,.cover::after,.site-foot::after{content:"";position:absolute;inset:0;opacity:var(--grain);mix-blend-mode:screen;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.15' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 2.4 0 0 0 -1.2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
-.stage3d{position:absolute;inset:0;z-index:2;width:100%;height:100%;border:0;display:block;color-scheme:light dark}   /* the system's scheme, like the sculpture page inside, so a frame never paints an opaque backdrop when the visitor picks the other look */
+.stage3d{position:absolute;inset:0;z-index:2;width:100%;height:100%;border:0;display:block;color-scheme:light dark;opacity:0;transition:opacity 1.1s cubic-bezier(.2,.7,.2,1)}
+.stage3d.ready{opacity:1}   /* hidden until the sculpture has its layout, light and backdrop, then fades in once */
+@media (prefers-reduced-motion: reduce){ .stage3d{transition:none} }   /* the system's scheme, like the sculpture page inside, so a frame never paints an opaque backdrop when the visitor picks the other look */
 
 .hero-grid{flex:1;width:100%;padding-block:var(--s-5) calc(var(--s-5) + var(--arc));grid-template-rows:auto 1fr auto auto var(--s-7) auto}
 .hero-grid > *{position:relative;z-index:3}
@@ -194,8 +198,13 @@ p{text-wrap:pretty}
 .pill:active,.btn:active,.cta:active{transform:translateY(1px);box-shadow:inset 0 1px 0 var(--btn-rim),inset 0 -1px 0 var(--btn-lo),0 1px 1px var(--btn-drop)}
 .pill svg,.cta svg{width:18px;height:18px;flex:none}
 .bi{fill:currentColor;overflow:visible}   /* balance-set icons in buttons */
+/* secondary button: the same metal, inverted, so it never outweighs a primary (light on light pages, dark on dark) */
+.btn.btn-2{color:var(--ink);
+  --btn-hi:var(--b2-hi); --btn-lo:var(--b2-lo); --btn-rim:var(--b2-rim); --btn-sheen:var(--b2-sheen); --btn-drop:var(--b2-drop);
+  background:linear-gradient(105deg,transparent 40%,var(--btn-sheen) 50%,transparent 60%) var(--sx,35%) 0 / 300% 100% no-repeat,
+             linear-gradient(180deg,var(--btn-hi),transparent 50%,var(--btn-lo)),var(--btn2-base,#F6F5FB)}
 .hero-foot{grid-row:6;grid-column:1 / -1;display:flex;align-items:center;justify-content:space-between;gap:var(--s-4)}
-.hero-foot .study{font-size:var(--fs-label);line-height:1.3;color:var(--ink-2);opacity:.85}   /* Label size, sentence case: the one caption on the page */
+.hero-foot .study{margin:0;max-width:19em;text-align:right;font-size:var(--fs-label);line-height:1.4;color:var(--ink-2);opacity:.85}   /* Label size, sentence case: the one caption on the page */
 .hero-foot .study i{font-style:italic}
 .hero-foot .tools{display:flex;align-items:center;gap:var(--s-4);margin-left:auto}
 .icon-btn{width:44px;height:44px;min-height:44px;padding:0;display:inline-flex;align-items:center;justify-content:center;gap:var(--s-2);border-radius:999px}
@@ -280,6 +289,9 @@ html .rv.rv-in .pre-facts::before{transform:none;transition:transform 1.1s cubic
   grid-template-areas:"head head head head" "visual visual visual visual" "facts facts facts facts";row-gap:var(--s-5)}
 .p-head{grid-area:head;display:flex;flex-direction:column;gap:var(--s-3)}
 .p-head .caps{margin-bottom:calc(var(--s-2) - var(--s-3))}
+/* card labels: a shorter version on phones */
+.sm-only{display:none}
+@media (max-width:639px){ .lg-only{display:none} .sm-only{display:inline} .p-head .thesis{display:none} }   /* phones: no case study subtitle */
 .p-head h3{}
 
 .p-visual{grid-area:visual;display:block;position:relative;aspect-ratio:5/4;max-width:100%;border-radius:var(--radius);overflow:hidden;text-decoration:none}
@@ -370,8 +382,10 @@ img.lq.landed{transition:filter .7s ease,transform .6s cubic-bezier(.2,.7,.2,1)}
    words in a frosted bubble at the bottom. Arrows, tapping either side or the keyboard step through frames, then on to
    the next story; Esc closes. */
 .spots{padding-block:var(--section)}
-.spot-row{list-style:none;margin:0;padding:0 var(--margin);display:grid;grid-auto-flow:column;grid-auto-columns:84%;gap:var(--gutter);
-  overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-inline:var(--margin);scrollbar-width:none;margin-inline:calc(-1 * var(--margin))}
+.spot-row{list-style:none;margin:0;padding:0;display:grid;grid-auto-flow:column;grid-auto-columns:84%;gap:var(--gutter);
+  overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;
+  /* full bleed: the row runs to both edges of the window, its first card still lined up with the page content */
+  --bleed:max(var(--margin), calc(50vw - var(--content) / 2));margin-inline:calc(50% - 50vw);padding-inline:var(--bleed);scroll-padding-inline:var(--bleed)}
 .spot-row::-webkit-scrollbar{display:none}
 @media (min-width:640px){ .spot-row{grid-auto-columns:calc((100% - var(--gutter)) / 2.15)} }
 @media (min-width:1024px){ .spot-row{grid-auto-columns:calc((100% - 2*var(--gutter)) / 3.2)} }
